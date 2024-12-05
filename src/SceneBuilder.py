@@ -24,8 +24,10 @@ class SceneBuilder():
         return self.root
 
 
+    def __load_plugins(self, more_plugins: list = []):
+        for pl in more_plugins:
+            assert type(pl) == str
 
-    def __load_plugins(self):
         self.root.addObject("RequiredPlugin", pluginName=[
             'Sofa.Component.Collision.Detection.Algorithm',
             'Sofa.Component.Collision.Detection.Intersection',
@@ -47,7 +49,7 @@ class SceneBuilder():
             'Sofa.Component.Constraint.Lagrangian.Correction',
             'Sofa.Component.Topology.Mapping',
             'Sofa.Component.MechanicalLoad'
-            ])
+            ].append(more_plugins))
 
 
     def __setup_root_simulation(self):
@@ -63,5 +65,3 @@ class SceneBuilder():
 
     def __render_force(self):
         self.root.addObject('VisualStyle', displayFlags="showCollisionModels hideVisualModels showForceFields")
-
-
