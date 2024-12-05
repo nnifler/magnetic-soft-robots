@@ -89,3 +89,24 @@ class TestConversion(unittest.TestCase):
         val = randrange(1000)
         uut = YoungsModulus.fromMPa(val)
         self.assertEqual(val / 1000, uut.GPa)
+
+
+def suite() -> unittest.TestSuite: 
+    suite = unittest.TestSuite()
+
+    ## Insert new tests here
+    tests = [
+        TestInitMethods,
+        TestSetMethods,
+        TestExceptionalBehavior,
+        TestConversion
+    ]
+
+    ## Load tests
+    loaded_tests = []
+    for test in tests:
+        loaded_tests.append(unittest.TestLoader().loadTestsFromTestCase(test))
+
+    ## Add tests to test suite
+    suite.addTests(loaded_tests)
+    return suite
