@@ -24,11 +24,7 @@ class SceneBuilder():
         return self.root
 
 
-    def __load_plugins(self, more_plugins: list = []):
-        for pl in more_plugins:
-            if not type(pl) == str: 
-                raise TypeError()
-
+    def __load_plugins(self):
         self.root.addObject("RequiredPlugin", pluginName=[
             'Sofa.Component.Collision.Detection.Algorithm',
             'Sofa.Component.Collision.Detection.Intersection',
@@ -50,7 +46,7 @@ class SceneBuilder():
             'Sofa.Component.Constraint.Lagrangian.Correction',
             'Sofa.Component.Topology.Mapping',
             'Sofa.Component.MechanicalLoad'
-            ].append(more_plugins))
+            ])
 
 
     def __setup_root_simulation(self):
