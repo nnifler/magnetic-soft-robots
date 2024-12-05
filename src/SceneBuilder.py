@@ -26,7 +26,8 @@ class SceneBuilder():
 
     def __load_plugins(self, more_plugins: list = []):
         for pl in more_plugins:
-            assert type(pl) == str
+            if not type(pl) == str: 
+                raise TypeError()
 
         self.root.addObject("RequiredPlugin", pluginName=[
             'Sofa.Component.Collision.Detection.Algorithm',
