@@ -7,10 +7,12 @@ import Sofa
 USE_GUI = True
 USE_GRAVITY = True
 NAME = "beam"
-POISSON_RATIO = 0.45
-YOUNG_MODULUS = 10000
-MAGNETIC_FORCE = 10
-MAGNETIC_DIR = (0,-1,0)
+POISSON_RATIO = 0.47 # Ratio halt
+YOUNG_MODULUS = 1000000 # Pascal
+DENSITY = 1100 # kg/m^3
+SCALE = 0.02 # Factor to model
+MAGNETIC_FORCE = 0.1 # Newton
+MAGNETIC_DIR = (0,1,0)
 SHOW_FORCE = False
 
 
@@ -72,7 +74,15 @@ def createScene(root):
     root.addObject('DefaultContactManager', name="CollisionResponse", response="FrictionContactConstraint")
     root.addObject('MinProximityIntersection', useLineLine=True, usePointPoint=True, alarmDistance=0.3, contactDistance=0.15, useLinePoint=True)
 
-    beam = createElasticObject(root, name=NAME, poissonRatio=POISSON_RATIO, youngModulus=YOUNG_MODULUS, magneticForce=MAGNETIC_FORCE, magneticDir=MAGNETIC_DIR, showForce=SHOW_FORCE)
+    beam = createElasticObject(root, 
+                               name=NAME, 
+                               poissonRatio=POISSON_RATIO, 
+                               youngModulus=YOUNG_MODULUS, 
+                               magneticForce=MAGNETIC_FORCE, 
+                               magneticDir=MAGNETIC_DIR, 
+                               showForce=SHOW_FORCE, 
+                               density=DENSITY,
+                               scale=SCALE)
     return root
 
 

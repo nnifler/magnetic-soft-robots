@@ -1,16 +1,16 @@
 import os
 
-def createElasticObject(root, name, poissonRatio, youngModulus, magneticForce, magneticDir, showForce):
+def createElasticObject(root, name, poissonRatio, youngModulus, magneticForce, magneticDir, showForce, density, scale):
     cwd = os.getcwd()
     ## Add Object
     elastic_obj = root.addChild('object')
     elastic_obj.addObject('EulerImplicitSolver', name="cg_odesolver", rayleighStiffness=0.1, rayleighMass=0.1)
     elastic_obj.addObject('SparseLDLSolver', name="linear_solver", template="CompressedRowSparseMatrixMat3x3d")
-    elastic_obj.addObject('MeshGmshLoader', name="meshLoader", filename=f"{cwd}/meshes/{name}.msh")
+    elastic_obj.addObject('MeshGmshLoader', name="meshLoader", filename=f"{cwd}/meshes/{name}.msh", scale3d=[scale]*3)
     elastic_obj.addObject('TetrahedronSetTopologyContainer', name="topo", src="@meshLoader")
     elastic_obj.addObject('MechanicalObject', name="dofs", src="@meshLoader")
     elastic_obj.addObject('TetrahedronSetGeometryAlgorithms', template="Vec3d", name="GeomAlgo")
-    elastic_obj.addObject('DiagonalMass', name="Mass", massDensity=1.0)
+    elastic_obj.addObject('DiagonalMass', name="Mass", massDensity=density)
     elastic_obj.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngModulus, computeGlobalMatrix=False)
 
     ## Add Constraints
@@ -39,7 +39,7 @@ def createElasticObject(root, name, poissonRatio, youngModulus, magneticForce, m
     ## Add visuals
     visu = elastic_obj.addChild("VisualModel")
     visu.loader = visu.addObject('MeshOBJLoader', name="loader", filename=f"{cwd}/meshes/{name}.obj")
-    visu.addObject('OglModel', name="model", src="@loader", scale3d=[1]*3, color=[1., 1., 1.], updateNormals=False)
+    visu.addObject('OglModel', name="model", src="@loader", scale3d=[scale]*3, color=[1., 1., 1.], updateNormals=False)
     visu.addObject('BarycentricMapping')
 
     return elastic_obj
