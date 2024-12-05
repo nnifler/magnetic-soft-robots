@@ -1,6 +1,6 @@
+from __future__ import annotations
 from src.units.BaseUnit import BaseUnit
 from enum import Enum
-from __future__ import annotations
 
 
 # TODO accept only positive values!!!
@@ -13,48 +13,48 @@ class YoungsModulus(BaseUnit):
 
 
     @staticmethod
-    def Pa(value: int) -> YoungsModulus:
+    def fromPa(value: int) -> YoungsModulus:
         return YoungsModulus(value * YoungsModulus.Unit.Pa.value)
 
     @property
     def Pa(self) -> int:
-        return self._value * self.Unit.Pa.value
+        return self._value // self.Unit.Pa.value
     
     @Pa.setter
     def Pa(self, value: int) -> None:
         self._value = value * self.Unit.Pa.value
     
     @staticmethod
-    def hPa(value: float) -> YoungsModulus:
+    def fromhPa(value: float) -> YoungsModulus:
         return YoungsModulus(value * YoungsModulus.Unit.hPa.value)
 
     @property
-    def hPa(self) -> int:
-        return self._value * self.Unit.hPa.value
+    def hPa(self) -> float:
+        return self._value / self.Unit.hPa.value
     
     @hPa.setter
     def hPa(self, value: float) -> None:
         self._value = value * self.Unit.hPa.value
 
     @staticmethod
-    def MPa(value: float) -> YoungsModulus:
+    def fromMPa(value: float) -> YoungsModulus:
         return YoungsModulus(value * YoungsModulus.Unit.MPa.value)
 
     @property
-    def MPa(self) -> None:
-        return self._value * self.Unit.MPa.value
+    def MPa(self) -> float:
+        return self._value / self.Unit.MPa.value
     
     @MPa.setter
-    def MPa(self, value: float) -> int:
+    def MPa(self, value: float) -> None:
         self._value = value * self.Unit.MPa.value
 
     @staticmethod
-    def GPa(value: float) -> YoungsModulus:
+    def fromGPa(value: float) -> YoungsModulus:
         return YoungsModulus(value * YoungsModulus.Unit.GPa.value)
 
     @property
-    def GPa(self) -> int:
-        return self._value * self.Unit.GPa.value
+    def GPa(self) -> float:
+        return self._value / self.Unit.GPa.value
     
     @GPa.setter
     def GPa(self, value: float) -> None:
