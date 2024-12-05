@@ -6,22 +6,22 @@ class TestInitMethods(unittest.TestCase):
 
     def testPa(self):
         val = randrange(1000)
-        uut = YoungsModulus.Pa(val)
+        uut = YoungsModulus.fromPa(val)
         self.assertEqual(val, uut.Pa)
 
     def testhPa(self):
         val = randrange(1000)
-        uut = YoungsModulus.hPa(val)
+        uut = YoungsModulus.fromhPa(val)
         self.assertEqual(val, uut.hPa)
 
     def testMPa(self):
         val = randrange(1000)
-        uut = YoungsModulus.MPa(val)
+        uut = YoungsModulus.fromMPa(val)
         self.assertEqual(val, uut.MPa)
 
     def testGPa(self):
         val = randrange(1000)
-        uut = YoungsModulus.GPa(val)
+        uut = YoungsModulus.fromGPa(val)
         self.assertEqual(val, uut.GPa)
 
 class TestSetMethods(unittest.TestCase):
@@ -58,34 +58,34 @@ class TestExceptionalBehavior(unittest.TestCase):
         with self.assertRaises(ValueError):
             YoungsModulus(val)
         with self.assertRaises(ValueError):
-            YoungsModulus.Pa(val)
+            YoungsModulus.fromPa(val)
         with self.assertRaises(ValueError):
-            YoungsModulus.hPa(val)
+            YoungsModulus.fromhPa(val)
         with self.assertRaises(ValueError):
-            YoungsModulus.MPa(val)
+            YoungsModulus.fromMPa(val)
         with self.assertRaises(ValueError):
-            YoungsModulus.GPa(val)
+            YoungsModulus.fromGPa(val)
 
     def testNegativeSet(self):
         val = randrange(-1000,-1)
         uut = YoungsModulus(0)
         with self.assertRaises(ValueError):
-            uut.Pa(val)
+            uut.Pa = val
         with self.assertRaises(ValueError):
-            uut.hPa(val)
+            uut.hPa = val
         with self.assertRaises(ValueError):
-            uut.MPa(val)
+            uut.MPa = val
         with self.assertRaises(ValueError):
-            uut.GPa(val)
+            uut.GPa = val
 
 class TestConversion(unittest.TestCase):
     
     def testPa_hPa(self):
         val = randrange(1000)
-        uut = YoungsModulus.Pa(val)
-        self.assertEqual(val * 100, uut.hPa)
+        uut = YoungsModulus.fromPa(val)
+        self.assertEqual(val / 100, uut.hPa)
 
     def testMpa_GPa(self):
         val = randrange(1000)
-        uut = YoungsModulus.MPa(val)
-        self.assertEqual(val * 1000, uut.GPa)
+        uut = YoungsModulus.fromMPa(val)
+        self.assertEqual(val / 1000, uut.GPa)
