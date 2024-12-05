@@ -3,6 +3,7 @@ class BaseUnit:
 
     ## Basic init method to create a BaseUnit Object with the given value
     def __init__(self, value):
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value
 
     ## String representation

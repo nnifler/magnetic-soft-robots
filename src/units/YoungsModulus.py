@@ -3,7 +3,6 @@ from src.units.BaseUnit import BaseUnit
 from enum import Enum
 
 
-# TODO accept only positive values!!!
 class YoungsModulus(BaseUnit):
 
     ## Define conversion factors
@@ -20,6 +19,7 @@ class YoungsModulus(BaseUnit):
     ## Create a YoungsModulus Object from a value with Pa as its unit
     @staticmethod
     def fromPa(value: int) -> YoungsModulus:
+        if value < 0: raise ValueError('Value cannot be negative!')
         return YoungsModulus(value * YoungsModulus.Unit.Pa.value)
 
     ## Get the value of the YoungsModulus Object in Pa
@@ -30,11 +30,13 @@ class YoungsModulus(BaseUnit):
     ## Set the value of the YoungsModulus Object with a value with Pa as its unit
     @Pa.setter
     def Pa(self, value: int) -> None:
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.Pa.value
     
     ## Create a YoungsModulus Object from a value with hPa as its unit
     @staticmethod
     def fromhPa(value: float) -> YoungsModulus:
+        if value < 0: raise ValueError('Value cannot be negative!')
         return YoungsModulus(value * YoungsModulus.Unit.hPa.value)
 
     ## Get the value of the YoungsModulus Object in hPa
@@ -45,11 +47,13 @@ class YoungsModulus(BaseUnit):
     ## Set the value of the YoungsModulus Object with a value with hPa as its unit
     @hPa.setter
     def hPa(self, value: float) -> None:
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.hPa.value
 
     ## Create a YoungsModulus Object from a value with MPa as its unit
     @staticmethod
     def fromMPa(value: float) -> YoungsModulus:
+        if value < 0: raise ValueError('Value cannot be negative!')
         return YoungsModulus(value * YoungsModulus.Unit.MPa.value)
 
     ## Get the value of the YoungsModulus Object in MPa
@@ -60,11 +64,13 @@ class YoungsModulus(BaseUnit):
     ## Set the value of the YoungsModulus Object with a value with MPa as its unit
     @MPa.setter
     def MPa(self, value: float) -> None:
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.MPa.value
 
     ## Create a YoungsModulus Object from a value with GPa as its unit
     @staticmethod
     def fromGPa(value: float) -> YoungsModulus:
+        if value < 0: raise ValueError('Value cannot be negative!')
         return YoungsModulus(value * YoungsModulus.Unit.GPa.value)
 
     ## Get the value of the YoungsModulus Object in GPa
@@ -75,4 +81,5 @@ class YoungsModulus(BaseUnit):
     ## Set the value of the YoungsModulus Object with a value with GPa as its unit
     @GPa.setter
     def GPa(self, value: float) -> None:
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.GPa.value
