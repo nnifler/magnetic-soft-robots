@@ -8,9 +8,11 @@ class YoungsModulus(BaseUnit):
     class Unit(Enum):
         Pa = 1
         hPa = 100
-        MPa = 1000000
-        GPa = 1000000000
+        MPa = 1_000_000
+        GPa = 1_000_000_000
 
+    def __repr__(self) -> str:
+        return f'{super().__repr__()} Pa'
 
     @staticmethod
     def fromPa(value: int) -> YoungsModulus:
