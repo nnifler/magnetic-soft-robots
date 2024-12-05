@@ -1,0 +1,9 @@
+# Choose Parameters
+USE_GUI = True
+USE_GRAVITY = True
+NAME = "beam"
+POISSON_RATIO = 0.45
+YOUNG_MODULUS = 10000
+MAGNETIC_FORCE = 0
+MAGNETIC_DIR = (0,-1,0)
+SHOW_FORCE = False
