@@ -3,7 +3,6 @@ from src.units.BaseUnit import BaseUnit
 from enum import Enum
 
 
-# TODO accept only positive values!!!
 class Density(BaseUnit): # base: kgpm3
     
     ## Define conversion factors
@@ -20,6 +19,7 @@ class Density(BaseUnit): # base: kgpm3
     ## Create a Density Object from a value with kg/m^3 as its unit
     @staticmethod
     def fromkgpm3(value: float) -> Density:
+        if value < 0: raise ValueError('Value cannot be negative!')
         return Density(value * Density.Unit.kgpm3.value)
 
     ## Get the value of the Density Object in kg/m^3
@@ -30,11 +30,13 @@ class Density(BaseUnit): # base: kgpm3
     ## Set the value of the Density Object with a value with kg/m^3 as its unit
     @kgpm3.setter
     def kgpm3(self, value: int) -> None:
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.kgpm3.value
     
     ## Create a Density Object from a value with g/cm^3 as its unit
     @staticmethod
     def fromgpcm3(value: float) -> Density:
+        if value < 0: raise ValueError('Value cannot be negative!')
         return Density(value * Density.Unit.gpcm3.value)
 
     ## Get the value of the Density Object in g/cm^3
@@ -45,6 +47,7 @@ class Density(BaseUnit): # base: kgpm3
     ## Set the value of the Density Object with a value with g/cm^3 as its unit
     @gpcm3.setter
     def gpcm3(self, value: float) -> None:
+        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.gpcm3.value
 
     ## Define getter and setter for t/m^3 and Mg/m^3
