@@ -1,8 +1,8 @@
-from elastic_body import createElasticObject
+from src.elastic_body import createElasticObject
 # Required import for python
 import Sofa
-from config import *
-from SceneBuilder import SceneBuilder
+from src.config import *
+from src.SceneBuilder import SceneBuilder
 
 
 def main():
@@ -26,7 +26,15 @@ def main():
 
 def createScene(root):
     SceneBuilder(root)
-    beam = createElasticObject(root, name=NAME, poissonRatio=POISSON_RATIO, youngModulus=YOUNG_MODULUS, magneticForce=MAGNETIC_FORCE, magneticDir=MAGNETIC_DIR, showForce=SHOW_FORCE)
+    beam = createElasticObject(root, 
+                               name=NAME, 
+                               poissonRatio=POISSON_RATIO,
+                               youngsModulus=YOUNGS_MODULUS, 
+                               magneticForce=MAGNETIC_FORCE, 
+                               magneticDir=MAGNETIC_DIR, 
+                               showForce=SHOW_FORCE,
+                               density=DENSITY,
+                               scale=SCALE)
     return root
 
 

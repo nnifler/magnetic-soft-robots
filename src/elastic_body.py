@@ -1,6 +1,8 @@
 import os
+from src.units.YoungsModulus import YoungsModulus
+from src.units.Density import Density
 
-def createElasticObject(root, name, poissonRatio, youngModulus, magneticForce, magneticDir, showForce, density, scale):
+def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: YoungsModulus, magneticForce: float, magneticDir, showForce: bool, density: Density, scale: float):
     cwd = os.getcwd()
     ## Add Object
     elastic_obj = root.addChild('object')
@@ -10,8 +12,8 @@ def createElasticObject(root, name, poissonRatio, youngModulus, magneticForce, m
     elastic_obj.addObject('TetrahedronSetTopologyContainer', name="topo", src="@meshLoader")
     elastic_obj.addObject('MechanicalObject', name="dofs", src="@meshLoader")
     elastic_obj.addObject('TetrahedronSetGeometryAlgorithms', template="Vec3d", name="GeomAlgo")
-    elastic_obj.addObject('DiagonalMass', name="Mass", massDensity=density)
-    elastic_obj.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngModulus, computeGlobalMatrix=False)
+    elastic_obj.addObject('DiagonalMass', name="Mass", massDensity=density.kgpm3)
+    elastic_obj.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngsModulus.Pa, computeGlobalMatrix=False)
 
     ## Add Constraints
     elastic_obj.addObject('FixedConstraint', name="FixedConstraint", indices="0 1 2 3")
