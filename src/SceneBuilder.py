@@ -1,5 +1,5 @@
 import Sofa
-import config
+import src.config as config
 from typing import List, SupportsFloat
 
 
