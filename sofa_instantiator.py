@@ -1,13 +1,12 @@
-from src.elastic_body import createElasticObject
-# Required import for python
+import SofaRuntime
 import Sofa
+import Sofa.Gui
+from src.elastic_body import createElasticObject
+from src import SceneBuilder
 from src.config import *
-from src.SceneBuilder import SceneBuilder
 
 
 def main():
-    import SofaRuntime
-    import Sofa.Gui
 
     root = Sofa.Core.Node("root")
     createScene(root)
@@ -26,17 +25,16 @@ def main():
 
 def createScene(root):
     SceneBuilder(root)
-    beam = createElasticObject(root, 
-                               name=NAME, 
+    beam = createElasticObject(root,
+                               name=NAME,
                                poissonRatio=POISSON_RATIO,
-                               youngsModulus=YOUNGS_MODULUS, 
-                               magneticForce=MAGNETIC_FORCE, 
-                               magneticDir=MAGNETIC_DIR, 
+                               youngsModulus=YOUNGS_MODULUS,
+                               magneticForce=MAGNETIC_FORCE,
+                               magneticDir=MAGNETIC_DIR,
                                showForce=SHOW_FORCE,
                                density=DENSITY,
                                scale=SCALE)
     return root
-
 
 
 # Function used only if this script is called from a python environment

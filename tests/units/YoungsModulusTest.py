@@ -1,6 +1,7 @@
 import unittest
-from src.units.YoungsModulus import YoungsModulus
 from random import randrange
+from src.units import YoungsModulus
+
 
 class TestInitMethods(unittest.TestCase):
 
@@ -24,6 +25,7 @@ class TestInitMethods(unittest.TestCase):
         uut = YoungsModulus.fromGPa(val)
         self.assertEqual(val, uut.GPa)
 
+
 class TestSetMethods(unittest.TestCase):
 
     def testPa(self):
@@ -31,7 +33,6 @@ class TestSetMethods(unittest.TestCase):
         uut = YoungsModulus(0)
         uut.Pa = val
         self.assertEqual(val, uut.Pa)
-
 
     def testhPa(self):
         val = randrange(1, 1000)
@@ -51,10 +52,11 @@ class TestSetMethods(unittest.TestCase):
         uut.GPa = val
         self.assertEqual(val, uut.GPa)
 
+
 class TestExceptionalBehavior(unittest.TestCase):
-    
+
     def testNegativeInit(self):
-        val = randrange(-1000,-1)
+        val = randrange(-1000, -1)
         with self.assertRaises(ValueError):
             YoungsModulus(val)
         with self.assertRaises(ValueError):
@@ -67,7 +69,7 @@ class TestExceptionalBehavior(unittest.TestCase):
             YoungsModulus.fromGPa(val)
 
     def testNegativeSet(self):
-        val = randrange(-1000,-1)
+        val = randrange(-1000, -1)
         uut = YoungsModulus(0)
         with self.assertRaises(ValueError):
             uut.Pa = val
@@ -78,8 +80,9 @@ class TestExceptionalBehavior(unittest.TestCase):
         with self.assertRaises(ValueError):
             uut.GPa = val
 
+
 class TestConversion(unittest.TestCase):
-    
+
     def testPa_hPa(self):
         val = randrange(1000)
         uut = YoungsModulus.fromPa(val)
@@ -91,10 +94,10 @@ class TestConversion(unittest.TestCase):
         self.assertEqual(val / 1000, uut.GPa)
 
 
-def suite() -> unittest.TestSuite: 
+def suite() -> unittest.TestSuite:
     suite = unittest.TestSuite()
 
-    ## Insert new tests here
+    # Insert new tests here
     tests = [
         TestInitMethods,
         TestSetMethods,
@@ -102,11 +105,11 @@ def suite() -> unittest.TestSuite:
         TestConversion
     ]
 
-    ## Load tests
+    # Load tests
     loaded_tests = []
     for test in tests:
         loaded_tests.append(unittest.TestLoader().loadTestsFromTestCase(test))
 
-    ## Add tests to test suite
+    # Add tests to test suite
     suite.addTests(loaded_tests)
     return suite

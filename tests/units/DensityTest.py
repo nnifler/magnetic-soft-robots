@@ -1,6 +1,7 @@
 import unittest
-from src.units.Density import Density
 from random import randrange
+from src.units import Density
+
 
 class TestInitMethods(unittest.TestCase):
 
@@ -24,6 +25,7 @@ class TestInitMethods(unittest.TestCase):
         uut = Density.fromtpm3(val)
         self.assertEqual(val, uut.tpm3)
 
+
 class TestSetMethods(unittest.TestCase):
 
     def testkgpm3(self):
@@ -31,7 +33,6 @@ class TestSetMethods(unittest.TestCase):
         uut = Density(0)
         uut.kgpm3 = val
         self.assertEqual(val, uut.kgpm3)
-
 
     def testgpcm3(self):
         val = randrange(1, 1000)
@@ -51,10 +52,11 @@ class TestSetMethods(unittest.TestCase):
         uut.tpm3 = val
         self.assertEqual(val, uut.tpm3)
 
+
 class TestExceptionalBehavior(unittest.TestCase):
-    
+
     def testNegativeInit(self):
-        val = randrange(-1000,-1)
+        val = randrange(-1000, -1)
         with self.assertRaises(ValueError):
             Density(val)
         with self.assertRaises(ValueError):
@@ -67,7 +69,7 @@ class TestExceptionalBehavior(unittest.TestCase):
             Density.fromtpm3(val)
 
     def testNegativeSet(self):
-        val = randrange(-1000,-1)
+        val = randrange(-1000, -1)
         uut = Density(0)
         with self.assertRaises(ValueError):
             uut.kgpm3 = val
@@ -78,8 +80,9 @@ class TestExceptionalBehavior(unittest.TestCase):
         with self.assertRaises(ValueError):
             uut.tpm3 = val
 
+
 class TestConversion(unittest.TestCase):
-    
+
     def testkgpm3_gpcm3(self):
         val = randrange(1000)
         uut = Density.fromkgpm3(val)
@@ -91,10 +94,10 @@ class TestConversion(unittest.TestCase):
         self.assertEqual(val, uut.tpm3)
 
 
-def suite() -> unittest.TestSuite: 
+def suite() -> unittest.TestSuite:
     suite = unittest.TestSuite()
 
-    ## Insert new tests here
+    # Insert new tests here
     tests = [
         TestInitMethods,
         TestSetMethods,
@@ -102,11 +105,11 @@ def suite() -> unittest.TestSuite:
         TestConversion
     ]
 
-    ## Load tests
+    # Load tests
     loaded_tests = []
     for test in tests:
         loaded_tests.append(unittest.TestLoader().loadTestsFromTestCase(test))
 
-    ## Add tests to test suite
+    # Add tests to test suite
     suite.addTests(loaded_tests)
     return suite
