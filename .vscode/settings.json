@@ -1,0 +1,5 @@
+{
+    "terminal.integrated.env.linux": {
+        "QT_QPA_PLATFORM": "xcb"
+    }
+}
