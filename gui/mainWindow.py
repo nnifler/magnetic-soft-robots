@@ -1,127 +1,187 @@
 import os
-import sys
 import json
 from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QGroupBox,
-    QListWidget,
-    QPushButton,
-    QMessageBox,
-    QLabel,
-    QSplitter,
-    QFrame,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
+    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox
 )
 from PySide6.QtCore import Qt
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Fenster-Einstellungen
-        self.setWindowTitle("SOFA GUI")
-        self.setGeometry(100, 100, 1200, 800)
+        self.setWindowTitle("Soft Robotics Simulation")
+        self.resize(1200, 800)
 
-        # Zentrale Widget-Struktur
-        central_widget = QWidget(self)
+        # Haupt-Widget und Layout
+        central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        main_layout = QHBoxLayout(central_widget)
+        main_layout = QVBoxLayout(central_widget)
 
-        # Splitter für flexibles Layout
-        splitter = QSplitter(Qt.Horizontal, self)
-        main_layout.addWidget(splitter)
+        # Header-View
+        header_widget = QWidget()
+        header_widget.setFixedHeight(30)  # Maximal 1 cm Höhe
+        header_layout = QHBoxLayout(header_widget)
+        header_layout.setContentsMargins(5, 0, 5, 0)
+        header_layout.setSpacing(5)  # Minimaler Abstand zwischen Buttons
 
-        # Linker Bereich (Library)
-        self.library_box = QGroupBox("Library", self)
-        library_layout = QVBoxLayout()
-        self.library_box.setLayout(library_layout)
+        mrs_label = QLabel("MRS")
+        mrs_label.setStyleSheet("font-size: 20px; font-weight: bold;")
+        header_layout.addWidget(mrs_label, alignment=Qt.AlignLeft)
 
-        self.sofa_label = QLabel("Sample text: Ready to launch SOFA", self)
-        self.sofa_button = QPushButton("Launch SOFA", self)
-        self.sofa_button.clicked.connect(self.launch_sofa)
-        library_layout.addWidget(self.sofa_label)
-        library_layout.addWidget(self.sofa_button)
+        self.library_button = QPushButton("Library")
+        self.save_button = QPushButton("Speichern")
+        header_layout.addStretch()
+        header_layout.addWidget(self.library_button)
+        header_layout.addWidget(self.save_button)
 
-        splitter.addWidget(self.library_box)
+        main_layout.addWidget(header_widget)
 
-        # Zentraler Bereich (SOFA-Anzeige)
-        sofa_frame = QFrame(self)
-        sofa_frame.setFrameShape(QFrame.StyledPanel)
-        sofa_frame.setStyleSheet("background-color: lightgray;")  # Platzhalter für SOFA-Fenster
-        splitter.addWidget(sofa_frame)
+        # Hauptinhalt - Horizontal Layout
+        content_layout = QHBoxLayout()
 
-        # Rechter Bereich (ausklappbare Widgets)
-        right_widget = QSplitter(Qt.Vertical, self)
+        # Linke Seitenleiste für Navigation und Parametersteuerung
+        sidebar = QGroupBox("Navigation und Parametersteuerung")
+        sidebar_layout = QVBoxLayout(sidebar)
 
-        # Models Widget
-        self.models_list = QListWidget(self)
-        self.models_list.setObjectName("Models")
-        models_group = QGroupBox("Models")
-        models_layout = QVBoxLayout()
-        models_layout.addWidget(self.models_list)
-        models_group.setLayout(models_layout)
-        right_widget.addWidget(models_group)
+        # Materialeigenschaften
+        material_group = QGroupBox("Materialeigenschaften")
+        material_layout = QGridLayout(material_group)
 
-        # Materials Widget
-        self.materials_list = QListWidget(self)
-        self.materials_list.setObjectName("Materials")
-        materials_group = QGroupBox("Materials")
-        materials_layout = QVBoxLayout()
-        materials_layout.addWidget(self.materials_list)
-        materials_group.setLayout(materials_layout)
-        right_widget.addWidget(materials_group)
+        material_label = QLabel("Material auswählen:")
+        self.material_combo_box = QComboBox()
+        self.material_combo_box.currentIndexChanged.connect(self.update_material_parameters)
 
-
-        splitter.addWidget(right_widget)
-        splitter.setStretchFactor(1, 3)
-
-        # Inhalte laden
+        self.material_data = []  # Platz für JSON-Daten
         self.load_materials_from_json()
 
+        behavior_label = QLabel("Materialverhalten:")
+        self.behavior_combo_box = QComboBox()
+        self.behavior_combo_box.addItems(["Linear-elastisch", "Plastisch", "Viskoelastisch"])
+
+        young_modulus_label = QLabel("(E) Elastizitätsmodul (Pa):")
+        self.young_modulus_spinbox = QDoubleSpinBox()
+        self.young_modulus_spinbox.setRange(0, 1e12)
+        self.young_modulus_spinbox.setDecimals(2)
+
+        poisson_label = QLabel("(ν) Poisson-Verhältnis:")
+        self.poisson_spinbox = QDoubleSpinBox()
+        self.poisson_spinbox.setRange(0, 0.5)
+        self.poisson_spinbox.setDecimals(2)
+
+        density_label = QLabel("(ρ) Dichte (kg/m³):")
+        self.density_spinbox = QDoubleSpinBox()
+        self.density_spinbox.setRange(0, 20000)
+        self.density_spinbox.setDecimals(0)
+
+        magnetization_label = QLabel("Magnetisierungsstärke (A/m):")
+        self.magnetization_spinbox = QDoubleSpinBox()
+        self.magnetization_spinbox.setRange(0, 1e7)
+        self.magnetization_spinbox.setDecimals(0)
+
+        # Layout für Materialeigenschaften
+        material_layout.addWidget(material_label, 0, 0)
+        material_layout.addWidget(self.material_combo_box, 0, 1)
+
+        material_layout.addWidget(behavior_label, 1, 0)
+        material_layout.addWidget(self.behavior_combo_box, 1, 1)
+
+        material_layout.addWidget(young_modulus_label, 2, 0)
+        material_layout.addWidget(self.young_modulus_spinbox, 2, 1)
+
+        material_layout.addWidget(poisson_label, 3, 0)
+        material_layout.addWidget(self.poisson_spinbox, 3, 1)
+
+        material_layout.addWidget(density_label, 4, 0)
+        material_layout.addWidget(self.density_spinbox, 4, 1)
+
+        material_layout.addWidget(magnetization_label, 5, 0)
+        material_layout.addWidget(self.magnetization_spinbox, 5, 1)
+
+        sidebar_layout.addWidget(material_group)
+
+        # Magnetfeldsteuerung
+        field_group = QGroupBox("Magnetfeldsteuerung")
+        field_layout = QVBoxLayout(field_group)
+
+        field_strength_label = QLabel("Feldstärke (Tesla):")
+        self.field_strength_slider = QSlider(Qt.Horizontal)
+        self.field_strength_slider.setRange(0, 100)
+        self.field_strength_slider.setValue(50)
+        self.field_strength_slider.setTickPosition(QSlider.TicksBelow)
+        self.field_strength_slider.setTickInterval(10)
+
+        field_direction_label = QLabel("Richtung (Vektor):")
+        self.field_direction_input = QLabel("[0, 0, 1]")  # Platzhalter
+
+        field_layout.addWidget(field_strength_label)
+        field_layout.addWidget(self.field_strength_slider)
+        field_layout.addWidget(field_direction_label)
+        field_layout.addWidget(self.field_direction_input)
+
+        sidebar_layout.addWidget(field_group)
+
+        # Schaltfläche zum Anwenden der Parameter
+        apply_button = QPushButton("Anwenden")
+        apply_button.clicked.connect(self.apply_parameters)
+        sidebar_layout.addWidget(apply_button)
+
+        sidebar.setFixedWidth(400)
+        content_layout.addWidget(sidebar)
+
+        # Hauptanzeige für Visualisierung
+        visualization_area = QWidget()
+        visualization_area.setStyleSheet("background-color: #f0f0f0;")
+        content_layout.addWidget(visualization_area)
+
+        main_layout.addLayout(content_layout)
+
     def load_materials_from_json(self):
-        # Lädt Materialien aus einer JSON-Datei und zeigt sie in der Materials-Liste an.
+        # Lädt Materialien aus einer JSON-Datei
         data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../lib/materials/magnetic_soft_robot_materials.json")
         json_file_path = data_path
         print(f"Looking for JSON file at: {json_file_path}")
 
-
         try:
-            # JSON-Datei laden
             with open(json_file_path, "r") as file:
-                materials = json.load(file)
+                self.material_data = json.load(file)
 
-            # Liste aktualisieren
-            self.materials_list.clear()
-            for material in materials:
-                name = material.get("name", "Unknown Material")
-                density = material.get("density", "N/A")
-                youngs_modulus = material.get("youngs_modulus", "N/A")
-                poissons_ratio = material.get("poissons_ratio", "N/A")
-                self.materials_list.addItem(f"{name} - Density: {density} kg/m³, Young's Modulus: {youngs_modulus} Pa, Poisson's Ratio: {poissons_ratio}")
+            self.material_combo_box.clear()
+            for material in self.material_data:
+                self.material_combo_box.addItem(material.get("name", "Unknown Material"))
 
         except FileNotFoundError:
             QMessageBox.warning(self, "Error", "Materials JSON file not found.")
         except json.JSONDecodeError as e:
             QMessageBox.warning(self, "Error", f"Error decoding JSON file:\n{e}")
 
-   
+    def update_material_parameters(self):
+        # Aktualisiert die Parameterfelder basierend auf der Auswahl im ComboBox
+        index = self.material_combo_box.currentIndex()
+        if 0 <= index < len(self.material_data):
+            material = self.material_data[index]
+            self.density_spinbox.setValue(material.get("density", 0))
+            self.young_modulus_spinbox.setValue(material.get("youngs_modulus", 0))
+            self.poisson_spinbox.setValue(material.get("poissons_ratio", 0))
+            self.magnetization_spinbox.setValue(material.get("magnetization_strength", 0))
 
-    def launch_sofa(self):
-        # Platzhalter für SOFA-Start.
-        QMessageBox.information(self, "Launch SOFA", "SOFA simulation would start here!")
+    def apply_parameters(self):
+        # Erfassung der Parameterwerte
+        material = self.material_combo_box.currentText()
+        behavior = self.behavior_combo_box.currentText()
+        young_modulus = self.young_modulus_spinbox.value()
+        poisson_ratio = self.poisson_spinbox.value()
+        density = self.density_spinbox.value()
+        magnetization_strength = self.magnetization_spinbox.value()
+        field_strength = self.field_strength_slider.value()
+        field_direction = self.field_direction_input.text()
 
+        print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} Pa, "
+              f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Magnetisierungsstärke: {magnetization_strength} A/m, "
+              f"Feldstärke: {field_strength} Tesla, Richtung: {field_direction}")
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QApplication([])
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
-
-
-
-       
-    
+    app.exec()
