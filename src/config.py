@@ -13,6 +13,7 @@ POISSON_RATIO = 0.47
 YOUNGS_MODULUS = YoungsModulus.fromGPa(0.001)
 DENSITY = Density.fromMgpm3(1.1)
 MAGNETIC_FORCE = 0.5
+REMANENCE = 0.35
 
 MATERIAL_LIST = [
     (0.47, YoungsModulus.fromGPa(0.001), Density.fromMgpm3(1.1), 0.5),   # Silicone Rubber
@@ -25,7 +26,8 @@ POISSON_RATIO, YOUNGS_MODULUS, DENSITY, MAGNETIC_FORCE = MATERIAL_LIST[0]
 
 SCALE = 0.02
 MAGNETIC_DIR = (0,-1,0)
-SHOW_FORCE = False
+SHOW_FORCE = True
+
 
 
 ### Plugins ### 
