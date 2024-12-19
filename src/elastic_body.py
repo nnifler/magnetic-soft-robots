@@ -61,6 +61,6 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     l = len(elastic_object.mesh.position.value)
     elastic_object.vertex_forces = [None] * l
     for i in range(l):
-        elastic_object.vertex_forces[i] = elastic_obj.addObject('ConstantForceField', indices = f"{i}", name=f"force_{i}", forces=[0,0,0], showArrowSize="0.1" if config.SHOW_FORCE else "0")
+        elastic_object.vertex_forces[i] = elastic_obj.addObject('ConstantForceField', indices = f"{i}", name=f"force_{i}", forces=[0,0,0], showArrowSize="0.001" if config.SHOW_FORCE else "0")
 
     return elastic_object
