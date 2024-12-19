@@ -1,18 +1,18 @@
-from numpy import float32
+import numpy as np
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
 
 # Choose Parameters
 USE_GUI = True
-USE_GRAVITY = True
+USE_GRAVITY = False
 GRAVITY_VEC = [0, float(-10), 0]
 NAME = "beam"
 
 ## Silicone rubber
 POISSON_RATIO = 0.47
-YOUNGS_MODULUS = YoungsModulus.fromGPa(0.001)
+YOUNGS_MODULUS = YoungsModulus.fromGPa(0.1)
 DENSITY = Density.fromMgpm3(1.1)
-MAGNETIC_FORCE = 0.5
+MAGNETIC_FORCE = 50
 REMANENCE = 0.35
 
 MATERIAL_LIST = [
@@ -22,12 +22,15 @@ MATERIAL_LIST = [
     (0.337, YoungsModulus.fromGPa(3.14), Density.fromgpcm3(1.63), 100)   # PET
 ]
 
-POISSON_RATIO, YOUNGS_MODULUS, DENSITY, MAGNETIC_FORCE = MATERIAL_LIST[0]
+# POISSON_RATIO, YOUNGS_MODULUS, DENSITY, MAGNETIC_FORCE = MATERIAL_LIST[2]
 
 SCALE = 0.02
-MAGNETIC_DIR = (0,-1,0)
-SHOW_FORCE = True
+MAGNETIC_DIR = (0,0,1)
+SHOW_FORCE = TrueYOUNGS_MODULUS = YoungsModulus.fromPa(1)
 
+B_FIELD = np.array(MAGNETIC_FORCE * np.array(MAGNETIC_DIR))
+
+INIT = np.array([1, 0, 0])
 
 
 ### Plugins ### 
