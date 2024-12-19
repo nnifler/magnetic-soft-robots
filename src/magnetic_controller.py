@@ -24,29 +24,17 @@ class MagneticController(Sofa.Core.Controller):
     def _calculate_angle(self, v1: np.ndarray, v2: np.ndarray, subscript: Callable[[np.ndarray], np.ndarray]) -> float:
         """Calculate the angle between v1 and v2 projected from the direction excluded in the subscript"""
         p1, p2 = subscript(v1), subscript(v2)
-        print(p1, p2)
-        def rot(v): 
+        def rot(v):
             return np.array([v[1], -1*v[0]])
-        #p2_right_of_p1 = math.copysign(1, np.dot(p1, rot(p2)))
-        
-        print(p1, rot(p2))
 
         angle = math.atan2(
             np.dot(p1, rot(p2)),
             np.dot(p1, p2)
         )
-
-        if False:
-            angle = np.arccos(
-                np.dot(p1, p2)
-                / (np.linalg.norm(p1) * np.linalg.norm(p2))
-            )
         return angle if not math.isnan(angle) else 0
 
 
     def _calculate_rotation(self, normal: np.ndarray, initial_dipole_orientation: np.ndarray):
-        # TODOsolved?: Fix exception when normal = (x,0,0) or normal = (0,0,x)
-        # TODO: Fix error that the angles are in the wrong direction (when they should be negative)
         # Calculate the angle between the normal and the initial direction in x direction
         angle_x = self._calculate_angle(normal, initial_dipole_orientation, lambda x: x[1:])
         rot_x = Rotation.from_euler('x', angle_x, degrees=False)
@@ -57,7 +45,7 @@ class MagneticController(Sofa.Core.Controller):
         angle_y = self._calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[::2])
         rot_y = Rotation.from_euler('y', angle_y, degrees=False)
         normal_rot = rot_y.apply(normal_rot)
-      
+
         angle_z = self._calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[:2])
         return Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=False)
 
@@ -127,12 +115,6 @@ class MagneticController(Sofa.Core.Controller):
                     # print(config.B_FIELD.shape, m.shape)
                     torque = np.cross(m, config.B_FIELD)
                     # print(type(m), m)
-                    self._elastic_object.vertex_forces[node].forces = torque #f"{torque[0]} {torque[1]} {torque[2]}"
+                    self._elastic_object.vertex_forces[node].forces = f"{torque[0]} {torque[1]} {torque[2]}"
 
                     force_defined_at[node] = True
-
-                    print(dipole_moment, orientation, "dipole + or")
-                    print(m)
-                    print(torque, " torque")
-                    print(self._elastic_object.vertex_forces[7].forces.value)
-
