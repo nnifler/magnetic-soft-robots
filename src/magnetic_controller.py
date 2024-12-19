@@ -1,7 +1,6 @@
 import Sofa
 
 from src.elastic_body import ElasticObject
-from src.SceneBuilder import SceneBuilder
 import src.config as config
 
 import numpy as np
@@ -21,7 +20,7 @@ class MagneticController(Sofa.Core.Controller):
         return (cross / np.linalg.norm(cross)), vec1, vec2
 
 
-    def _calculate_angle(self, v1: np.ndarray, v2: np.ndarray, subscript: Callable[[np.ndarray], np.ndarray]) -> float:
+    def calculate_angle(self, v1: np.ndarray, v2: np.ndarray, subscript: Callable[[np.ndarray], np.ndarray]) -> float:
         """Calculate the angle between v1 and v2 projected from the direction excluded in the subscript"""
         p1, p2 = subscript(v1), subscript(v2)
         def rot(v):
@@ -34,19 +33,19 @@ class MagneticController(Sofa.Core.Controller):
         return angle if not math.isnan(angle) else 0
 
 
-    def _calculate_rotation(self, normal: np.ndarray, initial_dipole_orientation: np.ndarray):
+    def calculate_rotation(self, normal: np.ndarray, initial_dipole_orientation: np.ndarray):
         # Calculate the angle between the normal and the initial direction in x direction
-        angle_x = self._calculate_angle(normal, initial_dipole_orientation, lambda x: x[1:])
+        angle_x = self.calculate_angle(normal, initial_dipole_orientation, lambda x: x[1:])
         rot_x = Rotation.from_euler('x', angle_x, degrees=False)
 
         # Calculate the angle between the in x direction rotated normal and the initial direction in z direction
         normal_rot = rot_x.apply(normal)
 
-        angle_y = self._calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[::2])
+        angle_y = self.calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[::2])
         rot_y = Rotation.from_euler('y', angle_y, degrees=False)
         normal_rot = rot_y.apply(normal_rot)
 
-        angle_z = self._calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[:2])
+        angle_z = self.calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[:2])
         return Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=False)
 
 
@@ -79,7 +78,7 @@ class MagneticController(Sofa.Core.Controller):
             # Initial direction of the magnetic dipole moment
             initial = config.INIT
 
-            r = self._calculate_rotation(normal, initial)
+            r = self.calculate_rotation(normal, initial)
             self._rotations.append(r)
             print(r.as_euler('xyz'), "r")
 
