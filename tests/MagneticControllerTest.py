@@ -95,6 +95,32 @@ class TestRotation(unittest.TestCase):
         for pair in zip(reference_vector, result_under_test):
             self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
 
+    def testNoRot(self):
+        rand_base_vector = (np.random.rand(3) - 0.5) * 20
+        noRot_angles = [0,0,0]
+
+        reference_rotation = Rotation.from_euler("xyz", noRot_angles, degrees=False)
+        reference_vector = reference_rotation.apply(rand_base_vector)
+
+        rot_under_test = MagneticController.calculate_rotation(rand_base_vector, reference_vector)
+        #result_under_test = rot_under_test.apply(rand_base_vector)
+        result_under_test = rot_under_test.apply(rand_base_vector)
+
+        for pair in zip(reference_vector, result_under_test):
+            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
+
+
+    def testAntiParallel(self):
+        rand_base_vector = (np.random.rand(3) - 0.5) * 20
+        reverse_base_vector = -1 * rand_base_vector
+
+        rot_under_test = MagneticController.calculate_rotation(rand_base_vector, reverse_base_vector)
+        #result_under_test = rot_under_test.apply(rand_base_vector)
+        result_under_test = rot_under_test.apply(rand_base_vector)
+
+        for pair in zip(reverse_base_vector, result_under_test):
+            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reverse_base_vector} expected but found {result_under_test}")
+
 
 
 def suite() -> unittest.TestSuite: 

@@ -47,6 +47,10 @@ class MagneticController(Sofa.Core.Controller):
 
     @staticmethod
     def calculate_rotation(normal: np.ndarray, initial_dipole_orientation: np.ndarray):
+
+        if np.isclose(normal, initial_dipole_orientation).all(): return Rotation.from_euler('x', 0)
+        if np.isclose(normal, -1 * initial_dipole_orientation).all(): return Rotation.from_matrix(-1 * np.eye())
+
         a = (normal / np.linalg.norm(normal)).reshape(3)
         b = (initial_dipole_orientation / np.linalg.norm(initial_dipole_orientation)).reshape(3)
         v = np.cross(a, b)
