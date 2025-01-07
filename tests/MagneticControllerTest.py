@@ -53,7 +53,7 @@ class TestAngles(unittest.TestCase):
             rotated_vec = r.apply(rand_vec)
 
             a = MagneticController.calculate_angle(None, rand_vec, rotated_vec, subscript) # sign error still persists, swapping order of compared vecs only changes axis in which they occur (y, if swapped x)
-            self.assertAlmostEqual(a, rand_angs[i], msg=f"axis {one_axis}")
+            self.assertAlmostEqual(a, one_angle, msg=f"axis {one_axis}")
 
     def testOne0(self):
         rand_vec = (np.random.rand(3) - 0.5) * 20
@@ -72,12 +72,41 @@ class TestAngles(unittest.TestCase):
         self.assertAlmostEqual(np.abs(actual), ref)
 
 
+class TestRotation(unittest.TestCase):
+    def testRandomized(self):
+        rand_base_vector = (np.random.rand(3) - 0.5) * 20
+        rand_angles = (np.random.rand(3) - 0.5) * 2*np.pi
+
+        reference_rotation = Rotation.from_euler("xyz", rand_angles, degrees=False)
+        reference_vector = reference_rotation.apply(rand_base_vector)
+
+        rot_under_test = MagneticController.calculate_rotation(None, rand_base_vector, reference_vector)
+        result_under_test = rot_under_test.apply(rand_base_vector)
+
+        for pair in zip(reference_vector, result_under_test):
+            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}")
+
+
+
+
+        rand_base_vector = (np.random.rand(3) - 0.5) * 20
+        rand_dipole = (np.random.rand(3) - 0.5) * 20
+
+        make_comparable = lambda a : a.as_euler('xyz', degrees=False).tolist()
+        rot_under_test = MagneticController.calculate_rotation(None, rand_base_vector, rand_dipole)
+        rot_reference = Rotation.align_vectors(rand_base_vector, rand_dipole)[0]
+
+        for pair in zip(make_comparable(rot_under_test), make_comparable(rot_reference)):
+            self.assertAlmostEqual(pair[0], pair[1], msg=f"{make_comparable(rot_reference)} expected but found {make_comparable(rot_under_test)}")
+
+
 def suite() -> unittest.TestSuite: 
     suite = unittest.TestSuite()
 
     ## Insert new tests here
     tests = [
-        TestAngles
+        TestAngles,
+        TestRotation,
     ]
 
     ## Load tests
