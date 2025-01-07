@@ -13,16 +13,29 @@ MU0 = (4 * np.pi) / np.pow(10, 7)
 
 class MagneticController(Sofa.Core.Controller):
 
-    def _normal(self, cur_positions: np.ndarray, tetrahedron: np.ndarray):
+    @staticmethod
+    def _projection_from(axis: str, vec: np.ndarray): 
+        proj = {
+            'x': lambda x: x[1:], 
+            'y': lambda x: [x[0], -x[2]],
+            'z': lambda x: x[:2]
+        }
+        if axis not in 'xyz':
+            raise ValueError(f"Invalid axis!!! Got {axis}, should be x, y, or z.")
+        
+        return proj[axis](vec)
+
+    @staticmethod
+    def _normal(cur_positions: np.ndarray, tetrahedron: np.ndarray):
         vec1 = cur_positions[tetrahedron[1]] - cur_positions[tetrahedron[0]]
         vec2 = cur_positions[tetrahedron[2]] - cur_positions[tetrahedron[0]]
         cross = np.cross(vec1, vec2)
         return (cross / np.linalg.norm(cross)), vec1, vec2
 
-
-    def calculate_angle(self, v1: np.ndarray, v2: np.ndarray, subscript: Callable[[np.ndarray], np.ndarray]) -> float:
+    @staticmethod
+    def calculate_angle(v1: np.ndarray, v2: np.ndarray, axis: str) -> float:
         """Calculate the angle between v1 and v2 projected from the direction excluded in the subscript"""
-        p1, p2 = subscript(v1), subscript(v2)
+        p1, p2 = MagneticController._projection_from(axis, v1), MagneticController._projection_from(axis, v2)
         def rot(v):
             return np.array([v[1], -1*v[0]])
 
@@ -32,20 +45,20 @@ class MagneticController(Sofa.Core.Controller):
         )
         return angle if not math.isnan(angle) else 0
 
-
-    def calculate_rotation(self, normal: np.ndarray, initial_dipole_orientation: np.ndarray):
+    @staticmethod
+    def calculate_rotation(normal: np.ndarray, initial_dipole_orientation: np.ndarray):
         # Calculate the angle between the normal and the initial direction in x direction
-        angle_x = MagneticController.calculate_angle(self, normal, initial_dipole_orientation, lambda x: x[1:])
+        angle_x = MagneticController.calculate_angle(normal, initial_dipole_orientation, 'x')
         rot_x = Rotation.from_euler('x', angle_x, degrees=False)
 
         # Calculate the angle between the in x direction rotated normal and the initial direction in z direction
         normal_rot = rot_x.apply(normal)
 
-        angle_y = MagneticController.calculate_angle(self, normal_rot, initial_dipole_orientation, lambda x: x[::2])
+        angle_y = MagneticController.calculate_angle(normal_rot, initial_dipole_orientation, 'y')
         rot_y = Rotation.from_euler('y', angle_y, degrees=False)
         normal_rot = rot_y.apply(normal_rot)
 
-        angle_z = MagneticController.calculate_angle(self, normal_rot, initial_dipole_orientation, lambda x: x[:2])
+        angle_z = MagneticController.calculate_angle(normal_rot, initial_dipole_orientation, 'z')
         return Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=False)
 
 
