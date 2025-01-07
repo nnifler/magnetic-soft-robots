@@ -32,12 +32,28 @@ class TestAngles(unittest.TestCase):
     def testRandomized(self):
         rand_vec = (np.random.rand(3) - 0.5) * 20
         rand_angs = (np.random.rand(3) - 0.5) * 2*np.pi
-        r = Rotation.from_euler('xyz', rand_angs, degrees=False)
-        rotated_vec = r.apply(rand_vec)
+
+        if False:
+            r = Rotation.from_euler('xyz', rand_angs, degrees=False)
+            rotated_vec = r.apply(rand_vec)
+
+            for i, subscript in enumerate([lambda x: x[1:], lambda x: x[::2], lambda x: x[:2]]):
+                a = MagneticController.calculate_angle(None, rand_vec, rotated_vec, subscript)
+                self.assertAlmostEqual(a, rand_angs[i], msg=f"index {i}")
+        # was hier passiert stimmt nicht. die winkel werden im nachhinein nochmal verändert werden.
+        # stell dir vor, du schaust aus einer Richtung auf einen 45 grad winkel und drehst dann nochmal um die vertikale achse. 
+        # dann spitzt sich der winkel der projektion logischerweise zu, da er ja irgendwann 0 werden muss (wenn der vektor so steht dass wir gerade draufsehen)
+        # dh der erste winkel ist nicht notwendigerweise nach der letzten rotation so, wie wir ihn initial durchs drehen gebaut haben
 
         for i, subscript in enumerate([lambda x: x[1:], lambda x: x[::2], lambda x: x[:2]]):
-            a = MagneticController.calculate_angle(None, rand_vec, rotated_vec, subscript)
-            self.assertAlmostEqual(a, rand_angs[i], msg=f"index {i}")
+            one_axis = 'xyz'[i]
+            one_angle = rand_angs[i]
+
+            r = Rotation.from_euler(one_axis, one_angle, degrees=False)
+            rotated_vec = r.apply(rand_vec)
+
+            a = MagneticController.calculate_angle(None, rand_vec, rotated_vec, subscript) # sign error still persists, swapping order of compared vecs only changes axis in which they occur (y, if swapped x)
+            self.assertAlmostEqual(a, rand_angs[i], msg=f"axis {one_axis}")
 
     def testOne0(self):
         rand_vec = (np.random.rand(3) - 0.5) * 20
@@ -54,6 +70,7 @@ class TestAngles(unittest.TestCase):
         actual = MagneticController.calculate_angle(None, [0,0,0], [0,0,0], lambda x: x[1:])
         ref = 0
         self.assertAlmostEqual(np.abs(actual), ref)
+
 
 def suite() -> unittest.TestSuite: 
     suite = unittest.TestSuite()
