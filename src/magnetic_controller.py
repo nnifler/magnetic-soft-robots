@@ -20,8 +20,8 @@ class MagneticController(Sofa.Core.Controller):
             'y': lambda x: [x[0], -x[2]],
             'z': lambda x: x[:2]
         }
-        if axis not in 'xyz':
-            raise ValueError(f"Invalid axis!!! Got {axis}, should be x, y, or z.")
+        if type(axis) != str or axis not in 'xyz':
+            raise ValueError(f"Invalid axis!!! Got {axis}, should be string x, y, or z.")
         
         return proj[axis](vec)
 

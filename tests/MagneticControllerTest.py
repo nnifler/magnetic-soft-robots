@@ -70,6 +70,14 @@ class TestAngles(unittest.TestCase):
         actual = MagneticController.calculate_angle([0,0,0], [0,0,0], 'x')
         ref = 0
         self.assertAlmostEqual(np.abs(actual), ref)
+        
+    def testAxisErrors(self):
+        with self.assertRaises(ValueError):
+            MagneticController.calculate_angle([0,0,0], [1,1,1], 'w')
+            
+        with self.assertRaises(ValueError):
+            MagneticController.calculate_angle([0,0,0], [1,1,1], 69)
+
 
 
 class TestRotation(unittest.TestCase):
@@ -86,6 +94,7 @@ class TestRotation(unittest.TestCase):
 
         for pair in zip(reference_vector, result_under_test):
             self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
+
 
 
 def suite() -> unittest.TestSuite: 
