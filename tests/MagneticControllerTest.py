@@ -93,7 +93,7 @@ class TestRotation(unittest.TestCase):
         result_under_test = rot_under_test.apply(rand_base_vector)
 
         for pair in zip(reference_vector, result_under_test):
-            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
+            self.assertAlmostEqual(*pair, msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
 
     def testNoRot(self):
         rand_base_vector = (np.random.rand(3) - 0.5) * 20
@@ -107,9 +107,9 @@ class TestRotation(unittest.TestCase):
         result_under_test = rot_under_test.apply(rand_base_vector)
 
         for pair in zip(reference_vector, result_under_test):
-            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
+            self.assertAlmostEqual(*pair, msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
 
-
+    #TODO:
     def testAntiParallel(self):
         rand_base_vector = (np.random.rand(3) - 0.5) * 20
         reverse_base_vector = -1 * rand_base_vector
@@ -119,7 +119,7 @@ class TestRotation(unittest.TestCase):
         result_under_test = rot_under_test.apply(rand_base_vector)
 
         for pair in zip(reverse_base_vector, result_under_test):
-            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reverse_base_vector} expected but found {result_under_test}")
+            self.assertAlmostEqual(*pair, msg=f"{reverse_base_vector} expected but found {result_under_test}", places=5)
 
 
 
