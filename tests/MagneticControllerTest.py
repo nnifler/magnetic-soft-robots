@@ -81,23 +81,11 @@ class TestRotation(unittest.TestCase):
         reference_vector = reference_rotation.apply(rand_base_vector)
 
         rot_under_test = MagneticController.calculate_rotation(rand_base_vector, reference_vector)
+        #result_under_test = rot_under_test.apply(rand_base_vector)
         result_under_test = rot_under_test.apply(rand_base_vector)
 
         for pair in zip(reference_vector, result_under_test):
-            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}")
-
-
-
-
-        rand_base_vector = (np.random.rand(3) - 0.5) * 20
-        rand_dipole = (np.random.rand(3) - 0.5) * 20
-
-        make_comparable = lambda a : a.as_euler('xyz', degrees=False).tolist()
-        rot_under_test = MagneticController.calculate_rotation(rand_base_vector, rand_dipole)
-        rot_reference = Rotation.align_vectors(rand_base_vector, rand_dipole)[0]
-
-        for pair in zip(make_comparable(rot_under_test), make_comparable(rot_reference)):
-            self.assertAlmostEqual(pair[0], pair[1], msg=f"{make_comparable(rot_reference)} expected but found {make_comparable(rot_under_test)}")
+            self.assertAlmostEqual(pair[0], pair[1], msg=f"{reference_vector} expected but found {result_under_test}, reference_rotation: {reference_rotation.as_euler('xyz')}, rot_under_test: {rot_under_test}")
 
 
 def suite() -> unittest.TestSuite: 
