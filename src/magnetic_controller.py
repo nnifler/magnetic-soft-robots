@@ -35,17 +35,17 @@ class MagneticController(Sofa.Core.Controller):
 
     def calculate_rotation(self, normal: np.ndarray, initial_dipole_orientation: np.ndarray):
         # Calculate the angle between the normal and the initial direction in x direction
-        angle_x = self.calculate_angle(normal, initial_dipole_orientation, lambda x: x[1:])
+        angle_x = MagneticController.calculate_angle(self, normal, initial_dipole_orientation, lambda x: x[1:])
         rot_x = Rotation.from_euler('x', angle_x, degrees=False)
 
         # Calculate the angle between the in x direction rotated normal and the initial direction in z direction
         normal_rot = rot_x.apply(normal)
 
-        angle_y = self.calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[::2])
+        angle_y = MagneticController.calculate_angle(self, normal_rot, initial_dipole_orientation, lambda x: x[::2])
         rot_y = Rotation.from_euler('y', angle_y, degrees=False)
         normal_rot = rot_y.apply(normal_rot)
 
-        angle_z = self.calculate_angle(normal_rot, initial_dipole_orientation, lambda x: x[:2])
+        angle_z = MagneticController.calculate_angle(self, normal_rot, initial_dipole_orientation, lambda x: x[:2])
         return Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=False)
 
 
