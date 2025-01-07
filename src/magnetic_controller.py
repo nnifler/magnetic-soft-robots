@@ -47,19 +47,14 @@ class MagneticController(Sofa.Core.Controller):
 
     @staticmethod
     def calculate_rotation(normal: np.ndarray, initial_dipole_orientation: np.ndarray):
-        # Calculate the angle between the normal and the initial direction in x direction
-        angle_x = MagneticController.calculate_angle(normal, initial_dipole_orientation, 'x')
-        rot_x = Rotation.from_euler('x', angle_x, degrees=False)
-
-        # Calculate the angle between the in x direction rotated normal and the initial direction in z direction
-        normal_rot = rot_x.apply(normal)
-
-        angle_y = MagneticController.calculate_angle(normal_rot, initial_dipole_orientation, 'y')
-        rot_y = Rotation.from_euler('y', angle_y, degrees=False)
-        normal_rot = rot_y.apply(normal_rot)
-
-        angle_z = MagneticController.calculate_angle(normal_rot, initial_dipole_orientation, 'z')
-        return Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=False)
+        a = (normal / np.linalg.norm(normal)).reshape(3)
+        b = (initial_dipole_orientation / np.linalg.norm(initial_dipole_orientation)).reshape(3)
+        v = np.cross(a, b)
+        c = np.dot(a, b)
+        s = np.linalg.norm(v)
+        kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+        rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+        return Rotation.from_matrix(rotation_matrix)
 
 
     def __init__(self, elastic_object: ElasticObject):
@@ -93,7 +88,6 @@ class MagneticController(Sofa.Core.Controller):
 
             r = self.calculate_rotation(normal, initial)
             self._rotations.append(r)
-            print(r.as_euler('xyz'), "r")
 
             vec3 = cur_positions[tetrahedron[3]] - cur_positions[tetrahedron[0]]
             self._volume += abs(np.dot(vec1, np.cross(vec2, vec3))) / 6
