@@ -67,20 +67,20 @@ class MagneticController(Sofa.Core.Controller):
         return angle if not math.isnan(angle) else 0
 
     @staticmethod
-    def calculate_rotation(vec1: np.ndarray, vec2: np.ndarray) -> Rotation:
+    def calculate_rotation(source: np.ndarray, destination: np.ndarray) -> Rotation:
         """
-        Calculates the rotation between two 3d vectors. Applying the result to the first vector will result in the second vector. 
+        Calculates the rotation between two 3d vectors. Applying the result to the source will result in the destination. 
 
         Arguments:
-        - vec1: The first 3d vector
-        - vec2: The second 3d vector
+        - source: The first 3d vector
+        - destination: The second 3d vector
         """
-        if np.isclose(vec1, vec2).all(): return Rotation.from_euler('x', 0)
-        if np.isclose(vec1, -1 * vec2).all(): 
-            vec1 = Rotation.from_euler('x', 0.000000001*np.pi).apply(vec1)
+        if np.isclose(source, destination).all(): return Rotation.from_euler('x', 0)
+        if np.isclose(source, -1 * destination).all(): 
+            source = Rotation.from_euler('x', 0.000000001*np.pi).apply(source)
 
-        a = (vec1 / np.linalg.norm(vec1)).reshape(3)
-        b = (vec2 / np.linalg.norm(vec2)).reshape(3)
+        a = (source / np.linalg.norm(source)).reshape(3)
+        b = (destination / np.linalg.norm(destination)).reshape(3)
         v = np.cross(a, b)
         c = np.dot(a, b)
         s = np.linalg.norm(v)
