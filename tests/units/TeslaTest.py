@@ -50,4 +50,3 @@ def suite() -> unittest.TestSuite:
     ## Add tests to test suite
     suite.addTests(loaded_tests)
     return suite
-    
