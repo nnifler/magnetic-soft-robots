@@ -12,6 +12,9 @@ class ElasticObject():
         self.mech_obj = None
         self.volume = None
         self.vertex_forces = None
+        self.FEM_force_field = None
+        self.diagonal_mass = None
+        self.remanence = config.REMANENCE
 
 
 def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: YoungsModulus, density: Density, scale: float):
@@ -32,8 +35,8 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     eo_node.addObject('TetrahedronSetTopologyContainer', name="topo", src=mesh_loader.reference(Mode.VOLUMETRIC))
     elastic_object.mech_obj = eo_node.addObject('MechanicalObject', name="dofs", src=mesh_loader.reference(Mode.VOLUMETRIC))
     eo_node.addObject('TetrahedronSetGeometryAlgorithms', template="Vec3d", name="GeomAlgo")
-    eo_node.addObject('DiagonalMass', name="Mass", massDensity=density.kgpm3)
-    eo_node.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngsModulus.Pa, computeGlobalMatrix=False)
+    elastic_object.diagonal_mass = eo_node.addObject('DiagonalMass', name="Mass", massDensity=density.kgpm3)
+    elastic_object.FEM_force_field = eo_node.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngsModulus.Pa, computeGlobalMatrix=False)
 
     ## Add Constraints
     eo_node.addObject('FixedConstraint', name="FixedConstraint", indices="0 1 2 3")
@@ -55,7 +58,7 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     ## Add visuals
     visu = eo_node.addChild("VisualModel")
     visu.loader = mesh_loader.load_mesh_into(visu, Mode.SURFACE)
-    visu.addObject('OglModel', name="model", src=mesh_loader.reference(Mode.SURFACE), scale3d=[scale]*3, color=[1., 1., 1.], updateNormals=False)
+    visu.addObject('OglModel', name="model", src=mesh_loader.reference(Mode.SURFACE), color=[1., 1., 1.], updateNormals=False)
     visu.addObject('BarycentricMapping')
 
     l = len(elastic_object.mesh.position.value)
