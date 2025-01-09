@@ -1,6 +1,8 @@
 import Sofa
+import Sofa.Core
 import src.config as config
 from typing import List, SupportsFloat
+import numpy as np
 
 
 class SceneBuilder():
@@ -28,7 +30,27 @@ class SceneBuilder():
             self._render_force()
         self._setup_root_simulation()
 
+        if config.SHOW_FORCE:
+            for dir in [config.INIT, config.MAGNETIC_DIR]:
+                self._build_reference_direction(dir)
+
         return self.root
+    
+
+    def create_child(self, name) -> Sofa.Core.Node:
+        """returns a child of root node"""
+        return self.root.addChild(name)
+
+
+    def _build_reference_direction(self, dir: np.ndarray):
+        ref = self.create_child("reference")
+        ref.addObject("MechanicalObject", name="ref")
+        ex_dir = dir.tolist()
+        ex_dir.append(1)
+        ref.addObject('ConstantForceField', forces=dir, showArrowSize="0.01", showColor=ex_dir)
+        ref.addObject('VisualStyle', displayFlags="showForceFields")
+
+
 
 
     def _load_plugins(self):
