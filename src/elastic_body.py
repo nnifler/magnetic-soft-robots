@@ -2,7 +2,8 @@ import os
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
 from src import config
-from src.mesh_loader import MeshLoader
+from src.mesh_loader import MeshLoader, Mode
+from pathlib import Path
 
 class ElasticObject():
     def __init__(self):
@@ -23,10 +24,13 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     eo_node.addObject('EulerImplicitSolver', name="cg_odesolver", rayleighStiffness=0.1, rayleighMass=0.1)
     eo_node.addObject('SparseLDLSolver', name="linear_solver", template="CompressedRowSparseMatrixMat3x3d")
 
-    elastic_object.mesh = eo_node.addObject('MeshGmshLoader', name="meshLoader", filename=f"{cwd}/meshes/{name}.msh", scale3d=[scale]*3)
-
-    eo_node.addObject('TetrahedronSetTopologyContainer', name="topo", src="@meshLoader")
-    elastic_object.mech_obj = eo_node.addObject('MechanicalObject', name="dofs", src="@meshLoader")
+    mesh_loader = MeshLoader(scaling_factor=scale)
+    mesh_loader.load_file(path=Path(f"{cwd}/meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
+    mesh_loader.load_file(path=Path(f"{cwd}/meshes/{name}.obj"), mode=Mode.SURFACE)
+    
+    elastic_object.mesh = mesh_loader.load_mesh_into(eo_node, Mode.VOLUMETRIC)
+    eo_node.addObject('TetrahedronSetTopologyContainer', name="topo", src=mesh_loader.reference(Mode.VOLUMETRIC))
+    elastic_object.mech_obj = eo_node.addObject('MechanicalObject', name="dofs", src=mesh_loader.reference(Mode.VOLUMETRIC))
     eo_node.addObject('TetrahedronSetGeometryAlgorithms', template="Vec3d", name="GeomAlgo")
     eo_node.addObject('DiagonalMass', name="Mass", massDensity=density.kgpm3)
     eo_node.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngsModulus.Pa, computeGlobalMatrix=False)
@@ -50,8 +54,8 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
 
     ## Add visuals
     visu = eo_node.addChild("VisualModel")
-    visu.loader = visu.addObject('MeshOBJLoader', name="loader", filename=f"{cwd}/meshes/{name}.obj")
-    visu.addObject('OglModel', name="model", src="@loader", scale3d=[scale]*3, color=[1., 1., 1.], updateNormals=False)
+    visu.loader = mesh_loader.load_mesh_into(visu, Mode.SURFACE)
+    visu.addObject('OglModel', name="model", src=mesh_loader.reference(Mode.SURFACE), scale3d=[scale]*3, color=[1., 1., 1.], updateNormals=False)
     visu.addObject('BarycentricMapping')
 
     l = len(elastic_object.mesh.position.value)
