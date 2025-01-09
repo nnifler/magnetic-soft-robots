@@ -12,7 +12,7 @@ class ElasticObject():
         self.vertex_forces = None
 
 
-def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: YoungsModulus, magneticForce: float, magneticDir, showForce: bool, density: Density, scale: float):
+def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: YoungsModulus, density: Density, scale: float):
     cwd = os.getcwd()
     elastic_object = ElasticObject()
 
@@ -31,13 +31,6 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     ## Add Constraints
     elastic_obj.addObject('FixedConstraint', name="FixedConstraint", indices="0 1 2 3")
     elastic_obj.addObject('LinearSolverConstraintCorrection')
-
-    ## Add Magnetic Field
-    #fx = magneticForce * magneticDir[0]
-    #fy = magneticForce * magneticDir[1]
-    #fz = magneticForce * magneticDir[2]
-    #elastic_obj.addObject('ConstantForceField', name="mag_force", forces=f"{fx} {fy} {fz}", showArrowSize="0.1" if showForce else "0")
-
 
     ## Add Surface
     surf = elastic_obj.addChild('ExtractSurface')
