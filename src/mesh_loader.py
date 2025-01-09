@@ -65,15 +65,3 @@ class MeshLoader():
     def reference(self, mode: Mode) -> str:
         """for referencing the loader for meshes of desired mode in other SOFA objects"""
         return "@"+self._name+"_"+mode.name.lower()
-
-
-    @property
-    def ref_volumetric(self) -> str:
-        """for referencing the loader for volumetric meshes in other SOFA objects"""
-        return "@"+self._name+"_vol"
-    
-    @property
-    def ref_surface(self) -> str:
-        """for referencing the loader for surface meshes in other SOFA objects"""
-        return "@"+self._name+"_surf"
-
