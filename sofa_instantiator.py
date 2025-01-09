@@ -31,9 +31,6 @@ def createScene(root):
                                name=NAME, 
                                poissonRatio=POISSON_RATIO,
                                youngsModulus=YOUNGS_MODULUS, 
-                               magneticForce=MAGNETIC_FORCE, 
-                               magneticDir=MAGNETIC_DIR, 
-                               showForce=SHOW_FORCE,
                                density=DENSITY,
                                scale=SCALE)
     

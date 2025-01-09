@@ -9,7 +9,7 @@ from typing import Callable
 import math
 
 
-MU0 = (4 * np.pi) / np.pow(10, 7)
+MU0 = (4 * np.pi) / np.pow(10, 7) # Permeability (H/m)
 
 class MagneticController(Sofa.Core.Controller):
 
@@ -99,10 +99,8 @@ class MagneticController(Sofa.Core.Controller):
 
         self._volume_per_node = self._volume / self._num_nodes
 
-        print(self._volume)
 
-
-    def onAnimateBeginEvent(self, event):
+    def onAnimateBeginEvent(self, _):
         """
         Function that is automatically called every Sofa animation step
         """
@@ -126,6 +124,6 @@ class MagneticController(Sofa.Core.Controller):
                     # print(config.B_FIELD.shape, m.shape)
                     torque = np.cross(m, config.B_FIELD)
                     # print(type(m), m)
-                    self._elastic_object.vertex_forces[node].forces = f"{torque[0]} {torque[1]} {torque[2]}"
+                    self._elastic_object.vertex_forces[node].forces = [[torque[0], torque[1], torque[2]]]
 
                     force_defined_at[node] = True

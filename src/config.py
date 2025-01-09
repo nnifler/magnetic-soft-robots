@@ -12,8 +12,8 @@ NAME = "beam"
 POISSON_RATIO = 0.47
 YOUNGS_MODULUS = YoungsModulus.fromGPa(0.1)
 DENSITY = Density.fromMgpm3(1.1)
-MAGNETIC_FORCE = 50
-REMANENCE = 0.35
+MAGNETIC_FORCE = 50 # Tesla
+REMANENCE = 0.35 # Tesla
 
 MATERIAL_LIST = [
     (0.47, YoungsModulus.fromGPa(0.001), Density.fromMgpm3(1.1), 0.5),   # Silicone Rubber
@@ -25,10 +25,10 @@ MATERIAL_LIST = [
 # POISSON_RATIO, YOUNGS_MODULUS, DENSITY, MAGNETIC_FORCE = MATERIAL_LIST[2]
 
 SCALE = 0.02
-MAGNETIC_DIR = (0,0,1)
-SHOW_FORCE = TrueYOUNGS_MODULUS = YoungsModulus.fromPa(1)
+MAGNETIC_DIR = np.array([0,0,1])
+SHOW_FORCE = True
 
-B_FIELD = np.array(MAGNETIC_FORCE * np.array(MAGNETIC_DIR))
+B_FIELD = np.array(MAGNETIC_FORCE * MAGNETIC_DIR)
 
 INIT = np.array([1, 0, 0])
 
