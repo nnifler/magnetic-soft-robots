@@ -2,6 +2,7 @@ import os
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
 from src import config
+import numpy as np
 
 class ElasticObject():
     def __init__(self):
@@ -29,7 +30,10 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     elastic_obj.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngsModulus.Pa, computeGlobalMatrix=False)
 
     ## Add Constraints
-    elastic_obj.addObject('FixedConstraint', name="FixedConstraint", indices="0 1 2 3")
+    positions = elastic_object.mesh.position.value.tolist()
+    ind = [i for i in range(len(positions)) if positions[i][0] == 0]
+    constraints = " ".join(str(x) for x in ind)
+    elastic_obj.addObject('FixedConstraint', name="FixedConstraint", indices=constraints)
     elastic_obj.addObject('LinearSolverConstraintCorrection')
 
     ## Add Surface
@@ -47,7 +51,8 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
 
     ## Add visuals
     visu = elastic_obj.addChild("VisualModel")
-    visu.loader = visu.addObject('MeshOBJLoader', name="loader", filename=f"{cwd}/meshes/{name}.obj")
+    #visu.loader = visu.addObject('MeshOBJLoader', name="loader", filename=f"{cwd}/meshes/{name}.obj")
+    visu.loader = visu.addObject('MeshSTLLoader', name="loader", filename=f"{cwd}/meshes/{name}.stl")
     visu.addObject('OglModel', name="model", src="@loader", scale3d=[scale]*3, color=[1., 1., 1.], updateNormals=False)
     visu.addObject('BarycentricMapping')
 
