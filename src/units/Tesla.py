@@ -28,4 +28,3 @@ class Tesla(BaseUnit): # base: T
     def T(self, value: int) -> None:
         if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.T.value
-        
