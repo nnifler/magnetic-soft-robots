@@ -4,6 +4,7 @@ import Sofa
 from src.config import *
 from src.SceneBuilder import SceneBuilder
 from src.magnetic_controller import MagneticController
+from src.material_loader import MaterialLoader
 
 
 def main():
@@ -34,7 +35,8 @@ def createScene(root):
                                density=DENSITY,
                                scale=SCALE)
     
-    controller = MagneticController(elastic_object)
+    mat_loader = MaterialLoader(elastic_object)
+    controller = MagneticController(elastic_object, mat_loader)
     root.addObject(controller)
 
     return root
