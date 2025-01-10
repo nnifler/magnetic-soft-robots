@@ -131,6 +131,6 @@ class MagneticController(Sofa.Core.Controller):
                     # print(config.B_FIELD.shape, m.shape)
                     torque = np.cross(m, config.B_FIELD)
                     # print(type(m), m)
-                    self._elastic_object.vertex_forces[vertex].forces = [[torque[0], torque[1], torque[2]]]
+                    self._elastic_object.vertex_forces[vertex].forces = [torque]
 
                     force_defined_at[vertex] = True

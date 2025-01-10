@@ -28,14 +28,20 @@ def main():
 
 def createScene(root):
     SceneBuilder(root)
-    elastic_object = createElasticObject(root, 
-                               name=NAME, 
+    elastic_object = createElasticObject(root,
+                               name=NAME,
                                poissonRatio=POISSON_RATIO,
-                               youngsModulus=YOUNGS_MODULUS, 
+                               youngsModulus=YOUNGS_MODULUS,
                                density=DENSITY,
                                scale=SCALE)
-    
+
     mat_loader = MaterialLoader(elastic_object)
+    # can be overwritten / removed as soon as linked to GUI
+    mat_loader.set_density(DENSITY)
+    mat_loader.set_youngs_modulus(YOUNGS_MODULUS)
+    mat_loader.set_poissons_ratio(POISSON_RATIO)
+    mat_loader.set_remanence(REMANENCE)
+
     controller = MagneticController(elastic_object, mat_loader)
     root.addObject(controller)
 

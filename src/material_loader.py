@@ -1,4 +1,3 @@
-from src import config
 from src.elastic_body import ElasticObject
 from src.units.Density import Density
 from src.units.YoungsModulus import YoungsModulus
@@ -8,13 +7,13 @@ class MaterialLoader:
         self._eo = eo
         self._material_values = {
             # "name": "Magnetic Silicone Composite",
-            "density": config.DENSITY.kgpm3,  # in kg/m³
-            "youngs_modulus": config.YOUNGS_MODULUS.Pa,  # in Pa
-            "poissons_ratio": config.POISSON_RATIO,  # dimensionslos
-            "remanence": config.REMANENCE,  # in T ?
-        }   #TODO: plausible base values? remanence not in material data 
+            "density": 0.,
+            "youngs_modulus": 0,
+            "poissons_ratio": 0.,
+            "remanence": 0,
+        }   #TODO: remanence not in material data
 
-        self._dirty: bool = True
+        self._dirty: bool = False
 
     def set_density(self, value: Density):
         """set material density"""
