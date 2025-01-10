@@ -4,6 +4,7 @@ import Sofa.Gui
 from src.elastic_body import createElasticObject
 from src import SceneBuilder
 from src.config import *
+from src import MagneticController
 
 
 def main():
@@ -25,15 +26,16 @@ def main():
 
 def createScene(root):
     SceneBuilder(root)
-    beam = createElasticObject(root,
-                               name=NAME,
-                               poissonRatio=POISSON_RATIO,
-                               youngsModulus=YOUNGS_MODULUS,
-                               magneticForce=MAGNETIC_FORCE,
-                               magneticDir=MAGNETIC_DIR,
-                               showForce=SHOW_FORCE,
-                               density=DENSITY,
-                               scale=SCALE)
+    elastic_object = createElasticObject(root,
+                                         name=NAME,
+                                         poissonRatio=POISSON_RATIO,
+                                         youngsModulus=YOUNGS_MODULUS,
+                                         density=DENSITY,
+                                         scale=SCALE)
+
+    controller = MagneticController(elastic_object)
+    root.addObject(controller)
+
     return root
 
 

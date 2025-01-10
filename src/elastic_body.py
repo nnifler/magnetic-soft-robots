@@ -1,21 +1,35 @@
 import os
 from .units import YoungsModulus
 from .units import Density
+from . import config
 
 
-def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: YoungsModulus, magneticForce: float, magneticDir, showForce: bool, density: Density, scale: float):
+class ElasticObject():
+    def __init__(self):
+        self.node = None
+        self.mesh = None
+        self.mech_obj = None
+        self.volume = None
+        self.vertex_forces = None
+
+
+def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: YoungsModulus, density: Density, scale: float):
     cwd = os.getcwd()
+    elastic_object = ElasticObject()
+
     # Add Object
     elastic_obj = root.addChild('object')
+    elastic_object.node = elastic_obj
     elastic_obj.addObject('EulerImplicitSolver', name="cg_odesolver",
                           rayleighStiffness=0.1, rayleighMass=0.1)
     elastic_obj.addObject('SparseLDLSolver', name="linear_solver",
                           template="CompressedRowSparseMatrixMat3x3d")
-    elastic_obj.addObject('MeshGmshLoader', name="meshLoader",
-                          filename=f"{cwd}/meshes/{name}.msh", scale3d=[scale]*3)
+    elastic_object.mesh = elastic_obj.addObject(
+        'MeshGmshLoader', name="meshLoader", filename=f"{cwd}/meshes/{name}.msh", scale3d=[scale]*3)
     elastic_obj.addObject('TetrahedronSetTopologyContainer',
                           name="topo", src="@meshLoader")
-    elastic_obj.addObject('MechanicalObject', name="dofs", src="@meshLoader")
+    elastic_object.mech_obj = elastic_obj.addObject(
+        'MechanicalObject', name="dofs", src="@meshLoader")
     elastic_obj.addObject('TetrahedronSetGeometryAlgorithms',
                           template="Vec3d", name="GeomAlgo")
     elastic_obj.addObject('DiagonalMass', name="Mass",
@@ -27,13 +41,6 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
     elastic_obj.addObject(
         'FixedConstraint', name="FixedConstraint", indices="0 1 2 3")
     elastic_obj.addObject('LinearSolverConstraintCorrection')
-
-    # Add Magnetic Field
-    fx = magneticForce * magneticDir[0]
-    fy = magneticForce * magneticDir[1]
-    fz = magneticForce * magneticDir[2]
-    elastic_obj.addObject('ConstantForceField', name="mag_force",
-                          forces=f"{fx} {fy} {fz}", showArrowSize="0.1" if showForce else "0")
 
     # Add Surface
     surf = elastic_obj.addChild('ExtractSurface')
@@ -60,4 +67,10 @@ def createElasticObject(root, name: str, poissonRatio: float, youngsModulus: You
                    scale3d=[scale]*3, color=[1., 1., 1.], updateNormals=False)
     visu.addObject('BarycentricMapping')
 
-    return elastic_obj
+    l = len(elastic_object.mesh.position.value)
+    elastic_object.vertex_forces = [None] * l
+    for i in range(l):
+        elastic_object.vertex_forces[i] = elastic_obj.addObject('ConstantForceField', indices=f"{i}", name=f"force_{i}", forces=[
+                                                                0, 0, 0], showArrowSize="0.001" if config.SHOW_FORCE else "0")
+
+    return elastic_object
