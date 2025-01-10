@@ -6,7 +6,10 @@ from src.mesh_loader import MeshLoader, Mode
 from pathlib import Path
 
 class ElasticObject():
-    
+    '''
+    Class that holds important parameters for the elastic object - the MSR - that is simulated.
+    Upon class initialization, code from 
+    '''
     def __init__(self, root, mesh_loader: MeshLoader, poissonRatio: float, youngsModulus: YoungsModulus, density: Density):
         self._mesh_loader = mesh_loader
         self._root = root

@@ -16,13 +16,18 @@ class MaterialLoader:
 
         self._dirty: bool = False
 
+    def set_elastic_object(self, eo: ElasticObject):
+        """Set the connected ElasticObject anew. 
+        Helpful for initialization."""
+        self._eo = eo
+
     def set_density(self, value: Density):
         """set material density"""
         self._material_values['density'] = value.kgpm3
         self._dirty = True
 
     def set_youngs_modulus(self, value: YoungsModulus):
-        """set material's young's modulus"""
+        """set young's modulus"""
         self._material_values['youngs_modulus'] = value.Pa
         self._dirty = True
 
