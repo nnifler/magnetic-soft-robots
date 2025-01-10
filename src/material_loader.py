@@ -52,18 +52,19 @@ class MaterialLoader:
 
         self._dirty = False
 
-    # deprecated
-    def set_one(self, parameter: str, val):
-        """unsupported"""
-        if not parameter in self._material_values.keys():
-            raise ValueError("unknown material parameter")
-        self._material_values[parameter] = val
+    # TODO: maybe useful for lib to directly set json format?
+    # # deprecated
+    # def set_one(self, parameter: str, val):
+    #     """unsupported"""
+    #     if not parameter in self._material_values.keys():
+    #         raise ValueError("unknown material parameter")
+    #     self._material_values[parameter] = val
 
-    # deprecated
-    def set_all(self, material_info: dict):
-        """unsupported"""
-        if not material_info.keys() == self._material_values.keys():
-            raise ValueError(
-                f"parameter mismatch. expected {self._material_values.keys()}, but found {material_info.keys()}")
+    # # deprecated
+    # def set_all(self, material_info: dict):
+    #     """unsupported"""
+    #     if not material_info.keys() == self._material_values.keys():
+    #         raise ValueError(
+    #             f"parameter mismatch. expected {self._material_values.keys()}, but found {material_info.keys()}")
 
-        self._material_values = material_info
+    #     self._material_values = material_info

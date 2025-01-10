@@ -1,13 +1,10 @@
 import unittest
-from typing import get_type_hints
 import unittest.mock
+from random import uniform
+
 from src.material_loader import MaterialLoader
-from src import elastic_body
-from src.units.BaseUnit import BaseUnit
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
-from tests.assets.dummy_node import DummyNode
-from random import choice, randint, uniform
 
 
 class TestRegularBehavior(unittest.TestCase):

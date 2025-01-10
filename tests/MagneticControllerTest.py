@@ -1,6 +1,6 @@
 import unittest
 from src.magnetic_controller import MagneticController
-from src.elastic_body import ElasticObject, createElasticObject
+from src.elastic_body import ElasticObject
 
 import numpy as np
 from scipy.spatial.transform import Rotation
