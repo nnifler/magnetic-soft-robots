@@ -3,6 +3,7 @@ from src.elastic_body import ElasticObject
 from src.units.Density import Density
 from src.units.YoungsModulus import YoungsModulus
 
+
 class MaterialLoader:
     def __init__(self, eo: ElasticObject):
         self._eo = eo
@@ -12,7 +13,7 @@ class MaterialLoader:
             "youngs_modulus": config.YOUNGS_MODULUS.Pa,  # in Pa
             "poissons_ratio": config.POISSON_RATIO,  # dimensionslos
             "remanence": config.REMANENCE,  # in T ?
-        }   #TODO: plausible base values? remanence not in material data 
+        }  # TODO: plausible base values? remanence not in material data
 
         self._dirty: bool = True
 
@@ -26,24 +27,24 @@ class MaterialLoader:
         self._material_values['youngs_modulus'] = value.Pa
         self._dirty = True
 
-    #TODO: add unit
+    # TODO: add unit
     def set_poissons_ratio(self, value: float):
         """set poissons ratio"""
         self._material_values['poissons_ratio'] = value
         self._dirty = True
 
-    #TODO: add remanence unit (Tesla)
+    # TODO: add remanence unit (Tesla)
     def set_remanence(self, value: float):
         """set remanence"""
         self._material_values['remanence'] = value
         self._dirty = True
 
-
     def update_elastic_object(self):
         if not self._dirty:
             return
 
-        self._eo.diagonal_mass.setDataValues(massDensity=self._material_values['density'])
+        self._eo.diagonal_mass.setDataValues(
+            massDensity=self._material_values['density'])
         self._eo.FEM_force_field.setDataValues(
             youngModulus=self._material_values['youngs_modulus'],
             poissonRatio=self._material_values['poissons_ratio'],
@@ -52,19 +53,18 @@ class MaterialLoader:
 
         self._dirty = False
 
-
-    ### deprecated
-
+    # deprecated
     def set_one(self, parameter: str, val):
         """unsupported"""
         if not parameter in self._material_values.keys():
             raise ValueError("unknown material parameter")
         self._material_values[parameter] = val
 
-
+    # deprecated
     def set_all(self, material_info: dict):
         """unsupported"""
         if not material_info.keys() == self._material_values.keys():
-            raise ValueError(f"parameter mismatch. expected {self._material_values.keys()}, but found {material_info.keys()}")
+            raise ValueError(
+                f"parameter mismatch. expected {self._material_values.keys()}, but found {material_info.keys()}")
 
         self._material_values = material_info
