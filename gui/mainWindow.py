@@ -1,10 +1,14 @@
 import os
 import json
+from builtins import ValueError
+
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox
+    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit
 )
 from PySide6.QtCore import Qt
+from future.builtins import isinstance
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,12 +29,12 @@ class MainWindow(QMainWindow):
         header_layout.setContentsMargins(5, 0, 5, 0)
         header_layout.setSpacing(5)  # Minimaler Abstand zwischen Buttons
 
-        mrs_label = QLabel("MRS")
-        mrs_label.setStyleSheet("font-size: 20px; font-weight: bold;")
-        header_layout.addWidget(mrs_label, alignment=Qt.AlignLeft)
+        msr_label = QLabel("MSR")
+        msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
+        header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
 
         self.library_button = QPushButton("Library")
-        self.save_button = QPushButton("Speichern")
+        self.save_button = QPushButton("Save")
         header_layout.addStretch()
         header_layout.addWidget(self.library_button)
         header_layout.addWidget(self.save_button)
@@ -41,43 +45,48 @@ class MainWindow(QMainWindow):
         content_layout = QHBoxLayout()
 
         # Linke Seitenleiste für Navigation und Parametersteuerung
-        sidebar = QGroupBox("Navigation und Parametersteuerung")
+        sidebar = QGroupBox("Navigation and Settings Panel")
         sidebar_layout = QVBoxLayout(sidebar)
 
         # Materialeigenschaften
-        material_group = QGroupBox("Materialeigenschaften")
+        material_group = QGroupBox("Material Configuration")
         material_layout = QGridLayout(material_group)
 
-        material_label = QLabel("Material auswählen:")
+        material_label = QLabel("Select Material:")
         self.material_combo_box = QComboBox()
         self.material_combo_box.currentIndexChanged.connect(self.update_material_parameters)
 
         self.material_data = []  # Platz für JSON-Daten
         self.load_materials_from_json()
 
-        behavior_label = QLabel("Materialverhalten:")
+        behavior_label = QLabel("Material Behavior:")
         self.behavior_combo_box = QComboBox()
-        self.behavior_combo_box.addItems(["Linear-elastisch", "Plastisch", "Viskoelastisch"])
+        self.behavior_combo_box.addItems(["Linear-Elastic", "Plastic", "Viscoelastic"])
 
-        young_modulus_label = QLabel("(E) Elastizitätsmodul (Pa):")
+        young_modulus_label = QLabel("(E) Young’s Modulus:")
         self.young_modulus_spinbox = QDoubleSpinBox()
         self.young_modulus_spinbox.setRange(0, 1e12)
-        self.young_modulus_spinbox.setDecimals(2)
+        self.young_modulus_spinbox.setDecimals(4)
+        self.unit_selector_modulus = QComboBox()
+        self.unit_selector_modulus.addItems(["Pa", "kPa", "MPa", "GPa"])
 
-        poisson_label = QLabel("(ν) Poisson-Verhältnis:")
+        poisson_label = QLabel("(ν) Poisson Ratio:")
         self.poisson_spinbox = QDoubleSpinBox()
-        self.poisson_spinbox.setRange(0, 0.5)
-        self.poisson_spinbox.setDecimals(2)
+        self.poisson_spinbox.setRange(0, 0.4999)
+        self.poisson_spinbox.setDecimals(4)
 
-        density_label = QLabel("(ρ) Dichte (kg/m³):")
+        density_label = QLabel("(ρ) Density:")
         self.density_spinbox = QDoubleSpinBox()
-        self.density_spinbox.setRange(0, 20000)
-        self.density_spinbox.setDecimals(0)
+        self.density_spinbox.setRange(0, 25000)
+        self.density_spinbox.setDecimals(2)
+        self.unit_selector_density = QComboBox()
+        self.unit_selector_density.addItems(["kg/m³", "g/cm³"])
 
-        magnetization_label = QLabel("Magnetisierungsstärke (A/m):")
-        self.magnetization_spinbox = QDoubleSpinBox()
-        self.magnetization_spinbox.setRange(0, 1e7)
-        self.magnetization_spinbox.setDecimals(0)
+        remanence_label = QLabel("Remanence (T):")
+        self.remanence_spinbox = QDoubleSpinBox()
+        self.remanence_spinbox.setRange(-2.0, 2.0)
+        self.remanence_spinbox.setDecimals(3)
+        self.remanence_spinbox.setValue(0.5)
 
         # Layout für Materialeigenschaften
         material_layout.addWidget(material_label, 0, 0)
@@ -88,33 +97,37 @@ class MainWindow(QMainWindow):
 
         material_layout.addWidget(young_modulus_label, 2, 0)
         material_layout.addWidget(self.young_modulus_spinbox, 2, 1)
+        material_layout.addWidget(self.unit_selector_modulus, 2, 2)
 
         material_layout.addWidget(poisson_label, 3, 0)
         material_layout.addWidget(self.poisson_spinbox, 3, 1)
 
         material_layout.addWidget(density_label, 4, 0)
         material_layout.addWidget(self.density_spinbox, 4, 1)
+        material_layout.addWidget(self.unit_selector_density, 4, 2)
 
-        material_layout.addWidget(magnetization_label, 5, 0)
-        material_layout.addWidget(self.magnetization_spinbox, 5, 1)
+        material_layout.addWidget(remanence_label, 5, 0)
+        material_layout.addWidget(self.remanence_spinbox, 5, 1)
 
         sidebar_layout.addWidget(material_group)
 
         # Magnetfeldsteuerung
-        field_group = QGroupBox("Magnetfeldsteuerung")
+        field_group = QGroupBox("Magnet Field Settings")
         field_layout = QVBoxLayout(field_group)
 
-        field_strength_label = QLabel("Feldstärke (Tesla):")
+        self.field_strength_label = QLabel("Magnetic Field Strength (Tesla):")
         self.field_strength_slider = QSlider(Qt.Horizontal)
         self.field_strength_slider.setRange(0, 100)
         self.field_strength_slider.setValue(50)
         self.field_strength_slider.setTickPosition(QSlider.TicksBelow)
         self.field_strength_slider.setTickInterval(10)
+        self.field_strength_slider.valueChanged.connect(self.update_field_strength_label)
 
-        field_direction_label = QLabel("Richtung (Vektor):")
-        self.field_direction_input = QLabel("[0, 0, 1]")  # Platzhalter
+        field_direction_label = QLabel("Direction (Vector):")
+        self.field_direction_input = QLineEdit("0, 0, 1")
+        self.field_direction_input.setPlaceholderText("Enter direction as [x, y, z]")
 
-        field_layout.addWidget(field_strength_label)
+        field_layout.addWidget(self.field_strength_label)
         field_layout.addWidget(self.field_strength_slider)
         field_layout.addWidget(field_direction_label)
         field_layout.addWidget(self.field_direction_input)
@@ -122,7 +135,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(field_group)
 
         # Schaltfläche zum Anwenden der Parameter
-        apply_button = QPushButton("Anwenden")
+        apply_button = QPushButton("Apply")
         apply_button.clicked.connect(self.apply_parameters)
         sidebar_layout.addWidget(apply_button)
 
@@ -163,22 +176,41 @@ class MainWindow(QMainWindow):
             self.density_spinbox.setValue(material.get("density", 0))
             self.young_modulus_spinbox.setValue(material.get("youngs_modulus", 0))
             self.poisson_spinbox.setValue(material.get("poissons_ratio", 0))
-            self.magnetization_spinbox.setValue(material.get("magnetization_strength", 0))
+            self.remanence_spinbox.setValue(material.get("remanence", 0))
 
+    def update_field_strength_label(self):
+        # Konvertuere Slider-Wert in Tesla (0-10 T)
+        strength_in_tesla = self.field_strength_slider.value() / 10
+        self.field_strength_label.setText(f"Magnetic Field Strength: {strength_in_tesla:.21f} T")
+
+    def parse_direction_input(self, text):
+        # Validierung des Feldvektors
+        try:
+            values = [float(i) for i in text.split(",")]
+            if len(values) != 3:
+                raise ValueError
+            return values
+        except ValueError:
+            return None
     def apply_parameters(self):
+        direction = self.parse_direction_input(self.field_direction_input.text())
+        if direction is None:
+            QMessageBox.warning(self, "Error", "Invalid direction.")
+            return
+
+
         # Erfassung der Parameterwerte
         material = self.material_combo_box.currentText()
         behavior = self.behavior_combo_box.currentText()
         young_modulus = self.young_modulus_spinbox.value()
         poisson_ratio = self.poisson_spinbox.value()
         density = self.density_spinbox.value()
-        magnetization_strength = self.magnetization_spinbox.value()
-        field_strength = self.field_strength_slider.value()
-        field_direction = self.field_direction_input.text()
+        remanence = self.remanence_spinbox.value()
+        field_strength = self.field_strength_slider.value() / 10 #Umrechnung in Tesla
 
         print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} Pa, "
-              f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Magnetisierungsstärke: {magnetization_strength} A/m, "
-              f"Feldstärke: {field_strength} Tesla, Richtung: {field_direction}")
+              f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
+              f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")
 
 if __name__ == "__main__":
     app = QApplication([])
