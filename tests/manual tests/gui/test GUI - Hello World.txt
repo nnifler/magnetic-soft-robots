@@ -1,0 +1,38 @@
+Manual test for the user story ‘GUI - Hello World’
+
+Test Goal: Check whether an external window is opened when the application is started
+User Story: As a user of the simulation framework, I’d like to run it in a window, so that I don’t have to use non intuitive console interfaces or code files for running my simulations
+
+Prerequisites: Successful cloning of the Git repository, Python extension activated and Python interpreter selected (Python 3.9+)
+
+Preparation
+1. Open project in IDE
+    1. Open the IDE of your choice
+    2. Open the cloned project folder in the IDE
+    3. Make sure that the correct Python interpreter is selected
+    4. Installing dependencies: Make sure that the package pyside6 is installed on the executing Python version, otherwise install it.
+    5. Switch to the branch to test
+
+Test
+1. Start of the application:
+    1. Run the file ∼/magnetic-soft-robots/main.py
+2. Check the behaviour of the application: Check whether a window with the name "Soft Robotic Simulation" opens within 2 seconds
+3. Window check:
+    1. Maximise and minimise the window.
+    2. Moving the window.
+    3. Closing the window.
+4. Check the console output: Ensure that no unexpected errors or warnings occur in the integrated terminal.
+
+
+Expected result
+	1. After starting the mainWindow.py file, a separate window with the title ‘Soft Robotic Simulation’ appears.
+	2. The window can be maximised, minimised, moved and closed.
+	3. No unexpected errors or console output.
+
+
+Test result (to be filled in)
+
+Test step | Expected result | Actual result | Passed (Yes/No)
+Start the application | Window appears within 2 seconds. | ? | ?
+Window check | Maximise, minimise, close works correctly. | ? | ?
+Console check | No errors or unexpected console output. | ? | ?

@@ -1,0 +1,43 @@
+Manual test for the user story ‘GUI - Select strength of magnetic field’
+
+Test Goal: Check adjustable mechanism for modifying the magnetic field, including a slider for strength adjustment next to the force size and a widget with a field for precise vector input for the magnetic direction. These widgets should be in the previously defined library widget.
+User Story: As a student of material sciences, I’d like to experiment with different magnetic fields, so that I can see how the behaviour of my models changes and develop an intuition.
+
+Prerequisites: Successful cloning of the Git repository, Python extension activated, Python interpreter selected (Python 3.9+), dependencies installed (pyside6)
+
+Preparation:
+1. Open project in IDE
+    1. Open the IDE of your choice
+    2. Open the cloned project folder in the IDE
+    3. Make sure that the correct Python interpreter is selected
+    4. Installing dependencies: Make sure that the package pyside6 is installed on the executing Python version, otherwise install it.
+    5. Switch to the branch to test
+
+Test:
+1. Start of the application:
+    1. Run the file ∼/magnetic-soft-robots/main.py
+2. Check the behaviour of the application: Check whether a sub widget with the name "Magnetic Field Settings" opens in the interface at start.
+3. Window check:
+    1. Slider for Strength Adjustment
+        a. Available slider with the label Magnetic Field Strength
+        b. Adjustable slider to various positions within its range
+        c. Minimum, Middle and Maximum values are correct
+        d. Changes in the slider position output the corresponding correct values
+    2. Vector Input Field
+        a. Available input field with the label Direction (Vector)
+        b. Allowed: Numbers in the format [x, y, z], with optional spaces and decimal places.
+        c. Invalid input is restricted: Anything that does not adhere to the format [x, y, z] with exactly three valid numbers and separators.
+        d. The text field contains a description of the correct entry
+4. Check the console output: Ensure that no unexpected errors or warnings occur in the integrated terminal.
+
+Expected result
+	1. Sub-widget appears correctly.
+	2. Labels are correct and complete.
+	3. Magnetic Field Strength input via the slider is possible
+	4. The limit values of the slider are correct
+	5. Vector direction value input is possible
+	6. Invalid input is restricted
+	7. Description of the correct entry is shown if the field is empty
+	8. No errors or warnings in the console.
+
+
