@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
         self.field_strength_slider.valueChanged.connect(self.update_field_strength_label)
 
         field_direction_label = QLabel("Direction (Vector):")
-        self.field_direction_input = QLineEdit("0, 0, 1")
+        self.field_direction_input = QLineEdit("[0, 0, 1]")
         self.field_direction_input.setPlaceholderText("Enter direction as [x, y, z]")
 
         vector_regex = QRegularExpression(r"^\s*\[\s*(-?\d+(\.\d+)?\s*,\s*){2}-?\d+(\.\d+)?\s*\]\s*$")
