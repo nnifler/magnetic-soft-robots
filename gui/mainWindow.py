@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.behavior_combo_box = QComboBox()
         self.behavior_combo_box.addItems(["Linear-Elastic", "Plastic", "Viscoelastic"])
 
-        young_modulus_label = QLabel("(E) Young’s Modulus:")
+        young_modulus_label = QLabel("(E) Young's Modulus:")
         self.young_modulus_spinbox = QDoubleSpinBox()
         self.young_modulus_spinbox.setRange(0, 1e12)
         self.young_modulus_spinbox.setDecimals(4)
@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
         self.field_strength_slider.setRange(0, 1000)
         self.field_strength_slider.setValue(500)
         self.field_strength_slider.setTickPosition(QSlider.TicksBelow)
-        self.field_strength_slider.setTickInterval(10)
+        self.field_strength_slider.setTickInterval(100)
         self.field_strength_slider.valueChanged.connect(self.update_field_strength_label)
 
         field_direction_label = QLabel("Direction (Vector):")
