@@ -50,3 +50,22 @@ Expected result
 	6. Drop-down menus for material selection and behavior are available and working.
 	7. No errors or warnings in the console.
 
+run at 2025-01-11T18:30+01:00:
+1. FAIL: not cloned in ~ (cloned in ~/tuda/fs5/git_repo/)
+2. PASS
+3.1. PASS
+3.2. PASS
+3.3.a. PASS
+3.3.b. PASS
+3.4.a. PASS
+3.4.b. FAIL: 0.5 not possible, comma not possible
+3.5.a. PASS
+3.5.b. PASS
+3.6.a. PASS
+3.6.b. FAIL: comma not possible
+3.7.a. PASS
+3.7.b. PASS
+3.8.a. PASS
+3.9.a. PASS
+3.9.c. PASS
+4. PASS: Looking for JSON file at: /home/heiko/Documents/tuda/fs5/TpSe/git_repo/magnetic-soft-robots/gui/../lib/materials/magnetic_soft_robot_materials.json
