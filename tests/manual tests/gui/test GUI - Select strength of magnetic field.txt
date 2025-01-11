@@ -40,4 +40,14 @@ Expected result
 	7. Description of the correct entry is shown if the field is empty
 	8. No errors or warnings in the console.
 
-
+run at 2025-01-11T19:00+01:00:
+1. FAIL: not cloned in ~ (cloned in ~/tuda/fs5/git_repo/)
+2. PASS
+3.1.a. PASS
+3.1.b. PASS
+3.1.c. PASS: 0.0000 T, 50.0000 T, 150.0000 T
+3.1.d. PASS
+3.2.a. PASS
+3.2.b. FAIL: not possible to write 1.00 only 10<-.0
+3.2.c. PASS
+4. PASS: Looking for JSON file at: /home/heiko/Documents/tuda/fs5/TpSe/git_repo/magnetic-soft-robots/gui/../lib/materials/magnetic_soft_robot_materials.json
