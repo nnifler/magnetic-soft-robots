@@ -36,7 +36,7 @@ def createScene(root):
     mesh_loader = MeshLoader(scaling_factor=SCALE)
     cwd = os.getcwd()
     mesh_loader.load_file(path=Path(f"{cwd}/meshes/{NAME}.msh"), mode=Mode.VOLUMETRIC)
-    mesh_loader.load_file(path=Path(f"{cwd}/meshes/{NAME}.obj"), mode=Mode.SURFACE)
+    mesh_loader.load_file(path=Path(f"{cwd}/meshes/{NAME}.stl"), mode=Mode.SURFACE)
 
     elastic_object = ElasticObject(root,
         mesh_loader=mesh_loader,
