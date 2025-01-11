@@ -1,5 +1,6 @@
 import os
 import json
+import builtins
 from builtins import ValueError
 
 from PySide6.QtWidgets import (
@@ -7,8 +8,6 @@ from PySide6.QtWidgets import (
     QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit
 )
 from PySide6.QtCore import Qt
-from future.builtins import isinstance
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -68,7 +67,8 @@ class MainWindow(QMainWindow):
         self.young_modulus_spinbox.setRange(0, 1e12)
         self.young_modulus_spinbox.setDecimals(4)
         self.unit_selector_modulus = QComboBox()
-        self.unit_selector_modulus.addItems(["Pa", "kPa", "MPa", "GPa"])
+        self.unit_selector_modulus.addItems(["GPa", "Pa", "kPa", "MPa"])
+        self.unit_selector_modulus.currentIndexChanged.connect(self.update_modulus_unit)
 
         poisson_label = QLabel("(ν) Poisson Ratio:")
         self.poisson_spinbox = QDoubleSpinBox()
@@ -81,12 +81,12 @@ class MainWindow(QMainWindow):
         self.density_spinbox.setDecimals(2)
         self.unit_selector_density = QComboBox()
         self.unit_selector_density.addItems(["kg/m³", "g/cm³"])
+        self.unit_selector_density.currentIndexChanged.connect(self.update_density_unit)
 
         remanence_label = QLabel("Remanence (T):")
         self.remanence_spinbox = QDoubleSpinBox()
         self.remanence_spinbox.setRange(-2.0, 2.0)
         self.remanence_spinbox.setDecimals(3)
-        self.remanence_spinbox.setValue(0.5)
 
         # Layout für Materialeigenschaften
         material_layout.addWidget(material_label, 0, 0)
@@ -117,8 +117,8 @@ class MainWindow(QMainWindow):
 
         self.field_strength_label = QLabel("Magnetic Field Strength (Tesla):")
         self.field_strength_slider = QSlider(Qt.Horizontal)
-        self.field_strength_slider.setRange(0, 100)
-        self.field_strength_slider.setValue(50)
+        self.field_strength_slider.setRange(0, 1000)
+        self.field_strength_slider.setValue(500)
         self.field_strength_slider.setTickPosition(QSlider.TicksBelow)
         self.field_strength_slider.setTickInterval(10)
         self.field_strength_slider.valueChanged.connect(self.update_field_strength_label)
@@ -168,20 +168,69 @@ class MainWindow(QMainWindow):
         except json.JSONDecodeError as e:
             QMessageBox.warning(self, "Error", f"Error decoding JSON file:\n{e}")
 
+    def convert_unit(self, value, from_unit, to_unit):
+        # Konvertierungstabelle für Modulus und Dichte
+        unit_conversion = {
+            "Pa": 1e-9,  # 1 Pa = 1e-9 GPa
+            "kPa": 1e-6,  # 1 kPa = 1e-6 GPa
+            "MPa": 1e-3,  # 1 MPa = 1e-3 GPa
+            "GPa": 1,  # 1 GPa = 1 GPa
+            "kg/m³": 1,  # 1 kg/m³ = 1 kg/m³
+            "g/cm³": 1e3  # 1 g/cm³ = 1000 kg/m³
+        }
+        return value * unit_conversion[from_unit] / unit_conversion[to_unit]
+
     def update_material_parameters(self):
-        # Aktualisiert die Parameterfelder basierend auf der Auswahl im ComboBox
         index = self.material_combo_box.currentIndex()
         if 0 <= index < len(self.material_data):
             material = self.material_data[index]
-            self.density_spinbox.setValue(material.get("density", 0))
-            self.young_modulus_spinbox.setValue(material.get("youngs_modulus", 0))
+
+            # Dichte mit Umrechnung aktualisieren
+            density = material.get("density", 0)
+            current_density_unit = self.unit_selector_density.currentText()
+            converted_density = self.convert_unit(density, "kg/m³", current_density_unit)
+            self.density_spinbox.blockSignals(True)
+            self.density_spinbox.setValue(round(converted_density, 2))
+            self.density_spinbox.blockSignals(False)
+
+            # Young's Modulus mit Umrechnung aktualisieren
+            youngs_modulus = material.get("youngs_modulus", 0)
+            current_modulus_unit = self.unit_selector_modulus.currentText()
+            converted_modulus = self.convert_unit(youngs_modulus, "GPa", current_modulus_unit)
+            self.young_modulus_spinbox.blockSignals(True)
+            self.young_modulus_spinbox.setValue(round(converted_modulus, 4))
+            self.young_modulus_spinbox.blockSignals(False)
+
+            # Poisson's Ratio und Remanenz direkt setzen
             self.poisson_spinbox.setValue(material.get("poissons_ratio", 0))
             self.remanence_spinbox.setValue(material.get("remanence", 0))
+
+    def update_modulus_unit(self):
+        # Elastizitätsmodulus umrechnen, wenn Einheit verändert wird
+        to_unit = "GPa"
+        from_unit = self.unit_selector_modulus.currentText()
+        value = self.young_modulus_spinbox.value()
+        # Umrechnung
+        converted_value = self.convert_unit(value, from_unit, to_unit)
+
+        self.young_modulus_spinbox.blockSignals(True)
+        self.young_modulus_spinbox.setValue(round(converted_value, 4))
+        self.young_modulus_spinbox.blockSignals(False)
+
+    def update_density_unit(self):
+        # Dichte umrechnen, wenn Einheit verändert wird
+        from_unit = self.unit_selector_density.currentText()
+        to_unit = "kg/m³"
+        value = self.density_spinbox.value()
+        converted_value = self.convert_unit(value, from_unit, to_unit)
+        self.density_spinbox.blockSignals(True)
+        self.density_spinbox.setValue(round(converted_value, 2))
+        self.density_spinbox.blockSignals(False)
 
     def update_field_strength_label(self):
         # Konvertuere Slider-Wert in Tesla (0-10 T)
         strength_in_tesla = self.field_strength_slider.value() / 10
-        self.field_strength_label.setText(f"Magnetic Field Strength: {strength_in_tesla:.21f} T")
+        self.field_strength_label.setText(f"Magnetic Field Strength: {strength_in_tesla:.4f} T")
 
     def parse_direction_input(self, text):
         # Validierung des Feldvektors
@@ -192,12 +241,12 @@ class MainWindow(QMainWindow):
             return values
         except ValueError:
             return None
+
     def apply_parameters(self):
         direction = self.parse_direction_input(self.field_direction_input.text())
         if direction is None:
             QMessageBox.warning(self, "Error", "Invalid direction.")
             return
-
 
         # Erfassung der Parameterwerte
         material = self.material_combo_box.currentText()
@@ -206,9 +255,9 @@ class MainWindow(QMainWindow):
         poisson_ratio = self.poisson_spinbox.value()
         density = self.density_spinbox.value()
         remanence = self.remanence_spinbox.value()
-        field_strength = self.field_strength_slider.value() / 10 #Umrechnung in Tesla
+        field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
-        print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} Pa, "
+        print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
               f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
               f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")
 
