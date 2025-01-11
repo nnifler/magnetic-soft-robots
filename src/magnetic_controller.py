@@ -2,7 +2,7 @@ import Sofa
 
 from src.elastic_body import ElasticObject
 from src.material_loader import MaterialLoader
-from src.config2 import Config
+from src.config import Config
 
 import numpy as np
 from scipy.spatial.transform import Rotation

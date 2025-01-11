@@ -13,7 +13,7 @@ from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
-from src.config2 import Config
+from src.config import Config
 from src import sofa_instantiator
 
 class MainWindow(QMainWindow):

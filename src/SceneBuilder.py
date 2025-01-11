@@ -1,5 +1,5 @@
 import Sofa.Core
-from src.config2 import Config
+from src.config import Config
 from typing import List, SupportsFloat
 import numpy as np
 
@@ -19,7 +19,7 @@ class SceneBuilder():
 
         self.root.gravity = [0]*3
         if Config.get_external_forces()["use_gravity"]:
-            self.root.gravity = gravity_vec 
+            self.root.gravity = gravity_vec.tolist()
         self._build()
 
 
