@@ -1,7 +1,7 @@
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
 from src.mesh_loader import MeshLoader, Mode
-from src.config2 import Config
+from src.config import Config
 
 class ElasticObject():
     '''

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import Sofa.Gui
 
-from src.config2 import Config
+from src.config import Config
 from src.SceneBuilder import SceneBuilder
 from src.elastic_body import ElasticObject
 from src.magnetic_controller import MagneticController
