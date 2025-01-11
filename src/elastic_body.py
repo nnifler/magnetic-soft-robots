@@ -4,6 +4,7 @@ from src.units.Density import Density
 from src import config
 from src.mesh_loader import MeshLoader, Mode
 from pathlib import Path
+import numpy as np
 
 class ElasticObject():
     '''
@@ -38,8 +39,11 @@ class ElasticObject():
         self.FEM_force_field = eo_node.addObject('TetrahedralCorotationalFEMForceField', template="Vec3d", name="FEM", method="large", poissonRatio=poissonRatio, youngModulus=youngsModulus.Pa, computeGlobalMatrix=False)
 
         ## Add Constraints
-        eo_node.addObject('FixedConstraint', name="FixedConstraint", indices="0 1 2 3")
-        eo_node.addObject('LinearSolverConstraintCorrection')
+        positions = self.mesh.position.value.tolist()
+        ind = [i for i in range(len(positions)) if positions[i][0] == 0]
+        constraints = " ".join(str(x) for x in ind)
+        self.addObject('FixedConstraint', name="FixedConstraint", indices=constraints)
+        self.addObject('LinearSolverConstraintCorrection')
 
         ## Add Surface
         surf = eo_node.addChild('ExtractSurface')

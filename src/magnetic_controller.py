@@ -51,7 +51,7 @@ class MagneticController(Sofa.Core.Controller):
 
         if np.isclose(normal, initial_dipole_orientation).all(): return Rotation.from_euler('x', 0)
         if np.isclose(normal, -1 * initial_dipole_orientation).all(): 
-            normal = Rotation.from_euler('x', 0.000000001*np.pi).apply(normal)
+            normal = Rotation.from_euler('xyz', [0.000000001*np.pi]*3).apply(normal)
 
         a = (normal / np.linalg.norm(normal)).reshape(3)
         b = (initial_dipole_orientation / np.linalg.norm(initial_dipole_orientation)).reshape(3)
