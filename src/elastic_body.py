@@ -42,8 +42,8 @@ class ElasticObject():
         positions = self.mesh.position.value.tolist()
         ind = [i for i in range(len(positions)) if positions[i][0] == 0]
         constraints = " ".join(str(x) for x in ind)
-        self.addObject('FixedConstraint', name="FixedConstraint", indices=constraints)
-        self.addObject('LinearSolverConstraintCorrection')
+        eo_node.addObject('FixedConstraint', name="FixedConstraint", indices=constraints)
+        eo_node.addObject('LinearSolverConstraintCorrection')
 
         ## Add Surface
         surf = eo_node.addChild('ExtractSurface')
