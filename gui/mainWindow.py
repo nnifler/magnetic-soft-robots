@@ -1,6 +1,7 @@
 import os
 import json
 from builtins import ValueError
+import numpy as np
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
@@ -12,6 +13,8 @@ from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
+from src.config2 import Config
+from src import sofa_instantiator
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -214,7 +217,7 @@ class MainWindow(QMainWindow):
         """Updates the modulus unit if the unit size is changed"""
         value = self.young_modulus_spinbox.value()
         youngs_modulus = [
-            YoungsModulus.fromPa(value),
+            YoungsModulus.fromPa(int(value)),
             YoungsModulus.fromhPa(value),
             YoungsModulus.fromMPa(value),
             YoungsModulus.fromGPa(value)
@@ -284,14 +287,61 @@ class MainWindow(QMainWindow):
             return
 
         # Erfassung der Parameterwerte
-        material = self.material_combo_box.currentText()
-        behavior = self.behavior_combo_box.currentText()
-        young_modulus = self.young_modulus_spinbox.value()
+        #material = self.material_combo_box.currentText()
+        #behavior = self.behavior_combo_box.currentText()
+        youngs_modulus_val = self.young_modulus_spinbox.value()
+        youngs_modulus = [
+            YoungsModulus.fromPa(int(youngs_modulus_val)),
+            YoungsModulus.fromhPa(youngs_modulus_val),
+            YoungsModulus.fromMPa(youngs_modulus_val),
+            YoungsModulus.fromGPa(youngs_modulus_val)
+        ][self.unit_selector_modulus.currentIndex()]
         poisson_ratio = self.poisson_spinbox.value()
-        density = self.density_spinbox.value()
+        density_val = self.density_spinbox.value()
+        density = [
+            Density.fromkgpm3(density_val),
+            Density.fromgpcm3(density_val),
+            Density.fromMgpm3(density_val),
+            Density.fromtpm3(density_val)
+        ][self.unit_selector_density.currentIndex()]
         remanence = self.remanence_spinbox.value()
         field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
-        print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
-              f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
-              f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")
+        Config.set_show_force(True)
+        Config.set_model("beam",
+                         0.02)
+        Config.set_external_forces(True,
+                                   np.array([0, -9.81, 0]),
+                                   field_strength,
+                                   np.array(direction),
+                                   np.array([1, 0, 0]))
+        Config.set_material_parameters(poisson_ratio,
+                                       youngs_modulus,
+                                       density,
+                                       remanence)
+        Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
+            'Sofa.Component.Collision.Detection.Intersection',
+            'Sofa.Component.Collision.Geometry',
+            'Sofa.Component.Collision.Response.Contact',
+            'Sofa.Component.Constraint.Projective',
+            'Sofa.Component.IO.Mesh',
+            'Sofa.Component.LinearSolver.Iterative',
+            'Sofa.Component.Mapping.Linear',
+            'Sofa.Component.Mass',
+            'Sofa.Component.ODESolver.Backward',
+            'Sofa.Component.SolidMechanics.FEM.Elastic',
+            'Sofa.Component.StateContainer',
+            'Sofa.Component.Topology.Container.Dynamic',
+            'Sofa.Component.Visual',
+            'Sofa.GL.Component.Rendering3D',
+            'Sofa.Component.AnimationLoop',
+            'Sofa.Component.LinearSolver.Direct',
+            'Sofa.Component.Constraint.Lagrangian.Correction',
+            'Sofa.Component.Topology.Mapping',
+            'Sofa.Component.MechanicalLoad'
+        ])
+
+        sofa_instantiator.main()
+        #print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
+        #      f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
+        #      f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")

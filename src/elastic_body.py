@@ -1,10 +1,7 @@
-import os
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
-from src import config
 from src.mesh_loader import MeshLoader, Mode
-from pathlib import Path
-import numpy as np
+from src.config2 import Config
 
 class ElasticObject():
     '''
@@ -22,7 +19,7 @@ class ElasticObject():
         self.vertex_forces = None
         self.FEM_force_field = None
         self.diagonal_mass = None
-        self.remanence = config.REMANENCE
+        self.remanence = Config.get_material_parameters()["remanence"]
 
 
         ## Add Object
@@ -67,5 +64,5 @@ class ElasticObject():
         l = len(self.mesh.position.value)
         self.vertex_forces = [None] * l
         for i in range(l):
-            self.vertex_forces[i] = eo_node.addObject('ConstantForceField', indices = f"{i}", name=f"force_{i}", forces=[0,0,0], showArrowSize="0.001" if config.SHOW_FORCE else "0")
+            self.vertex_forces[i] = eo_node.addObject('ConstantForceField', indices = f"{i}", name=f"force_{i}", forces=[0,0,0], showArrowSize="0.001" if Config.get_show_force() else "0")
 
