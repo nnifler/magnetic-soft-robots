@@ -36,3 +36,10 @@ Test step | Expected result | Actual result | Passed (Yes/No)
 Start the application | Window appears within 2 seconds. | ? | ?
 Window check | Maximise, minimise, close works correctly. | ? | ?
 Console check | No errors or unexpected console output. | ? | ?
+
+
+run at 2025-01-11T19:00+01:00:
+1. FAIL: not cloned in ~ (cloned in ~/tuda/fs5/git_repo/)
+2. PASS: almost instant startup
+3. FAIL: Tiling Window Manager
+4. PASS: Looking for JSON file at: /home/heiko/Documents/tuda/fs5/TpSe/git_repo/magnetic-soft-robots/gui/../lib/materials/magnetic_soft_robot_materials.json
