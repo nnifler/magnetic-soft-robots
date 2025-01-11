@@ -10,6 +10,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
+from src.units.YoungsModulus import YoungsModulus
+from src.units.Density import Density
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -54,7 +57,6 @@ class MainWindow(QMainWindow):
 
         material_label = QLabel("Select Material:")
         self.material_combo_box = QComboBox()
-        self.material_combo_box.currentIndexChanged.connect(self.update_material_parameters)
 
         self.material_data = []  # Platz für JSON-Daten
         self.load_materials_from_json()
@@ -68,7 +70,9 @@ class MainWindow(QMainWindow):
         self.young_modulus_spinbox.setRange(0, 1e12)
         self.young_modulus_spinbox.setDecimals(4)
         self.unit_selector_modulus = QComboBox()
-        self.unit_selector_modulus.addItems(["GPa", "Pa", "kPa", "MPa"])
+        self.unit_selector_modulus.addItems(["Pa", "hPa", "MPa", "GPa"])
+        self.unit_selector_modulus.setCurrentIndex(3)
+        self.prev_modulus_index = 3
         self.unit_selector_modulus.currentIndexChanged.connect(self.update_modulus_unit)
 
         poisson_label = QLabel("(ν) Poisson Ratio:")
@@ -81,8 +85,12 @@ class MainWindow(QMainWindow):
         self.density_spinbox.setRange(0, 30000)
         self.density_spinbox.setDecimals(2)
         self.unit_selector_density = QComboBox()
-        self.unit_selector_density.addItems(["kg/m³", "g/cm³"])
+        self.unit_selector_density.addItems(["kg/m³", "g/cm³", "Mg/m³", "T/m³"])
+        self.unit_selector_density.setCurrentIndex(0)
+        self.prev_density_index = 0
         self.unit_selector_density.currentIndexChanged.connect(self.update_density_unit)
+
+        self.material_combo_box.currentIndexChanged.connect(self.update_material_parameters)
 
         remanence_label = QLabel("Remanence (T):")
         self.remanence_spinbox = QDoubleSpinBox()
@@ -191,17 +199,19 @@ class MainWindow(QMainWindow):
             material = self.material_data[index]
 
             # Dichte mit Umrechnung aktualisieren
-            density = material.get("density", 0)
-            current_density_unit = self.unit_selector_density.currentText()
-            converted_density = self.convert_unit(density, "kg/m³", current_density_unit)
+            density = Density.fromkgpm3(material.get("density", 0))
+            current_density_index = self.unit_selector_density.currentIndex()
+            vals = [density.kgpm3, density.gpcm3, density.Mgpm3, density.tpm3]
+            converted_density = vals[current_density_index]
             self.density_spinbox.blockSignals(True)
             self.density_spinbox.setValue(round(converted_density, 2))
             self.density_spinbox.blockSignals(False)
 
             # Young's Modulus mit Umrechnung aktualisieren
-            youngs_modulus = material.get("youngs_modulus", 0)
-            current_modulus_unit = self.unit_selector_modulus.currentText()
-            converted_modulus = self.convert_unit(youngs_modulus, "GPa", current_modulus_unit)
+            youngs_modulus = YoungsModulus.fromPa(material.get("youngs_modulus", 0))
+            current_modulus_index = self.unit_selector_modulus.currentIndex()
+            vals = [youngs_modulus.Pa, youngs_modulus.hPa, youngs_modulus.MPa, youngs_modulus.GPa]
+            converted_modulus = vals[current_modulus_index]
             self.young_modulus_spinbox.blockSignals(True)
             self.young_modulus_spinbox.setValue(round(converted_modulus, 4))
             self.young_modulus_spinbox.blockSignals(False)
@@ -212,11 +222,22 @@ class MainWindow(QMainWindow):
 
     def update_modulus_unit(self):
         # Elastizitätsmodulus umrechnen, wenn Einheit verändert wird
-        to_unit = "GPa"
-        from_unit = self.unit_selector_modulus.currentText()
         value = self.young_modulus_spinbox.value()
-        # Umrechnung
-        converted_value = self.convert_unit(value, from_unit, to_unit)
+        youngs_modulus = [
+            YoungsModulus.fromPa(value),
+            YoungsModulus.fromhPa(value),
+            YoungsModulus.fromMPa(value),
+            YoungsModulus.fromGPa(value)
+        ][self.prev_modulus_index]
+        vals = [
+            youngs_modulus.Pa,
+            youngs_modulus.hPa,
+            youngs_modulus.MPa,
+            youngs_modulus.GPa
+        ]
+        cur_index = self.unit_selector_modulus.currentIndex()
+        converted_value = vals[cur_index]
+        self.prev_modulus_index = cur_index
 
         self.young_modulus_spinbox.blockSignals(True)
         self.young_modulus_spinbox.setValue(round(converted_value, 4))
@@ -224,10 +245,23 @@ class MainWindow(QMainWindow):
 
     def update_density_unit(self):
         # Dichte umrechnen, wenn Einheit verändert wird
-        from_unit = self.unit_selector_density.currentText()
-        to_unit = "kg/m³"
         value = self.density_spinbox.value()
-        converted_value = self.convert_unit(value, from_unit, to_unit)
+        density = [
+            Density.fromkgpm3(value),
+            Density.fromgpcm3(value),
+            Density.fromMgpm3(value),
+            Density.fromtpm3(value)
+        ][self.prev_density_index]
+        vals = [
+            density.kgpm3,
+            density.gpcm3,
+            density.Mgpm3,
+            density.tpm3
+        ]
+        cur_index = self.unit_selector_density.currentIndex()
+        converted_value = vals[cur_index]
+        self.prev_density_index = cur_index
+        
         self.density_spinbox.blockSignals(True)
         self.density_spinbox.setValue(round(converted_value, 2))
         self.density_spinbox.blockSignals(False)
