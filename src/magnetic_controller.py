@@ -2,12 +2,12 @@ import Sofa
 
 from src.elastic_body import ElasticObject
 from src.material_loader import MaterialLoader
-import src.config as config
+from src.config2 import Config
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-from typing import Callable
 import math
+
 
 
 MU0 = (4 * np.pi) / np.pow(10, 7) # Permeability (H/m)
@@ -91,7 +91,7 @@ class MagneticController(Sofa.Core.Controller):
             normal, vec1, vec2 = self._normal(cur_positions, tetrahedron)
 
             # Initial direction of the magnetic dipole moment
-            initial = config.INIT
+            initial = Config.get_external_forces()["initial_dipole_moment"]
 
             r = self.calculate_rotation(normal, initial)
             self._rotations.append(r)
@@ -128,8 +128,8 @@ class MagneticController(Sofa.Core.Controller):
                     #print(force * orientation)
                     #print(self._elastic_object.vertex_forces[0].forces
                     m = dipole_moment * orientation
-                    # print(config.B_FIELD.shape, m.shape)
-                    torque = np.cross(m, config.B_FIELD)
+
+                    torque = np.cross(m, Config.get_external_forces()["b_field"])
                     # print(type(m), m)
                     self._elastic_object.vertex_forces[vertex].forces = [torque]
 
