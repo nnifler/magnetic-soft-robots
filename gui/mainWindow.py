@@ -181,18 +181,6 @@ class MainWindow(QMainWindow):
         except json.JSONDecodeError as e:
             QMessageBox.warning(self, "Error", f"Error decoding JSON file:\n{e}")
 
-    def convert_unit(self, value, from_unit, to_unit):
-        # Konvertierungstabelle für Modulus und Dichte
-        unit_conversion = {
-            "Pa": 1e-9,  # 1 Pa = 1e-9 GPa
-            "kPa": 1e-6,  # 1 kPa = 1e-6 GPa
-            "MPa": 1e-3,  # 1 MPa = 1e-3 GPa
-            "GPa": 1,  # 1 GPa = 1 GPa
-            "kg/m³": 1,  # 1 kg/m³ = 1 kg/m³
-            "g/cm³": 1e3  # 1 g/cm³ = 1000 kg/m³
-        }
-        return value * unit_conversion[from_unit] / unit_conversion[to_unit]
-
     def update_material_parameters(self):
         index = self.material_combo_box.currentIndex()
         if 0 <= index < len(self.material_data):
