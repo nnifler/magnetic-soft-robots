@@ -1,12 +1,15 @@
 import json
 
+# Magnetische Feldkonstante (μ0) in T·m/A
+MU_0 = 4 * 3.141592653589793 * 1e-7
+
 materials = [
     {
         "name": "Silicone Rubber",
         "density": 1100,  # in kg/m³
         "youngs_modulus": 1e6,  # in Pa
         "poissons_ratio": 0.49,  # dimensionslos
-        "magnetization_strength": 0,  # in A/m
+        "remanence": 0 * MU_0,  # in T
 
     },
     {
@@ -14,7 +17,7 @@ materials = [
         "density": 7500,  # in kg/m³
         "youngs_modulus": 1.6e10,  # in Pa
         "poissons_ratio": 0.3,  # dimensionslos
-        "magnetization_strength": 1.2e6,  # in A/m
+        "remanence": 1.2e6 * MU_0,  # in T
         
     },
     {
@@ -22,7 +25,7 @@ materials = [
         "density": 1800,  # in kg/m³
         "youngs_modulus": 5e6,  # in Pa
         "poissons_ratio": 0.45,  # dimensionslos
-        "magnetization_strength": 2.5e4,  # in A/m
+        "remanence": 2.5e4 * MU_0,  # in T
         
     }
 ]
