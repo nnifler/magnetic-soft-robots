@@ -1,6 +1,5 @@
 import os
 import json
-import builtins
 from builtins import ValueError
 
 from PySide6.QtWidgets import (
@@ -8,6 +7,8 @@ from PySide6.QtWidgets import (
     QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit
 )
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -77,7 +78,7 @@ class MainWindow(QMainWindow):
 
         density_label = QLabel("(ρ) Density:")
         self.density_spinbox = QDoubleSpinBox()
-        self.density_spinbox.setRange(0, 25000)
+        self.density_spinbox.setRange(0, 30000)
         self.density_spinbox.setDecimals(2)
         self.unit_selector_density = QComboBox()
         self.unit_selector_density.addItems(["kg/m³", "g/cm³"])
@@ -126,6 +127,10 @@ class MainWindow(QMainWindow):
         field_direction_label = QLabel("Direction (Vector):")
         self.field_direction_input = QLineEdit("0, 0, 1")
         self.field_direction_input.setPlaceholderText("Enter direction as [x, y, z]")
+
+        vector_regex = QRegularExpression(r"^\s*\[\s*(-?\d+(\.\d+)?\s*,\s*){2}-?\d+(\.\d+)?\s*\]\s*$")
+        validator = QRegularExpressionValidator(vector_regex)
+        self.field_direction_input.setValidator(validator)
 
         field_layout.addWidget(self.field_strength_label)
         field_layout.addWidget(self.field_strength_slider)
