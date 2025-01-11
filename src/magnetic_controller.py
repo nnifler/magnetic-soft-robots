@@ -1,6 +1,7 @@
 import Sofa
 
 from src.elastic_body import ElasticObject
+from src.material_loader import MaterialLoader
 import src.config as config
 
 import numpy as np
@@ -62,7 +63,7 @@ class MagneticController(Sofa.Core.Controller):
         return Rotation.from_matrix(rotation_matrix)
 
 
-    def __init__(self, elastic_object: ElasticObject):
+    def __init__(self, elastic_object: ElasticObject, material_loader: MaterialLoader):
         """
         Initializes the Magnetic Controller
         
@@ -74,6 +75,7 @@ class MagneticController(Sofa.Core.Controller):
 
         # Process parameters
         self._elastic_object = elastic_object
+        self._material_loader = material_loader
 
         # Get list of the nodes of all tetrahedra
         self._tetrahedra = np.array(elastic_object.mesh.tetrahedra.value)
@@ -104,6 +106,11 @@ class MagneticController(Sofa.Core.Controller):
         """
         Function that is automatically called every Sofa animation step
         """
+
+        # first of all, update material values
+        self._material_loader.update_elastic_object()
+        # TODO: for LINK, also update magnetic field etc; similar class maybe?
+
         # Get the current positions of all nodes
         cur_positions = np.array(self._elastic_object.mech_obj.position.value)
         force_defined_at = [False] * self._num_nodes
@@ -115,15 +122,15 @@ class MagneticController(Sofa.Core.Controller):
             # Calculate the orientation of the magnetic dipole moment
             orientation = self._rotations[index].apply(normal)
 
-            for node in tetrahedron:
-                if not force_defined_at[node]:
-                    dipole_moment = config.REMANENCE * self._volume_per_node / MU0
+            for vertex in tetrahedron:
+                if not force_defined_at[vertex]:
+                    dipole_moment = self._elastic_object.remanence * self._volume_per_node / MU0
                     #print(force * orientation)
                     #print(self._elastic_object.vertex_forces[0].forces
                     m = dipole_moment * orientation
                     # print(config.B_FIELD.shape, m.shape)
                     torque = np.cross(m, config.B_FIELD)
                     # print(type(m), m)
-                    self._elastic_object.vertex_forces[node].forces = [[torque[0], torque[1], torque[2]]]
+                    self._elastic_object.vertex_forces[vertex].forces = [torque]
 
-                    force_defined_at[node] = True
+                    force_defined_at[vertex] = True
