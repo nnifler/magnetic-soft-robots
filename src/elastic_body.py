@@ -44,6 +44,8 @@ class ElasticObject():
             ind = [i for i in range(len(positions)) if positions[i][2] == 0.02]
         elif config.NAME == "beam":
             ind = [i for i in range(len(positions)) if positions[i][0] == 0]
+        else:
+            ind = []
         constraints = " ".join(str(x) for x in ind)
         visualize_constraints = False
         # If True, forces will be added and displayed on the vertices used as a constraint (use only for debugging)
