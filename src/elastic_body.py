@@ -40,8 +40,15 @@ class ElasticObject():
 
         ## Add Constraints
         positions = self.mesh.position.value.tolist()
-        ind = [i for i in range(len(positions)) if positions[i][0] == 0]
+        if config.NAME == "gripper":
+            ind = [i for i in range(len(positions)) if positions[i][2] == 0.02]
+        elif config.NAME == "beam":
+            ind = [i for i in range(len(positions)) if positions[i][0] == 0]
         constraints = " ".join(str(x) for x in ind)
+        visualize_constraints = False
+        # If True, forces will be added and displayed on the vertices used as a constraint (use only for debugging)
+        if visualize_constraints:
+            eo_node.addObject('ConstantForceField', indices = constraints, name=f"force_c", forces=[10,0,0], showArrowSize="0.01")
         eo_node.addObject('FixedConstraint', name="FixedConstraint", indices=constraints)
         eo_node.addObject('LinearSolverConstraintCorrection')
 

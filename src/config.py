@@ -6,7 +6,7 @@ from src.units.Density import Density
 USE_GUI = True
 USE_GRAVITY = False
 GRAVITY_VEC = [0, float(-10), 0]
-NAME = "beam"
+NAME = "gripper"
 
 # Silicone rubber
 POISSON_RATIO = 0.47
