@@ -11,7 +11,7 @@ from tests.assets.dummy_node import DummyNode
 
 class TestExceptionalBehavior(unittest.TestCase):
     """
-    This testcase tests the expected exceptional behavior of MeshLoader.
+    This testcase tests the exceptional behavior of MeshLoader.
     """
 
     def test_load_mesh_before_file(self):
