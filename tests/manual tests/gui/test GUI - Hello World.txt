@@ -4,7 +4,7 @@ Test Goal: Check whether an external window is opened when the application is st
 User Story: As a user of the simulation framework, I'd like to run it in a window, so that I don't have to use non-intuitive console interfaces or code files for running my simulations.
 
 Prerequisites: 
-Make sure that project is installed according to README.md and Requirements.text
+Make sure that the project is installed according to README.md and Requirements.txt
 
 Test
 1. Start of the application:

@@ -4,7 +4,7 @@ Test Goal: Check whether a sub-widget appears in the library widget that contain
 User Story: As a student of material sciences, I'd like to easily select different materials for a given model, so that I can easily switch between and experiment with them, in order to get a better feel for their behaviour. I'd also like to see the properties of each material when I select them, so that I can see what I am working with.
 
 Prerequisites: 
-Make sure that project is installed according to README.md and Requirements.text
+Make sure that the project is installed according to README.md and Requirements.txt
 
 
 Test:
