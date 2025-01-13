@@ -1,0 +1,17 @@
+Manual test for the user story ‘GUI - Select Materials’
+
+Test Goal: Check if material selection from json works.
+User Story: TBA
+
+Prestuff TBA
+
+Test
+1. Start of the application:
+    1. Run the file ∼/magnetic-soft-robots/main.py
+2. In widget Material Configuration - Select Material: Click on Silicone Rubber
+3. Select the third material in the list.
+
+
+Expected result
+	1. After step 2 a dropdown window with possible materials appears.
+    2. After step 3 the materials properties have changed.
