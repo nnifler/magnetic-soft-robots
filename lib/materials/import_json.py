@@ -54,7 +54,8 @@ for row in rows:
     columns = row.find_all('td')
     if not columns:
         continue
-    material_name = columns[2].get_text(strip=True).split('\n')[0].strip()
+    # material_name = columns[2].get_text(strip=True).split('\n')[0].strip()
+    material_name = columns[2].get_text(strip=True)
     material_link = 'https://www.matweb.com'+columns[2].find('a')['href']
     range_property_1 = calculate_average(columns[3].get_text(strip=True))*1e9
     range_property_2 = calculate_average(columns[5].get_text(strip=True))*1e3
