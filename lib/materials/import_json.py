@@ -29,6 +29,14 @@ materials = [
         "poissons_ratio": 0.45,  # dimensionslos
         "remanence": 2.5e4 * MU_0,  # in T
 
+    },
+    {  # from paper:
+        "name": "TPU Flexa Grey",
+        "url": "https://sls3d.de/wp-content/uploads/sinterit-flexa-soft-datenblatt.pdf",
+        "density": 700,  # in kg/m³
+        "youngs_modulus": 1.8e6,  # in Pa
+        "poissons_ratio": 0.4,  # dimensionslos
+        "remanence": 0,  # in T
     }
 ]
 
