@@ -4,11 +4,10 @@ from builtins import ValueError
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit
+    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit, QMenuBar, QMenu, QListWidget, QFileDialog
 )
-from PySide6.QtCore import Qt
-from PySide6.QtCore import QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtCore import Qt, QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
@@ -38,10 +37,9 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
 
         self.library_button = QPushButton("Library")
-        self.save_button = QPushButton("Save")
+        self.library_button.clicked.connect(self.show_library_menu)
         header_layout.addStretch()
         header_layout.addWidget(self.library_button)
-        header_layout.addWidget(self.save_button)
 
         main_layout.addWidget(header_widget)
 
@@ -66,6 +64,9 @@ class MainWindow(QMainWindow):
         self.behavior_combo_box = QComboBox()
         self.behavior_combo_box.addItems(["Linear-Elastic", "Plastic", "Viscoelastic"])
 
+        decimal_regex = QRegularExpression(r"^-?\d+[.,]?\d*$")
+        decimal_validator = QRegularExpressionValidator(decimal_regex)
+
         young_modulus_label = QLabel("(E) Young's Modulus:")
         self.young_modulus_spinbox = QDoubleSpinBox()
         self.young_modulus_spinbox.setRange(0, 1e12)
@@ -80,13 +81,22 @@ class MainWindow(QMainWindow):
         self.poisson_spinbox = QDoubleSpinBox()
         self.poisson_spinbox.setRange(0, 0.4999)
         self.poisson_spinbox.setDecimals(4)
+        self.poisson_spinbox.setSingleStep(0.1)
+
+
+        # Validator und Normalisierung für Poisson Ratio
+        self.poisson_spinbox.lineEdit().setValidator(decimal_validator)
+        self.poisson_spinbox.lineEdit().editingFinished.connect(
+            lambda: self.poisson_spinbox.setValue(float(self.poisson_spinbox.text().replace(",", ".")))
+        )
+    
 
         density_label = QLabel("(ρ) Density:")
         self.density_spinbox = QDoubleSpinBox()
         self.density_spinbox.setRange(0, 30000)
         self.density_spinbox.setDecimals(2)
         self.unit_selector_density = QComboBox()
-        self.unit_selector_density.addItems(["kg/m³", "g/cm³", "Mg/m³", "T/m³"])
+        self.unit_selector_density.addItems(["kg/m³", "g/cm³", "Mg/m³", "t/m³"])
         self.unit_selector_density.setCurrentIndex(0)
         self.prev_density_index = 0
         self.unit_selector_density.currentIndexChanged.connect(self.update_density_unit)
@@ -97,6 +107,12 @@ class MainWindow(QMainWindow):
         self.remanence_spinbox = QDoubleSpinBox()
         self.remanence_spinbox.setRange(-2.0, 2.0)
         self.remanence_spinbox.setDecimals(3)
+
+        # Validator und Normalisierung für Remanence
+        self.remanence_spinbox.lineEdit().setValidator(decimal_validator)
+        self.remanence_spinbox.lineEdit().editingFinished.connect(
+            lambda: self.remanence_spinbox.setValue(float(self.remanence_spinbox.text().replace(",", ".")))
+        )
 
         # Layout für Materialeigenschaften
         material_layout.addWidget(material_label, 0, 0)
@@ -295,3 +311,81 @@ class MainWindow(QMainWindow):
         print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
               f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
               f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")
+
+    
+    def show_library_menu(self):
+        """Create the library menu"""
+
+        # Create the menu bar
+        context_menu = QMenu(self)
+
+        # Add action to the Library menu
+        open_action = QAction("Open", self)
+        open_action.setShortcut(QKeySequence("Ctrl+O"))
+        open_action.triggered.connect(lambda _: self.open_library(context_menu))
+        context_menu.addAction(open_action)
+
+        import_action = QAction("Import", self)
+        import_action.setShortcut(QKeySequence("Ctrl+I"))
+        import_action.triggered.connect(lambda _: self.import_library(context_menu))
+        context_menu.addAction(import_action)
+
+        export_action = QAction("Export", self)
+        export_action.setShortcut(QKeySequence("Ctrl+E"))
+        export_action.triggered.connect(lambda _: self.export_library(context_menu))
+        context_menu.addAction(export_action)
+
+        context_menu.exec(self.library_button.mapToGlobal(self.library_button.rect().bottomLeft()))
+
+    
+    def open_library(self, menu):
+        menu.close()
+        
+        popup = QWidget()
+        popup.setWindowTitle("Library")
+        popup.resize(600, 400)
+
+        layout = QVBoxLayout(popup)
+
+        default_label = QLabel("Default Library:")
+        default_list = QListWidget()
+        self.load_default_meshes(default_list)
+
+        custom_label = QLabel("Custom Library:")
+        self.custom_list = QListWidget()
+
+        import_button = QPushButton("Import")
+        import_button.clicked.connect(self.import_custom_mesh)
+
+        layout.addWidget(default_label)
+        layout.addWidget(default_list)
+        layout.addWidget(custom_label)
+        layout.addWidget(self.custom_list)
+        layout.addWidget(import_button)
+
+        popup.show()
+
+    def load_default_meshes(self, list_widget):
+        models_path = os.path.expanduser("~/magnetic-soft-robots/meshes")
+
+        if not os.path.exists(models_path):
+            QMessageBox.warning(self, "Error", f"Models folder not found at: {models_path}")
+            return
+        
+        for filename in os.listdir(models_path):
+            if filename.endswith(".obj") or filename.endswith(".stl"):
+                list_widget.addItem(filename)
+
+    
+    def import_mesh_file(self):
+        """Importiert eine benutzerdefinierte Mesh-Datei."""
+        file_dialog = QFileDialog(self)
+        file_dialog.setNameFilter("Mesh Files (*.obj *.stl)")
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+
+        if file_dialog.exec():
+            selected_file = file_dialog.selectedFiles()[0]
+            filename = os.path.basename(selected_file)
+            self.custom_list.addItem(filename)
+
+            QMessageBox.information(self, "Import Success", f"Successfully imported: {filename}")
