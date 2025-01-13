@@ -307,13 +307,15 @@ class MainWindow(QMainWindow):
         remanence = self.remanence_spinbox.value()
         field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
+        normalized_dir = np.array(direction) / np.linalg.norm(np.array(direction))
+
         Config.set_show_force(True)
-        Config.set_model("beam",
+        Config.set_model("butterfly_disected",
                          0.02)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
-                                   np.array(direction),
+                                   normalized_dir,
                                    np.array([1, 0, 0]))
         Config.set_material_parameters(poisson_ratio,
                                        youngs_modulus,
