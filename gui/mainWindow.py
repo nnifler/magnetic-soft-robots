@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         content_layout = QHBoxLayout()
 
         # Linke Seitenleiste für Navigation und Parametersteuerung
-        sidebar = QGroupBox("Navigation and Settings Panel")
+        sidebar = QGroupBox("Simulation Settings Panel")
         sidebar_layout = QVBoxLayout(sidebar)
 
         # Materialeigenschaften
