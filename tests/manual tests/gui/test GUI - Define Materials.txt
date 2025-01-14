@@ -1,6 +1,6 @@
 Manual test for the user story ‘GUI - Define materials’
 
-Test Goal: Check whether a sub-widget appears in the library widget that contains labels for each property to explain the property name, a field for entering the value and a selectable unit
+Test Goal: Check whether a sub-widget appears in the simulation settings widget that contains labels for each property to explain the property name, a field for entering the value and a selectable unit
 User Story: As a material science engineer, I'd like to see how different materials change the behaviour of the models, so that I can pick the one best suited for my product. For that, I need to define different material properties.
 
 Prerequisites: 
