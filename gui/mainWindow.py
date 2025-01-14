@@ -1,6 +1,7 @@
 import os
 import json
 from builtins import ValueError
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
@@ -141,7 +142,7 @@ class MainWindow(QMainWindow):
         field_group = QGroupBox("Magnet Field Settings")
         field_layout = QVBoxLayout(field_group)
 
-        self.field_strength_label = QLabel("Magnetic Field Strength (Tesla):")
+        self.field_strength_label = QLabel("Magnetic Field Strength (T):")
         self.field_strength_slider = QSlider(Qt.Horizontal)
         self.field_strength_slider.setRange(0, 1000)
         self.field_strength_slider.setValue(500)
@@ -179,14 +180,17 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(content_layout)
 
-    def load_materials_from_json(self):
+    def load_materials_from_json(self) -> None:
         """Loads materials from a JSON file"""
-        data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../lib/materials/magnetic_soft_robot_materials.json")
+        # Directory of the current file
+        current_dir = Path(__file__).parent
+        # Path to the JSON file by moving one directory up from the current directory to the selected folder
+        data_path = current_dir / "../lib/materials/magnetic_soft_robot_materials.json"
         json_file_path = data_path
         print(f"Looking for JSON file at: {json_file_path}")
 
         try:
-            with open(json_file_path, "r") as file:
+            with open(json_file_path, "r", encoding="utf-8") as file:
                 self.material_data = json.load(file)
 
             self.material_combo_box.clear()
@@ -198,11 +202,11 @@ class MainWindow(QMainWindow):
         except json.JSONDecodeError as e:
             QMessageBox.warning(self, "Error", f"Error decoding JSON file:\n{e}")
 
-    def update_material_parameters(self):
+    def update_material_parameters(self) -> None:
         """Updates the material parameters with the data from the opened JSON file"""
-        index = self.material_combo_box.currentIndex()
-        if 0 <= index < len(self.material_data):
-            material = self.material_data[index]
+        current_material_index = self.material_combo_box.currentIndex()
+        if 0 <= current_material_index < len(self.material_data):
+            material = self.material_data[current_material_index]
 
             # Dichte mit Umrechnung aktualisieren
             density = Density.fromkgpm3(material.get("density", 0))
@@ -226,7 +230,7 @@ class MainWindow(QMainWindow):
             self.poisson_spinbox.setValue(material.get("poissons_ratio", 0))
             self.remanence_spinbox.setValue(material.get("remanence", 0))
 
-    def update_modulus_unit(self):
+    def update_modulus_unit(self) -> None:
         """Updates the modulus unit if the unit size is changed"""
         value = self.young_modulus_spinbox.value()
         youngs_modulus = [
@@ -249,7 +253,7 @@ class MainWindow(QMainWindow):
         self.young_modulus_spinbox.setValue(round(converted_value, 4))
         self.young_modulus_spinbox.blockSignals(False)
 
-    def update_density_unit(self):
+    def update_density_unit(self) -> None:
         """Updates the density unit if the unit size is changed"""
         value = self.density_spinbox.value()
         density = [
@@ -272,27 +276,29 @@ class MainWindow(QMainWindow):
         self.density_spinbox.setValue(round(converted_value, 2))
         self.density_spinbox.blockSignals(False)
 
-    def update_field_strength_label(self):
+    def update_field_strength_label(self) -> None:
         """Updates the field strength output based on the current position of the slider in tesla values"""
         strength_in_tesla = self.field_strength_slider.value() / 10
         self.field_strength_label.setText(f"Magnetic Field Strength: {strength_in_tesla:.4f} T")
 
     def parse_direction_input(self, text: str):
         """
-        Parses the direction input from the user
+        Parses the direction input from the user and ensures that it is a valid vector with 3 components.
 
         Arguments:
         - text: direction input of the user
         """
         try:
-            values = [float(i) for i in map(lambda x: x.strip(), text[1:-1].split(","))]
+            clean_values = text.strip("[]() ").replace(" ", "").replace(";", ",")
+            values = [float(i) for i in clean_values.split(",") if i.strip().replace(".", "").isdigit()]
+
             if len(values) != 3:
                 raise ValueError
             return values
         except ValueError:
             return None
 
-    def apply_parameters(self):
+    def apply_parameters(self) -> None:
         """Print the parameters and throws exception if invalid direction input"""
         direction = self.parse_direction_input(self.field_direction_input.text())
         if direction is None:
@@ -308,9 +314,9 @@ class MainWindow(QMainWindow):
         remanence = self.remanence_spinbox.value()
         field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
-        print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
-              f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
-              f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")
+        print(f"Material: {material}, behavior: {behavior}, Young Modulus: {young_modulus} GPa, "
+              f"Poisson-Ratio: {poisson_ratio}, Density: {density} kg/m³, Remanence: {remanence} T, "
+              f"Fieldstrength: {field_strength} T, Direction: {direction}")
 
     
     def show_library_menu(self):
