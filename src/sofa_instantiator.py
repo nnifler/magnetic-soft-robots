@@ -12,6 +12,14 @@ from src.mesh_loader import MeshLoader, Mode
 
 
 def main():
+    debug = True
+    if debug:
+        print(f"Show force: {Config.get_show_force()}")
+        print(f"Model: {Config.get_model()}")
+        print(f"External forces: {Config.get_external_forces()}")
+        print(f"Material parameters: {Config.get_material_parameters()}")
+        return
+
     root = Sofa.Core.Node("root")
     createScene(root)
     Sofa.Simulation.init(root)
