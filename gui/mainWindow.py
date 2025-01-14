@@ -279,7 +279,8 @@ class MainWindow(QMainWindow):
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based on the current position of the slider in tesla values"""
         strength_in_tesla = self.field_strength_slider.value() / 10
-        self.field_strength_label.setText(f"Magnetic Field Strength: {strength_in_tesla:.4f} T")
+        formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
+        self.field_strength_label.setText(f"Magnetic Field Strength: {formatted_strength} T")
 
     def parse_direction_input(self, text: str):
         """
