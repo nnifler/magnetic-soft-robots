@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 from enum import Enum
-import Sofa.Core.Node
+import Sofa.Core
 
 
 class Mode(Enum):

@@ -36,4 +36,4 @@ class DummyNode:
         if 'name' not in kwargs.keys():
             kwargs['name'] = component_type
         self.objects[kwargs['name']] = kwargs
-        return self.objects['name']
+        return self.objects[kwargs['name']]
