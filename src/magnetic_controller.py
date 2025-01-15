@@ -5,7 +5,7 @@ import src.config as config
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-from typing import Callable
+from typing import Tuple
 import math
 
 
@@ -14,7 +14,7 @@ MU0 = (4 * np.pi) / np.pow(10, 7) # Permeability (H/m)
 class MagneticController(Sofa.Core.Controller):
 
     @staticmethod
-    def _projection_from(axis: str, vec: np.ndarray): 
+    def _projection_from(axis: str, vec: np.ndarray) -> np.ndarray:
         """
         Projects the 3d vector to a 2d vector by ignoring the given axis.
 
@@ -33,7 +33,7 @@ class MagneticController(Sofa.Core.Controller):
         return proj[axis](vec)
 
     @staticmethod
-    def _normal(cur_positions: np.ndarray, tetrahedron: np.ndarray):
+    def _normal(cur_positions: np.ndarray, tetrahedron: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Calculates the normal of the surface defined by the first three points of the given tetrahedron.
 
@@ -56,13 +56,12 @@ class MagneticController(Sofa.Core.Controller):
         - vec2: The second 3d vector
         - axis: The axis the angle is calculated for
         """
-        p1, p2 = MagneticController._projection_from(axis, vec1), MagneticController._projection_from(axis, vec2)
-        def rot(v):
-            return np.array([v[1], -1*v[0]])
+        projected_vector1 = MagneticController._projection_from(axis, vec1)
+        projected_vector2 = MagneticController._projection_from(axis, vec2)
 
         angle = math.atan2(
-            np.dot(p1, rot(p2)),
-            np.dot(p1, p2)
+            np.dot(projected_vector1, np.array([projected_vector2[1], -1*projected_vector2[0]])),
+            np.dot(projected_vector1, projected_vector2)
         )
         return angle if not math.isnan(angle) else 0
 
@@ -79,13 +78,13 @@ class MagneticController(Sofa.Core.Controller):
         if np.isclose(source, -1 * destination).all(): 
             source = Rotation.from_euler('x', 0.000000001*np.pi).apply(source)
 
-        a = (source / np.linalg.norm(source)).reshape(3)
-        b = (destination / np.linalg.norm(destination)).reshape(3)
-        v = np.cross(a, b)
-        c = np.dot(a, b)
-        s = np.linalg.norm(v)
-        kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-        rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+        normalized_source = (source / np.linalg.norm(source)).reshape(3)
+        normalized_destination = (destination / np.linalg.norm(destination)).reshape(3)
+        normal = np.cross(normalized_source, normalized_destination)
+        dot_product = np.dot(normalized_source, normalized_destination)
+        normal_length = np.linalg.norm(normal)
+        kmat = np.array([[0, -normal[2], normal[1]], [normal[2], 0, -normal[0]], [-normal[1], normal[0], 0]])
+        rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - dot_product) / (normal_length ** 2))
         return Rotation.from_matrix(rotation_matrix)
 
 
@@ -97,7 +96,7 @@ class MagneticController(Sofa.Core.Controller):
         - elastic_object -- the elastic_object that is modeled
         """
         # Call init of Base class (required)
-        Sofa.Core.Controller.__init__(self)
+        super().__init__()
 
         # Process parameters
         self._elastic_object = elastic_object
@@ -131,6 +130,7 @@ class MagneticController(Sofa.Core.Controller):
         """
         Function that is automatically called every Sofa animation step
         """
+        print("Animate Begin Event")
         # Get the current positions of all nodes
         cur_positions = np.array(self._elastic_object.mech_obj.position.value)
         force_defined_at = [False] * self._num_nodes
@@ -145,12 +145,8 @@ class MagneticController(Sofa.Core.Controller):
             for node in tetrahedron:
                 if not force_defined_at[node]:
                     dipole_moment = config.REMANENCE.T * self._volume_per_node / MU0
-                    #print(force * orientation)
-                    #print(self._elastic_object.vertex_forces[0].forces
                     m = dipole_moment * orientation
-                    # print(config.B_FIELD.shape, m.shape)
                     torque = np.cross(m, config.B_FIELD)
-                    # print(type(m), m)
                     self._elastic_object.vertex_forces[node].forces = [[torque[0], torque[1], torque[2]]]
 
                     force_defined_at[node] = True
