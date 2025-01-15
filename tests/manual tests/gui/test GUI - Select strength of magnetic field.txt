@@ -21,7 +21,7 @@ Test:
     3. Apply Function 
         a. Verify that the current slider value is applied to the magnetic field strength by checking the console output.
         b. Verify that the vector value from the input field is parsed correctly by checking the console output.
-        c. Confirm that invalid vector inputs trigger a warning dialog box ad prevent the applicaation of values. 
+        c. Confirm that invalid vector inputs trigger a warning dialog box ad prevent the application of values. 
 4. Check the console output: Ensure that no unexpected errors or warnings occur in the integrated terminal.
 
 Expected result
