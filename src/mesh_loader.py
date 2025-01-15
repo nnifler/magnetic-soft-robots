@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Optional
 from enum import Enum
+import Sofa.Core.Node
 
 
 class Mode(Enum):
@@ -23,13 +24,25 @@ endings = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # SURFACE
 class MeshLoader():
     """Loads meshes into the Sofa Scene, if provided with a Path"""
 
-    def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.):
+    def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.) -> None:
         self._path: list = [None, None]
         self._name = name
         self._scaling = scaling_factor
 
-    def load_file(self, path: Path, mode: Mode):
-        """Loads a filepath into loader"""
+    def load_file(self, path: Path, mode: Mode) -> None:
+        """Loads a filepath into loader
+
+        Args:
+            path (Path): file that gets loaded
+            mode (Mode): mesh type
+
+        Raises:
+            FileNotFoundError: if given `path` is no file
+            ValueError: if file suffix is unknown
+            ValueError: if surface mode is selected but the file is a volumetric mesh
+            ValueError: if volumetric mesh is selected but the file is a surface mesh
+            ValueError: if the file is empty
+        """
         # TODO: integrity check for file?
 
         if not path.is_file():
@@ -61,8 +74,19 @@ class MeshLoader():
 
         self._path[mode.value] = path
 
-    def load_mesh_into(self, node, mode: Mode):
-        """for modularizing mesh loading code"""
+    def load_mesh_into(self, node: Sofa.Core.Node, mode: Mode) -> Sofa.Core.Object:
+        """Loads mesh into `node`.
+
+        Args:
+            node (Sofa.Core.Node): node the mesh loads into
+            mode (Mode): mesh type
+
+        Raises:
+            FileNotFoundError: path is not set yet
+
+        Returns:
+            Sofa.Core.Object: new object created by this method
+        """
 
         path: Optional[Path] = self._path[mode.value]
 
@@ -79,5 +103,12 @@ class MeshLoader():
         return mesh
 
     def reference(self, mode: Mode) -> str:
-        """for referencing the loader for meshes of desired mode in other SOFA objects"""
+        """References the loader in other SOFA objects
+
+        Args:
+            mode (Mode): mesh type
+
+        Returns:
+            str: reference string
+        """
         return "@"+self._name+"_"+mode.name.lower()
