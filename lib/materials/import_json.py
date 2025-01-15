@@ -47,7 +47,15 @@ with open('lib/materials/matweb_export.html') as ht:
 rows = soup.find_all('tr', class_=['altrow', ''])
 
 
-def calculate_average(range_str):
+def calculate_mean(range_str: str) -> float:
+    """Calculates mean from string with a range
+
+    Args:
+        range_str (str): string range ("7-9")
+
+    Returns:
+        float: mean
+    """
     numbers = [float(num.replace(',', '.'))
                for num in re.findall(r'\d+\.?\d*', range_str)]
     if len(numbers) == 2:
@@ -65,9 +73,9 @@ for row in rows:
     # material_name = columns[2].get_text(strip=True).split('\n')[0].strip()
     material_name = columns[2].get_text(strip=True)
     material_link = 'https://www.matweb.com'+columns[2].find('a')['href']
-    range_property_1 = calculate_average(columns[3].get_text(strip=True))*1e9
-    range_property_2 = calculate_average(columns[5].get_text(strip=True))*1e3
-    range_property_3 = calculate_average(columns[7].get_text(strip=True))
+    range_property_1 = calculate_mean(columns[3].get_text(strip=True))*1e9
+    range_property_2 = calculate_mean(columns[5].get_text(strip=True))*1e3
+    range_property_3 = calculate_mean(columns[7].get_text(strip=True))
 
     materials.append({
         'name': material_name,
