@@ -8,7 +8,7 @@ from src.units.Density import Density
 
 
 class TestRegularBehavior(unittest.TestCase):
-    def testDensity(self):
+    def test_density(self):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
         d = Density.fromkgpm3(uniform(0, 20))
@@ -18,6 +18,7 @@ class TestRegularBehavior(unittest.TestCase):
         uut.update_elastic_object()
         _, kwargs = eo.diagonal_mass.setDataValues.call_args
         self.assertEqual(kwargs['massDensity'], expected_density)
+        self.assertEqual(uut.get_density().kgpm3, expected_density)
 
     def test_youngs_modulus(self):
         eo = unittest.mock.Mock()
@@ -29,24 +30,27 @@ class TestRegularBehavior(unittest.TestCase):
         uut.update_elastic_object()
         _, kwargs = eo.FEM_force_field.setDataValues.call_args
         self.assertEqual(kwargs['youngModulus'], expected_modulus)
+        self.assertEqual(uut.get_youngs_modulus().Pa, expected_modulus)
 
-    def test_poisson_ratio(self):
+    def test_poissons_ratio(self):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
-        pr = uniform(-0.499, 0.499)
+        expected_poissions_ratio = uniform(-0.499, 0.499)
 
-        uut.set_poissons_ratio(pr)
+        uut.set_poissons_ratio(expected_poissions_ratio)
         uut.update_elastic_object()
         _, kwargs = eo.FEM_force_field.setDataValues.call_args
-        self.assertEqual(kwargs['poissonRatio'], pr)
+        self.assertEqual(kwargs['poissonRatio'], expected_poissions_ratio)
+        self.assertEqual(uut.get_poissons_ratio(), expected_poissions_ratio)
 
     def test_remanence(self):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
-        r = uniform(-100, 100)
-        uut.set_remanence(r)
+        expected_remanence = uniform(-100, 100)
+        uut.set_remanence(expected_remanence)
         uut.update_elastic_object()
-        self.assertEqual(eo.remanence, r)
+        self.assertEqual(eo.remanence, expected_remanence)
+        self.assertEqual(uut.get_remanence(), expected_remanence)
 
     def test_no_update_made(self):
         eo = unittest.mock.Mock()

@@ -1,8 +1,9 @@
-from numbers import Number
-from typing import Dict
 from src.elastic_body import ElasticObject
 from src.units.Density import Density
 from src.units.YoungsModulus import YoungsModulus
+# used for commented code:
+# from numbers import Number
+# from typing import Dict
 
 
 class MaterialLoader:
@@ -59,10 +60,10 @@ class MaterialLoader:
         return Density(self._material_values['density'])
 
     def set_youngs_modulus(self, value: YoungsModulus) -> None:
-        """Sets young's modulus.
+        """Sets Young's modulus.
 
         Args:
-            value (YoungsModulus): young's modulus to be set
+            value (YoungsModulus): Young's modulus to be set
         """
         self._material_values['youngs_modulus'] = value.Pa
         self._dirty = True
@@ -74,7 +75,7 @@ class MaterialLoader:
             ValueError: if read is dirty
 
         Returns:
-            YoungsModulus: current young's modulus
+            YoungsModulus: current Young's modulus
         """
         if self._dirty:
             raise ValueError('Dirty read.')
@@ -85,23 +86,23 @@ class MaterialLoader:
         """Sets poissons ratio.
 
         Args:
-            value (float): poissons ratio to be set
+            value (float): Poisson's ratio to be set
         """
         self._material_values['poissons_ratio'] = value
         self._dirty = True
 
     def get_poissons_ratio(self) -> float:
-        """Returns current poissions ratio.
+        """Returns current Poisson's ratio.
 
         Raises:
             ValueError: if read is dirty
 
         Returns:
-            float: current poissions ratio
+            float: current Poisson's ratio
         """
         if self._dirty:
             raise ValueError('Dirty read.')
-        return YoungsModulus(self._material_values['poissons_ratio'])
+        return self._material_values['poissons_ratio']
 
     # TODO: add remanence unit (Tesla)
     def set_remanence(self, value: float) -> None:
@@ -125,7 +126,7 @@ class MaterialLoader:
         """
         if self._dirty:
             raise ValueError('Dirty read.')
-        return YoungsModulus(self._material_values['remanence'])
+        return self._material_values['remanence']
 
     def update_elastic_object(self) -> None:
         """Updates the elastic object if changes occurred.
