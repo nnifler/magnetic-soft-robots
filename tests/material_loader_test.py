@@ -35,13 +35,13 @@ class TestRegularBehavior(unittest.TestCase):
     def test_poissons_ratio(self):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
-        expected_poissions_ratio = uniform(-0.499, 0.499)
+        expected_poissons_ratio = uniform(-0.499, 0.499)
 
-        uut.set_poissons_ratio(expected_poissions_ratio)
+        uut.set_poissons_ratio(expected_poissons_ratio)
         uut.update_elastic_object()
         _, kwargs = eo.FEM_force_field.setDataValues.call_args
-        self.assertEqual(kwargs['poissonRatio'], expected_poissions_ratio)
-        self.assertEqual(uut.get_poissons_ratio(), expected_poissions_ratio)
+        self.assertEqual(kwargs['poissonRatio'], expected_poissons_ratio)
+        self.assertEqual(uut.get_poissons_ratio(), expected_poissons_ratio)
 
     def test_remanence(self):
         eo = unittest.mock.Mock()
