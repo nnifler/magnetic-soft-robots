@@ -68,8 +68,8 @@ class MeshLoader():
                              {", ".join(endings[Mode.VOLUMETRIC.value])}"""
                              )
 
-        with open(path) as f:
-            if f.readline() == "":
+        with open(path, 'rb') as f:
+            if f.readline() == b"":
                 raise ValueError(f"File {path} empty! Not a valid mesh")
 
         self._path[mode.value] = path
