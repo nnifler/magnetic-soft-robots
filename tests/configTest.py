@@ -26,8 +26,8 @@ class TestConfig(unittest.TestCase):
 
         Config.set_model(ref_name, ref_scale)
 
-        self.assertEqual(Config.get_model()["name"], ref_name)
-        self.assertAlmostEqual(Config.get_model()["scale"], ref_scale)
+        self.assertEqual(Config.get_model()["name"], ref_name, msg="Model name is not correct")
+        self.assertAlmostEqual(Config.get_model()["scale"], ref_scale, msg="Model scale is not correct")
 
     def testModelExceptional(self):
         err_scale = uniform(-100,0)
@@ -40,7 +40,8 @@ class TestConfig(unittest.TestCase):
         ref_gravity_vec = np.random.uniform(0,100,3)
         ref_magnetic_force = uniform(0,100)
         ref_magnetic_dir = np.random.uniform(0,20,3)
-        ref_b_field = ref_magnetic_force * ref_magnetic_dir
+        normalised_magnetic_dir = ref_magnetic_dir / np.linalg.norm(ref_magnetic_dir)
+        ref_b_field = ref_magnetic_force * normalised_magnetic_dir
         ref_initial_dipole_moment = np.random.uniform(0,20,3)
 
         Config.set_external_forces(
@@ -51,16 +52,18 @@ class TestConfig(unittest.TestCase):
             ref_initial_dipole_moment
         )
 
-        self.assertEqual(Config.get_external_forces()["use_gravity"], ref_use_gravity)
+        self.assertEqual(Config.get_external_forces()["use_gravity"], ref_use_gravity, msg="Use gravity is not correct")
         for pair in zip(Config.get_external_forces()["gravity_vec"], ref_gravity_vec):
-            self.assertAlmostEqual(*pair)
-        self.assertAlmostEqual(Config.get_external_forces()["magnetic_force"], ref_magnetic_force)
-        for pair in zip(Config.get_external_forces()["magnetic_dir"], ref_magnetic_dir):
-            self.assertAlmostEqual(*pair)
+            self.assertAlmostEqual(*pair, msg="Gravity vector is not correct")
+        self.assertAlmostEqual(Config.get_external_forces()["magnetic_force"], ref_magnetic_force, msg="Magnetic force is not correct")
+        for elem in np.cross(Config.get_external_forces()["magnetic_dir"], ref_magnetic_dir):
+            self.assertAlmostEqual(elem, 0, msg="Magnetic direction is not correct")
+        self.assertGreaterEqual(np.dot(Config.get_external_forces()["magnetic_dir"], ref_magnetic_dir), 0, msg="Magnetic direction is not correct")
+        self.assertAlmostEqual(np.linalg.norm(Config.get_external_forces()["magnetic_dir"]), 1, msg="Magnetic direction is not normalized")
         for pair in zip(Config.get_external_forces()["b_field"], ref_b_field):
-            self.assertAlmostEqual(*pair)
+            self.assertAlmostEqual(*pair, msg="B field is not correct")
         for pair in zip(Config.get_external_forces()["initial_dipole_moment"], ref_initial_dipole_moment):
-            self.assertAlmostEqual(*pair)
+            self.assertAlmostEqual(*pair, msg="Initial dipole moment is not correct")
 
     def testExternalForcesExceptional(self):
         err_gravity_vec1 = np.random.uniform(0,100,4)
@@ -147,10 +150,10 @@ class TestConfig(unittest.TestCase):
             ref_remanence
         )
 
-        self.assertAlmostEqual(Config.get_material_parameters()["poisson_ratio"], ref_poisson_ratio)
-        self.assertAlmostEqual(Config.get_material_parameters()["youngs_modulus"].Pa, ref_youngs_modulus.Pa)
-        self.assertAlmostEqual(Config.get_material_parameters()["density"].kgpm3, ref_density.kgpm3)
-        self.assertAlmostEqual(Config.get_material_parameters()["remanence"], ref_remanence)
+        self.assertAlmostEqual(Config.get_material_parameters()["poisson_ratio"], ref_poisson_ratio, msg="Poisson ratio is not correct")
+        self.assertAlmostEqual(Config.get_material_parameters()["youngs_modulus"].Pa, ref_youngs_modulus.Pa, msg="Youngs modulus is not correct")
+        self.assertAlmostEqual(Config.get_material_parameters()["density"].kgpm3, ref_density.kgpm3, msg="Density is not correct")
+        self.assertAlmostEqual(Config.get_material_parameters()["remanence"], ref_remanence, msg="Remanence is not correct")
 
     def testMaterialParametersExceptional(self):
         err_poisson_ratio1 = uniform(-100,-1)

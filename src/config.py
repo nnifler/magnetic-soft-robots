@@ -94,8 +94,9 @@ class Config:
         cls._use_gravity = use_gravity
         cls._gravity_vec = gravity_vec
         cls._magnetic_force = magnetic_force
-        cls._magnetic_dir = magnetic_dir
-        cls._b_field = magnetic_force * magnetic_dir
+        normalised_magnetic_dir = magnetic_dir / np.linalg.norm(magnetic_dir)
+        cls._magnetic_dir = normalised_magnetic_dir
+        cls._b_field = magnetic_force * normalised_magnetic_dir
         cls._initial_dipole_moment = initial_dipole_moment
 
     @classmethod
