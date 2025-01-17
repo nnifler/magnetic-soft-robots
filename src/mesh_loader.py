@@ -1,4 +1,5 @@
 from pathlib import Path
+from os.path import getsize
 from typing import Optional
 from enum import Enum
 import Sofa.Core
@@ -68,9 +69,11 @@ class MeshLoader():
                              {", ".join(endings[Mode.VOLUMETRIC.value])}"""
                              )
 
-        with open(path, 'rb') as f:
-            if f.readline() == b"":
-                raise ValueError(f"File {path} empty! Not a valid mesh")
+        with open(path, mode="r+b") as f:
+            f.readline()
+        
+        if getsize(path) == 0:
+            raise ValueError(f"File {path} empty! Not a valid mesh")
 
         self._path[mode.value] = path
 
