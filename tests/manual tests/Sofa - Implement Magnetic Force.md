@@ -27,6 +27,11 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 2. **Start of the application**
     1. Run the file [$ magnetic-soft-robots/sofa_instantiator.py](../../sofa_instantiator.py)
 
+3. **Start the animation**
+    1. In the simulation window, click the button `Animate`
+    2. Observe the behavior of the model
+    3. If the model does not deform, lower the `YOUNGS_MODULUS`, raise the `MAGNETIC_FORCE` or change the `MAGNETIC_DIR` in the file [$ magnetic-soft-robots/src/config.py](../../src/config.py) and repeat step 2 and 3
+
 <span style='color:red'> ---------------------------------------------------------------------\
 <span style='color:red'> End of old version\
 <span style='color:red'> ---------------------------------------------------------------------
@@ -55,14 +60,14 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 4. **Click Apply Button**
     1. Click the `Apply` button at the bottom of the GUI
 
+5. **Start the animation**
+    1. In the simulation window, click the button `Animate`
+    2. Observe the behavior of the model
+    3. If the model does not deform, repeat step 2-5 and choose a lower `Young's Modulus`, a higher `Magnetic Field Strength` or change the `Direction`
+
 <span style='color:green'> ---------------------------------------------------------------------\
 <span style='color:green'> End of new version\
 <span style='color:green'> ---------------------------------------------------------------------
-
-3. **Start the animation**
-    1. In the simulation window, click the button `Animate`
-    2. Observe the behavior of the model
-    3. If the model does not deform, lower the `YOUNGS_MODULUS` or raise the `MAGNETIC_FORCE` in the file [$ magnetic-soft-robots/src/config.py](../../src/config.py) and repeat step 3
 
 4. **Stop the simulation**
     1. When the model does not deform any further, you can close the simulation window
