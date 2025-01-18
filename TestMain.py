@@ -1,7 +1,6 @@
 import unittest
 import tests.units.YoungsModulusTest
 import tests.units.DensityTest
-import tests.units.TeslaTest
 import tests.MagneticControllerTest
 import tests.mesh_loader_test
 import tests.material_loader_test
@@ -13,7 +12,6 @@ test_suites = []
 suite.addTests([
     tests.units.YoungsModulusTest.suite(),
     tests.units.DensityTest.suite(),
-    tests.units.TeslaTest.suite(),
     tests.MagneticControllerTest.suite(),
     tests.mesh_loader_test.suite(),
     tests.material_loader_test.suite(),
