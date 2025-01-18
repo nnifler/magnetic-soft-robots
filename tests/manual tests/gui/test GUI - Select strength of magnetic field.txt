@@ -12,7 +12,7 @@ Test:
         a. Verify that it contains a slider with the label Magnetic Field Strength.
         b. Slider is adjustable to various positions within its range.
         c. Ensure that the minimum and maximum values of the slider are correct zero and 100 T.
-        d. Check that changes in the slider position update the magnetic field strength in real time and match the expected values in Tesla.
+        d. Check that changes in the slider position update the magnetic field strength output in the Magnetic Field Setting widget in real time and match the expected values in Tesla.
     2. Vector Input Field
         a. Verify the presence of the input field with the label "Direction (Vector)".
         b. Allowed: Numbers in the format [x, y, z], with optional spaces and decimal places.
