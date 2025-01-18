@@ -291,7 +291,7 @@ class MainWindow(QMainWindow):
         """
         try:
             clean_values = text.strip("[]() ").replace(" ", "").replace(";", ",")
-            values = [float(i) for i in clean_values.split(",") if i.strip().replace(".", "").isdigit()]
+            values = [float(i) for i in clean_values.split(",") if i.strip("- ").replace(".", "").isdigit()]
 
             if len(values) != 3:
                 raise ValueError
