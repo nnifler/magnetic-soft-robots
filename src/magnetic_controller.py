@@ -1,6 +1,7 @@
 import Sofa
 
 from src.elastic_body import ElasticObject
+from src.material_loader import MaterialLoader
 import src.config as config
 
 import numpy as np
@@ -85,10 +86,11 @@ class MagneticController(Sofa.Core.Controller):
         normal_length = np.linalg.norm(normal)
         kmat = np.array([[0, -normal[2], normal[1]], [normal[2], 0, -normal[0]], [-normal[1], normal[0], 0]])
         rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - dot_product) / (normal_length ** 2))
+
         return Rotation.from_matrix(rotation_matrix)
 
 
-    def __init__(self, elastic_object: ElasticObject):
+    def __init__(self, elastic_object: ElasticObject, material_loader: MaterialLoader):
         """
         Initializes the Magnetic Controller
         
@@ -100,6 +102,7 @@ class MagneticController(Sofa.Core.Controller):
 
         # Process parameters
         self._elastic_object = elastic_object
+        self._material_loader = material_loader
 
         # Get list of the nodes of all tetrahedra
         self._tetrahedra = np.array(elastic_object.mesh.tetrahedra.value)
@@ -131,6 +134,11 @@ class MagneticController(Sofa.Core.Controller):
         Function that is automatically called every Sofa animation step
         """
         print("Animate Begin Event")
+
+        # first of all, update material values
+        self._material_loader.update_elastic_object()
+        # TODO: for LINK, also update magnetic field etc; similar class maybe?
+
         # Get the current positions of all nodes
         cur_positions = np.array(self._elastic_object.mech_obj.position.value)
         force_defined_at = [False] * self._num_nodes
@@ -145,8 +153,9 @@ class MagneticController(Sofa.Core.Controller):
             for node in tetrahedron:
                 if not force_defined_at[node]:
                     dipole_moment = config.REMANENCE.T * self._volume_per_node / MU0
+
                     m = dipole_moment * orientation
                     torque = np.cross(m, config.B_FIELD)
                     self._elastic_object.vertex_forces[node].forces = [[torque[0], torque[1], torque[2]]]
 
-                    force_defined_at[node] = True
+                    force_defined_at[vertex] = True

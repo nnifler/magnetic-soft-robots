@@ -3,6 +3,8 @@ import tests.units.YoungsModulusTest
 import tests.units.DensityTest
 import tests.units.TeslaTest
 import tests.MagneticControllerTest
+import tests.mesh_loader_test
+import tests.material_loader_test
 
 suite = unittest.TestSuite()
 test_suites = []
@@ -13,6 +15,8 @@ suite.addTests([
     tests.units.DensityTest.suite(),
     tests.units.TeslaTest.suite(),
     tests.MagneticControllerTest.suite(),
+    tests.mesh_loader_test.suite(),
+    tests.material_loader_test.suite(),
 ])
 
 runner = unittest.TextTestRunner()

@@ -1,9 +1,13 @@
-from src.elastic_body import createElasticObject
-# Required import for python
+import os
+from pathlib import Path
+
 import Sofa
 from src.config import *
 from src.SceneBuilder import SceneBuilder
+from src.elastic_body import ElasticObject
 from src.magnetic_controller import MagneticController
+from src.material_loader import MaterialLoader
+from src.mesh_loader import MeshLoader, Mode
 
 
 def main():
@@ -27,18 +31,34 @@ def main():
 
 def createScene(root):
     SceneBuilder(root)
-    elastic_object = createElasticObject(root, 
-                               name=NAME, 
-                               poissonRatio=POISSON_RATIO,
-                               youngsModulus=YOUNGS_MODULUS, 
-                               density=DENSITY,
-                               scale=SCALE)
-    
-    controller = MagneticController(elastic_object)
+
+    # can be overwritten / removed as soon as linked to GUI
+    mesh_loader = MeshLoader(scaling_factor=SCALE)
+    cwd = os.getcwd()
+    mesh_loader.load_file(
+        path=Path(f"{cwd}/meshes/{NAME}.msh"), mode=Mode.VOLUMETRIC)
+    mesh_loader.load_file(
+        path=Path(f"{cwd}/meshes/{NAME}.stl"), mode=Mode.SURFACE)
+
+    elastic_object = ElasticObject(root,
+                                   mesh_loader=mesh_loader,
+                                   poissonRatio=POISSON_RATIO,
+                                   youngsModulus=YOUNGS_MODULUS,
+                                   density=DENSITY,
+                                   )
+
+    mat_loader = MaterialLoader(elastic_object)
+
+    # can be overwritten / removed as soon as linked to GUI
+    mat_loader.set_density(DENSITY)
+    mat_loader.set_youngs_modulus(YOUNGS_MODULUS)
+    mat_loader.set_poissons_ratio(POISSON_RATIO)
+    mat_loader.set_remanence(REMANENCE)
+
+    controller = MagneticController(elastic_object, mat_loader)
     root.addObject(controller)
 
     return root
-
 
 
 # Function used only if this script is called from a python environment
