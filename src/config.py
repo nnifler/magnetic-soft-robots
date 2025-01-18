@@ -1,7 +1,6 @@
 import numpy as np
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
-from src.units.Tesla import Tesla
 
 # Choose Parameters
 USE_GUI = True
@@ -13,8 +12,8 @@ NAME = "beam"
 POISSON_RATIO = 0.47
 YOUNGS_MODULUS = YoungsModulus.fromGPa(0.1)
 DENSITY = Density.fromMgpm3(1.1)
-MAGNETIC_FORCE = Tesla.fromT(50)
-REMANENCE = Tesla.fromT(0.35)
+MAGNETIC_FORCE = 50  # Tesla
+REMANENCE = 0.35  # Tesla
 
 MATERIAL_LIST = [
     (0.47, YoungsModulus.fromGPa(0.001),
@@ -31,7 +30,7 @@ SCALE = 0.02
 MAGNETIC_DIR = np.array([0, 0, 1])
 SHOW_FORCE = True
 
-B_FIELD = np.array(MAGNETIC_FORCE.T * MAGNETIC_DIR)
+B_FIELD = np.array(MAGNETIC_FORCE * MAGNETIC_DIR)
 
 INIT = np.array([1, 0, 0])
 
