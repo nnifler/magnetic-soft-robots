@@ -1,6 +1,7 @@
 from src.elastic_body import ElasticObject
 from src.units.Density import Density
 from src.units.YoungsModulus import YoungsModulus
+from src.units.Tesla import Tesla
 # used for commented code:
 # from numbers import Number
 # from typing import Dict
@@ -15,7 +16,7 @@ class MaterialLoader:
             "youngs_modulus": 0,
             "poissons_ratio": 0.,
             "remanence": 0,
-        }  # TODO: remanence not in material data
+        }
 
         self._dirty: bool = False
 
@@ -104,8 +105,7 @@ class MaterialLoader:
             raise ValueError('Dirty read.')
         return self._material_values['poissons_ratio']
 
-    # TODO: add remanence unit (Tesla)
-    def set_remanence(self, value: float) -> None:
+    def set_remanence(self, value: Tesla) -> None:
         """Sets remanence.
 
         Args:
@@ -114,8 +114,7 @@ class MaterialLoader:
         self._material_values['remanence'] = value
         self._dirty = True
 
-    # TODO: add unit
-    def get_remanence(self) -> float:
+    def get_remanence(self) -> Tesla:
         """Returns current remanence ratio.
 
         Raises:
@@ -126,7 +125,7 @@ class MaterialLoader:
         """
         if self._dirty:
             raise ValueError('Dirty read.')
-        return self._material_values['remanence']
+        return Tesla(self._material_values['remanence'])
 
     def update_elastic_object(self) -> None:
         """Updates the elastic object if changes occurred.
