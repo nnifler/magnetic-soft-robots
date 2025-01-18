@@ -5,6 +5,7 @@ from random import uniform
 from src.material_loader import MaterialLoader
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
+from src.units.Tesla import Tesla
 
 
 class TestNormalBehavior(unittest.TestCase):
@@ -46,8 +47,10 @@ class TestNormalBehavior(unittest.TestCase):
     def test_remanence(self):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
-        expected_remanence = uniform(-100, 100)
-        uut.set_remanence(expected_remanence)
+        r = Tesla.fromT(uniform(-100, 100))
+        expected_remanence = r.T
+
+        uut.set_remanence(r)
         uut.update_elastic_object()
         self.assertEqual(eo.remanence, expected_remanence)
         self.assertEqual(uut.get_remanence(), expected_remanence)
@@ -95,7 +98,8 @@ class TestExceptionalBehavior(unittest.TestCase):
     def test_remanence(self):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
-        expected_remanence = uniform(-100, 100)
+        r = Tesla.fromT(uniform(-100, 100))
+        expected_remanence = r.T
         uut.set_remanence(expected_remanence)
         with self.assertRaises(ValueError):
             uut.get_remanence()
