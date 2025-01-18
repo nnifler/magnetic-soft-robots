@@ -77,7 +77,7 @@ class MagneticController(Sofa.Core.Controller):
         """
         if np.isclose(source, destination).all(): return Rotation.from_euler('x', 0)
         if np.isclose(source, -1 * destination).all(): 
-            source = Rotation.from_euler('x', 0.000000001*np.pi).apply(source)
+            source = Rotation.from_euler('xyz', [0.000000001*np.pi]*3).apply(source)
 
         normalized_source = (source / np.linalg.norm(source)).reshape(3)
         normalized_destination = (destination / np.linalg.norm(destination)).reshape(3)
@@ -133,8 +133,6 @@ class MagneticController(Sofa.Core.Controller):
         """
         Function that is automatically called every Sofa animation step
         """
-        print("Animate Begin Event")
-
         # first of all, update material values
         self._material_loader.update_elastic_object()
         # TODO: for LINK, also update magnetic field etc; similar class maybe?
@@ -158,4 +156,4 @@ class MagneticController(Sofa.Core.Controller):
                     torque = np.cross(m, config.B_FIELD)
                     self._elastic_object.vertex_forces[node].forces = [[torque[0], torque[1], torque[2]]]
 
-                    force_defined_at[vertex] = True
+                    force_defined_at[node] = True
