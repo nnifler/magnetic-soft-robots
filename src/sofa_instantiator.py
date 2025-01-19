@@ -12,13 +12,35 @@ from src.mesh_loader import MeshLoader, Mode
 
 
 def main():
-    debug = True
+    debug = False
     if debug:
         print(f"Show force: {Config.get_show_force()}")
         print(f"Model: {Config.get_model()}")
         print(f"External forces: {Config.get_external_forces()}")
         print(f"Material parameters: {Config.get_material_parameters()}")
         return
+    
+    Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
+            'Sofa.Component.Collision.Detection.Intersection',
+            'Sofa.Component.Collision.Geometry',
+            'Sofa.Component.Collision.Response.Contact',
+            'Sofa.Component.Constraint.Projective',
+            'Sofa.Component.IO.Mesh',
+            'Sofa.Component.LinearSolver.Iterative',
+            'Sofa.Component.Mapping.Linear',
+            'Sofa.Component.Mass',
+            'Sofa.Component.ODESolver.Backward',
+            'Sofa.Component.SolidMechanics.FEM.Elastic',
+            'Sofa.Component.StateContainer',
+            'Sofa.Component.Topology.Container.Dynamic',
+            'Sofa.Component.Visual',
+            'Sofa.GL.Component.Rendering3D',
+            'Sofa.Component.AnimationLoop',
+            'Sofa.Component.LinearSolver.Direct',
+            'Sofa.Component.Constraint.Lagrangian.Correction',
+            'Sofa.Component.Topology.Mapping',
+            'Sofa.Component.MechanicalLoad'
+        ])
 
     root = Sofa.Core.Node("root")
     createScene(root)
