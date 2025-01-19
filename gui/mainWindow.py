@@ -319,27 +319,6 @@ class MainWindow(QMainWindow):
                                        youngs_modulus,
                                        density,
                                        remanence)
-        Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
-            'Sofa.Component.Collision.Detection.Intersection',
-            'Sofa.Component.Collision.Geometry',
-            'Sofa.Component.Collision.Response.Contact',
-            'Sofa.Component.Constraint.Projective',
-            'Sofa.Component.IO.Mesh',
-            'Sofa.Component.LinearSolver.Iterative',
-            'Sofa.Component.Mapping.Linear',
-            'Sofa.Component.Mass',
-            'Sofa.Component.ODESolver.Backward',
-            'Sofa.Component.SolidMechanics.FEM.Elastic',
-            'Sofa.Component.StateContainer',
-            'Sofa.Component.Topology.Container.Dynamic',
-            'Sofa.Component.Visual',
-            'Sofa.GL.Component.Rendering3D',
-            'Sofa.Component.AnimationLoop',
-            'Sofa.Component.LinearSolver.Direct',
-            'Sofa.Component.Constraint.Lagrangian.Correction',
-            'Sofa.Component.Topology.Mapping',
-            'Sofa.Component.MechanicalLoad'
-        ])
 
         sofa_instantiator.main()
         #print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
