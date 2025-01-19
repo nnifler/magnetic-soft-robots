@@ -5,6 +5,7 @@ import tests.units.TeslaTest
 import tests.MagneticControllerTest
 import tests.mesh_loader_test
 import tests.material_loader_test
+import tests.meshes.BeamTest
 
 suite = unittest.TestSuite()
 test_suites = []
@@ -17,6 +18,7 @@ suite.addTests([
     tests.MagneticControllerTest.suite(),
     tests.mesh_loader_test.suite(),
     tests.material_loader_test.suite(),
+    tests.meshes.BeamTest.suite(),
 ])
 
 runner = unittest.TextTestRunner()
