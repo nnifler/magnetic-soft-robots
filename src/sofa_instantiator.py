@@ -82,7 +82,7 @@ def createScene(root):
     mat_loader.set_density(Config.get_density())
     mat_loader.set_youngs_modulus(Config.get_youngs_modulus())
     mat_loader.set_poissons_ratio(Config.get_poisson_ratio())
-    mat_loader.set_remanence(Config.get_remanence())
+    mat_loader.set_remanence(Config.get_remanence().T) # TODO PR17
 
     controller = MagneticController(elastic_object, mat_loader)
     root.addObject(controller)

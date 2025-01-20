@@ -13,6 +13,7 @@ from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
+from src.units.Tesla import Tesla
 from src.config import Config
 from src import sofa_instantiator
 
@@ -325,7 +326,8 @@ class MainWindow(QMainWindow):
             Density.fromMgpm3(density_val),
             Density.fromtpm3(density_val)
         ][self.unit_selector_density.currentIndex()]
-        remanence = self.remanence_spinbox.value()
+        remanence_val = self.remanence_spinbox.value()
+        remanence = Tesla(remanence_val)
         field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
         Config.set_show_force(True)
