@@ -42,10 +42,10 @@ class TestConfig(unittest.TestCase):
     def testExternalForces(self):
         ref_use_gravity = choice([True, False])
         ref_gravity_vec = np.random.uniform(0,100,3)
-        ref_magnetic_force = uniform(0,100)
+        ref_magnetic_force = Tesla.fromT(uniform(0,100))
         ref_magnetic_dir = np.random.uniform(0,20,3)
         normalised_magnetic_dir = ref_magnetic_dir / np.linalg.norm(ref_magnetic_dir)
-        ref_b_field = ref_magnetic_force * normalised_magnetic_dir
+        ref_b_field = ref_magnetic_force.T * normalised_magnetic_dir
         ref_initial_dipole_moment = np.random.uniform(0,20,3)
 
         Config.set_external_forces(
@@ -72,7 +72,7 @@ class TestConfig(unittest.TestCase):
     def testExternalForcesExceptional(self):
         err_gravity_vec1 = np.random.uniform(0,100,4)
         err_gravity_vec2 = np.random.uniform(0,100,(3,1))
-        err_magnetic_force = uniform(-100,0)
+        err_magnetic_force = Tesla.fromT(uniform(-100,0))
         err_magnetic_dir1 = np.random.uniform(0,100,4)
         err_magnetic_dir2 = np.random.uniform(0,100,(3,1))
         err_initial_dipole_moment1 = np.random.uniform(0,100,4)
@@ -82,7 +82,7 @@ class TestConfig(unittest.TestCase):
             Config.set_external_forces(
                 True, 
                 err_gravity_vec1, 
-                0, 
+                Tesla(0), 
                 np.array([0,0,0]), 
                 np.array([0,0,0])
             )
@@ -91,7 +91,7 @@ class TestConfig(unittest.TestCase):
             Config.set_external_forces(
                 True, 
                 err_gravity_vec2, 
-                0, 
+                Tesla(0), 
                 np.array([0,0,0]), 
                 np.array([0,0,0])
             )
@@ -109,7 +109,7 @@ class TestConfig(unittest.TestCase):
             Config.set_external_forces(
                 True, 
                 np.array([0,0,0]), 
-                0, 
+                Tesla(0), 
                 err_magnetic_dir1, 
                 np.array([0,0,0])
             )
@@ -118,7 +118,7 @@ class TestConfig(unittest.TestCase):
             Config.set_external_forces(
                 True, 
                 np.array([0,0,0]), 
-                0, 
+                Tesla(0), 
                 err_magnetic_dir2, 
                 np.array([0,0,0])
             )
@@ -127,7 +127,7 @@ class TestConfig(unittest.TestCase):
             Config.set_external_forces(
                 True, 
                 np.array([0,0,0]), 
-                0, 
+                Tesla(0), 
                 np.array([0,0,0]), 
                 err_initial_dipole_moment1
             )
@@ -136,7 +136,7 @@ class TestConfig(unittest.TestCase):
             Config.set_external_forces(
                 True, 
                 np.array([0,0,0]), 
-                0, 
+                Tesla(0), 
                 np.array([0,0,0]), 
                 err_initial_dipole_moment2
             )
@@ -168,7 +168,7 @@ class TestConfig(unittest.TestCase):
                 err_poisson_ratio1,
                 YoungsModulus.fromPa(0),
                 Density.fromkgpm3(0),
-                0
+                Tesla(0)
             )
         
         with self.assertRaises(ValueError):
@@ -176,7 +176,7 @@ class TestConfig(unittest.TestCase):
                 err_poisson_ratio2,
                 YoungsModulus.fromPa(0),
                 Density.fromkgpm3(0),
-                0
+                Tesla(0)
             )
         
     def testPluginList(self):
