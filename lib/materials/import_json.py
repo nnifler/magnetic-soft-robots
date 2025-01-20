@@ -34,7 +34,7 @@ materials = [
 
 # Maybe research values for material https://sls3d.de/wp-content/uploads/sinterit-flexa-soft-datenblatt.pdf
 
-with open('lib/materials/matweb_export.html') as ht:
+with open('lib/materials/matweb_export.html', encoding='utf-8') as ht:
     soup = BeautifulSoup(ht, 'html.parser')
 
 # Find all rows
@@ -82,7 +82,7 @@ for row in rows:
 
 # JSON-Datei speichern
 file_name = "lib/materials/magnetic_soft_robot_materials.json"
-with open(file_name, "w") as file:
+with open(file_name, "w", encoding='utf-8') as file:
     json.dump(materials, file, indent=4)
 
 print(f"JSON file '{file_name}' created successfully!")
