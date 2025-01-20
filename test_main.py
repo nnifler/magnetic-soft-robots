@@ -1,28 +1,20 @@
 import unittest
-import tests.units.YoungsModulusTest
-import tests.units.DensityTest
-import tests.units.TeslaTest
-import tests.MagneticControllerTest
-import tests.mesh_loader_test
-import tests.material_loader_test
-import tests.configTest
-import tests.meshes.BeamTest
-import tests.scene_builder_test
+from tests import *
 
 suite = unittest.TestSuite()
 test_suites = []
 
 # Add new test suites here
 suite.addTests([
-    tests.units.YoungsModulusTest.suite(),
-    tests.units.DensityTest.suite(),
-    tests.units.TeslaTest.suite(),
-    tests.MagneticControllerTest.suite(),
-    tests.mesh_loader_test.suite(),
-    tests.material_loader_test.suite(),
-    tests.configTest.suite(),
-    tests.meshes.BeamTest.suite(),
-    tests.scene_builder_test.suite(),
+    density_test_suite(),
+    tesla_test_suite(),
+    youngs_modulus_test_suite(),
+    config_test_suite(),
+    magnetic_controller_test_suite(),
+    material_loader_test_suite(),
+    mesh_loader_test_suite(),
+    scene_builder_test_suite(),
+    beam_test_suite(),
 ])
 
 runner = unittest.TextTestRunner()
