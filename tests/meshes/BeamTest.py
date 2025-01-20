@@ -1,16 +1,23 @@
 import unittest
+import numpy as np
 
 import Sofa
-
 import Sofa.Simulation
-from sofa_instantiator import createScene
+
+from src.sofa_instantiator import createScene
+from src.config import Config
+from src.units.YoungsModulus import YoungsModulus
+from src.units.Density import Density
+from src.units.Tesla import Tesla
 
 class TestBeam(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         """Called once before all the tests in the class"""
-        # TODO: Make sure that beam object is used (only really doable as soon as LINK is in main)
+        Config.set_test_env()
+        Config.set_model('beam', 1)
+        
         cls.root = Sofa.Core.Node("root")
         createScene(cls.root)
         Sofa.Simulation.init(cls.root)
@@ -88,6 +95,11 @@ class TestBeam(unittest.TestCase):
                     pos[2], self.mech_obj.position.value[i][2],
                     msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
                 )
+
+    @classmethod
+    def tearDownClass(self) -> None:
+        """Called once after all tests in the class"""
+        Config.reset()
 
 def suite() -> unittest.TestSuite: 
     suite = unittest.TestSuite()
