@@ -1,11 +1,13 @@
-import numpy as np
-from typing import List
+"""This module contains the configuration for the Sofa simulation."""
 
-from src.units.YoungsModulus import YoungsModulus
-from src.units.Density import Density
-from src.units.Tesla import Tesla
+from typing import List
+import numpy as np
+
+from .units import YoungsModulus, Density, Tesla
+
 
 class Config:
+    """This class contains the configuration for the Sofa simulation."""
     ### SOFA UI ###
     _show_force = True
 
@@ -15,11 +17,11 @@ class Config:
 
     ### External forces ###
     _use_gravity = True
-    _gravity_vec = np.array([0,0,0])
-    _magnetic_force = Tesla.fromT(.01)
-    _magnetic_dir = np.array([1,0,0])
-    _b_field = np.array([0,0,0])
-    _initial_dipole_moment = np.array([0,0,0])
+    _gravity_vec = np.array([0, 0, 0])
+    _magnetic_force = Tesla.from_T(.01)
+    _magnetic_dir = np.array([1, 0, 0])
+    _b_field = np.array([0, 0, 0])
+    _initial_dipole_moment = np.array([0, 0, 0])
 
     ### Material parameters ###
     _poisson_ratio = 0.0
@@ -32,27 +34,32 @@ class Config:
 
     @classmethod
     def set_show_force(cls, show_force: bool) -> None:
-        """
-        Set if Sofa should display forces acting on the model during the simulation.
+        """Set if Sofa should display forces acting on the model during the simulation.
 
-        Arguments:
-        - show_force: When True, the simulation will display forces.
+        Args:
+            show_force (bool): When True, the simulation will display forces.
         """
         cls._show_force = show_force
 
     @classmethod
     def get_show_force(cls) -> bool:
-        """True if Sofa should display forces acting on the model during the simulation."""
+        """Get the show_force value.
+
+        Returns:
+            bool: True if Sofa should display forces acting on the model during the simulation.
+        """
         return cls._show_force
 
     @classmethod
     def set_model(cls, name: str, scale: float) -> None:
-        """
-        Set the values important for the model.
+        """Set the values important for the model.
 
-        Arguments:
-        - name: The name of the model and all necessary mesh files.
-        - scale: The scaling factor used in the simulation.
+        Args:
+            name (str): The name of the model and all necessary mesh files.
+            scale (float): The scaling factor used in the simulation.
+
+        Raises:
+            ValueError: If scale is less than or equal to 0.
         """
         if scale <= 0:
             raise ValueError("Scale must be positive.")
@@ -61,12 +68,20 @@ class Config:
 
     @classmethod
     def get_name(cls) -> str:
-        """Get the name of the model."""
+        """Get the name of the model.
+
+        Returns:
+            str: The name of the model and all necessary mesh files.
+        """
         return cls._name
 
     @classmethod
     def get_scale(cls) -> float:
-        """Get the scaling factor of the model."""
+        """Get the scaling factor of the model.
+
+        Returns:
+            float: The scaling factor used in the simulation.
+        """
         return cls._scale
 
     @classmethod
@@ -75,16 +90,22 @@ class Config:
                             gravity_vec: np.ndarray,
                             magnetic_force: Tesla,
                             magnetic_dir: np.ndarray,
-                            initial_dipole_moment: np.ndarray):
-        """
-        Set the external forces used in the model.
+                            initial_dipole_moment: np.ndarray) -> None:
+        """Set the external forces used in the model.
 
-        Arguments:
-        - use_gravity: When True, the simulation will use gravity.
-        - gravity_vec: The gravity vector.
-        - magnetic_force: The strength of the magnetic field.
-        - magnetic_dir: The direction of the magnetic field.
-        - initial_dipole_moment: The initial dipole moment all tetrahedrons of the model will have.
+        Args:
+            use_gravity (bool): When True, the simulation will use gravity.
+            gravity_vec (np.ndarray): The gravity vector.
+            magnetic_force (Tesla): The strength of the magnetic field.
+            magnetic_dir (np.ndarray): The direction of the magnetic field.
+            initial_dipole_moment (np.ndarray): The initial dipole moment all 
+            tetrahedrons of the model will have.
+
+        Raises:
+            ValueError: If gravity_vec does not have shape (3,).
+            ValueError: If magnetic_force is less than or equal to 0.
+            ValueError: If magnetic_dir does not have shape (3,).
+            ValueError: If initial_dipole_moment does not have shape (3,).
         """
         if gravity_vec.shape != (3,):
             raise ValueError("Gravity vector must have shape [x,y,z].")
@@ -104,32 +125,56 @@ class Config:
 
     @classmethod
     def get_use_gravity(cls) -> bool:
-        """True if the simulation uses gravity."""
+        """Get the use_gravity value.
+
+        Returns:
+            bool: When True, the simulation will use gravity.
+        """
         return cls._use_gravity
 
     @classmethod
     def get_gravity_vec(cls) -> np.ndarray:
-        """Get the gravity vector used in the simulation."""
+        """Get the gravity vector used in the simulation.
+
+        Returns:
+            np.ndarray: The gravity vector.
+        """
         return cls._gravity_vec
 
     @classmethod
     def get_magnetic_force(cls) -> Tesla:
-        """Get the strength of the magnetic field."""
+        """Get the strength of the magnetic field.
+
+        Returns:
+            Tesla: The strength of the magnetic field.
+        """
         return cls._magnetic_force
 
     @classmethod
     def get_magnetic_dir(cls) -> np.ndarray:
-        """Get the direction of the magnetic field."""
+        """Get the direction of the magnetic field.
+
+        Returns:
+            np.ndarray: The direction of the magnetic field.
+        """
         return cls._magnetic_dir
 
     @classmethod
     def get_b_field(cls) -> np.ndarray:
-        """Get the magnetic field used in the simulation."""
+        """Get the magnetic field used in the simulation.
+
+        Returns:
+            np.ndarray: The magnetic field.
+        """
         return cls._b_field
 
     @classmethod
     def get_initial_dipole_moment(cls) -> np.ndarray:
-        """Get the initial dipole moment all tetrahedrons of the model will have."""
+        """Get the initial dipole moment all tetrahedrons of the model will have.
+
+        Returns:
+            np.ndarray: The initial dipole moment.
+        """
         return cls._initial_dipole_moment
 
     @classmethod
@@ -137,15 +182,17 @@ class Config:
                                 poisson_ratio: float,
                                 youngs_modulus: YoungsModulus,
                                 density: Density,
-                                remanence: Tesla):
-        """
-        Set the material parameters of the model.
+                                remanence: Tesla) -> None:
+        """Set the material parameters of the model.
 
-        Arguments:
-        - poisson_ratio: The poisson ratio.
-        - youngs_modulus: The youngs modulus.
-        - density: The density.
-        - remanence: The remanence.
+        Args:
+            poisson_ratio (float): The poisson ratio.
+            youngs_modulus (YoungsModulus): The youngs modulus.
+            density (Density): The density.
+            remanence (Tesla): The remanence.
+
+        Raises:
+            ValueError: If poisson_ratio is less than 0 or greater than or equal to 0.5.
         """
         if poisson_ratio < 0.0 or poisson_ratio >= 0.5:
             raise ValueError("Poisson ratio must be between 0 and 0.5.")
@@ -156,86 +203,104 @@ class Config:
 
     @classmethod
     def get_poisson_ratio(cls) -> float:
-        """Get the poisson ratio of the model."""
+        """Get the poisson ratio of the model.
+
+        Returns:
+            float: The poisson ratio.
+        """
         return cls._poisson_ratio
 
     @classmethod
     def get_youngs_modulus(cls) -> YoungsModulus:
-        """Get the youngs modulus of the model."""
+        """Get the youngs modulus of the model.
+
+        Returns:
+            YoungsModulus: The youngs modulus.
+        """
         return cls._youngs_modulus
 
     @classmethod
     def get_density(cls) -> Density:
-        """Get the density of the model."""
+        """Get the density of the model.
+
+        Returns:
+            Density: The density.
+        """
         return cls._density
 
     @classmethod
     def get_remanence(cls) -> Tesla:
-        """Get the remanence of the model."""
+        """Get the remanence of the model.
+
+        Returns:
+            Tesla: The remanence.
+        """
         return cls._remanence
 
     @classmethod
     def set_plugin_list(cls, plugin_list: List[str]):
-        """
-        Set the plugins used in the Sofa simulation.
+        """Set the plugins used in the Sofa simulation.
 
-        Arguments:
-        - plugin_list: The list of plugins.
+        Args:
+            plugin_list (List[str]): The list of plugins.
         """
         cls._plugin_list = plugin_list
 
     @classmethod
-    def get_plugin_list(cls) -> list:
-        """Get the plugins used in the Sofa simulation."""
+    def get_plugin_list(cls) -> List[str]:
+        """Get the plugins used in the Sofa simulation.
+
+        Returns:
+            List[str]: The list of plugins.
+        """
         return cls._plugin_list
-    
+
     @classmethod
     def set_test_env(cls) -> None:
-        """
-        Set the configuration to values that can be used in the test environment.
+        """Set the configuration to values that can be used in the test environment.
         """
         cls.set_show_force(False)
         cls.set_model('', 1)
-        cls.set_external_forces(True, 
-            np.array([0,-9.81,0]), 
-            Tesla.fromT(50), 
-            np.array([0,0,1]), 
-            np.array([1,0,0])
-        )
-        cls.set_material_parameters(0.47, 
-            YoungsModulus.fromGPa(0.1), 
-            Density.fromMgpm3(1.1), 
-            Tesla.fromT(0.35)
-        )
+        cls.set_external_forces(True,
+                                np.array([0, -9.81, 0]),
+                                Tesla.from_T(50),
+                                np.array([0, 0, 1]),
+                                np.array([1, 0, 0])
+                                )
+        cls.set_material_parameters(0.47,
+                                    YoungsModulus.from_GPa(0.1),
+                                    Density.from_Mgpm3(1.1),
+                                    Tesla.from_T(0.35)
+                                    )
         cls.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
-            'Sofa.Component.Collision.Detection.Intersection',
-            'Sofa.Component.Collision.Geometry',
-            'Sofa.Component.Collision.Response.Contact',
-            'Sofa.Component.Constraint.Projective',
-            'Sofa.Component.IO.Mesh',
-            'Sofa.Component.LinearSolver.Iterative',
-            'Sofa.Component.Mapping.Linear',
-            'Sofa.Component.Mass',
-            'Sofa.Component.ODESolver.Backward',
-            'Sofa.Component.SolidMechanics.FEM.Elastic',
-            'Sofa.Component.StateContainer',
-            'Sofa.Component.Topology.Container.Dynamic',
-            'Sofa.Component.Visual',
-            'Sofa.GL.Component.Rendering3D',
-            'Sofa.Component.AnimationLoop',
-            'Sofa.Component.LinearSolver.Direct',
-            'Sofa.Component.Constraint.Lagrangian.Correction',
-            'Sofa.Component.Topology.Mapping',
-            'Sofa.Component.MechanicalLoad'
-        ])
+                             'Sofa.Component.Collision.Detection.Intersection',
+                             'Sofa.Component.Collision.Geometry',
+                             'Sofa.Component.Collision.Response.Contact',
+                             'Sofa.Component.Constraint.Projective',
+                             'Sofa.Component.IO.Mesh',
+                             'Sofa.Component.LinearSolver.Iterative',
+                             'Sofa.Component.Mapping.Linear',
+                             'Sofa.Component.Mass',
+                             'Sofa.Component.ODESolver.Backward',
+                             'Sofa.Component.SolidMechanics.FEM.Elastic',
+                             'Sofa.Component.StateContainer',
+                             'Sofa.Component.Topology.Container.Dynamic',
+                             'Sofa.Component.Visual',
+                             'Sofa.GL.Component.Rendering3D',
+                             'Sofa.Component.AnimationLoop',
+                             'Sofa.Component.LinearSolver.Direct',
+                             'Sofa.Component.Constraint.Lagrangian.Correction',
+                             'Sofa.Component.Topology.Mapping',
+                             'Sofa.Component.MechanicalLoad'
+                             ])
 
     @classmethod
     def reset(cls) -> None:
-        """
-        Reset the configuration to the default values.
+        """Reset the configuration to the default values.
         """
         cls.set_show_force(True)
         cls.set_model('', 1)
-        cls.set_external_forces(True, np.zeros(3, dtype=int), Tesla.fromT(.01), np.array([1,0,0]), np.zeros(3, dtype=int))
+        cls.set_external_forces(True, np.zeros(
+            3, dtype=int), Tesla.from_T(.01), np.array([1, 0, 0]), np.zeros(3, dtype=int))
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         cls.set_plugin_list([""])
