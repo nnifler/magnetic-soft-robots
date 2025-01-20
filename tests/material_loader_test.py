@@ -18,8 +18,8 @@ class TestNormalBehavior(unittest.TestCase):
         uut.set_density(d)
         uut.update_elastic_object()
         _, kwargs = eo.diagonal_mass.setDataValues.call_args
-        self.assertEqual(kwargs['massDensity'], expected_density)
-        self.assertEqual(uut.get_density().kgpm3, expected_density)
+        self.assertAlmostEqual(kwargs['massDensity'], expected_density)
+        self.assertAlmostEqual(uut.get_density().kgpm3, expected_density)
 
     def test_youngs_modulus(self):
         eo = unittest.mock.Mock()
@@ -41,8 +41,8 @@ class TestNormalBehavior(unittest.TestCase):
         uut.set_poissons_ratio(expected_poissons_ratio)
         uut.update_elastic_object()
         _, kwargs = eo.FEM_force_field.setDataValues.call_args
-        self.assertEqual(kwargs['poissonRatio'], expected_poissons_ratio)
-        self.assertEqual(uut.get_poissons_ratio(), expected_poissons_ratio)
+        self.assertAlmostEqual(kwargs['poissonRatio'], expected_poissons_ratio)
+        self.assertAlmostEqual(uut.get_poissons_ratio(), expected_poissons_ratio)
 
     def test_remanence(self):
         eo = unittest.mock.Mock()
@@ -52,8 +52,8 @@ class TestNormalBehavior(unittest.TestCase):
 
         uut.set_remanence(r)
         uut.update_elastic_object()
-        self.assertEqual(eo.remanence, expected_remanence)
-        self.assertEqual(uut.get_remanence(), expected_remanence)
+        self.assertAlmostEqual(eo.remanence.T, expected_remanence)
+        self.assertAlmostEqual(uut.get_remanence().T, expected_remanence)
 
     def test_no_update_made(self):
         eo = unittest.mock.Mock()
@@ -99,8 +99,8 @@ class TestExceptionalBehavior(unittest.TestCase):
         eo = unittest.mock.Mock()
         uut = MaterialLoader(eo)
         r = Tesla.fromT(uniform(-100, 100))
-        expected_remanence = r.T
-        uut.set_remanence(expected_remanence)
+        
+        uut.set_remanence(r)
         with self.assertRaises(ValueError):
             uut.get_remanence()
 

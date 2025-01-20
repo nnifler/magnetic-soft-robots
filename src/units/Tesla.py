@@ -4,6 +4,9 @@ from enum import Enum
 
 class Tesla(BaseUnit): # base: T
 
+    def __init__(self, value):
+        self._value = value
+
     ## Define conversion factors
     class Unit(Enum):
         T = 1
@@ -15,7 +18,6 @@ class Tesla(BaseUnit): # base: T
     ## Create a Tesla Object from a value with T as its unit
     @staticmethod
     def fromT(value: float) -> Tesla:
-        if value < 0: raise ValueError('Value cannot be negative!')
         return Tesla(value * Tesla.Unit.T.value)
 
     ## Get the value of the Tesla Object in T
@@ -26,5 +28,4 @@ class Tesla(BaseUnit): # base: T
     ## Set the value of the Tesla Object with a value with T as its unit
     @T.setter
     def T(self, value: int) -> None:
-        if value < 0: raise ValueError('Value cannot be negative!')
         self._value = value * self.Unit.T.value
