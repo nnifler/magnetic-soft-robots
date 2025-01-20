@@ -137,7 +137,7 @@ class Config:
                                 poisson_ratio: float,
                                 youngs_modulus: YoungsModulus,
                                 density: Density,
-                                remanence: float):
+                                remanence: Tesla):
         """
         Set the material parameters of the model.
 
