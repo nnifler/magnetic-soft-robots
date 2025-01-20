@@ -15,9 +15,17 @@ def main():
     debug = False
     if debug:
         print(f"Show force: {Config.get_show_force()}")
-        print(f"Model: {Config.get_model()}")
-        print(f"External forces: {Config.get_external_forces()}")
-        print(f"Material parameters: {Config.get_material_parameters()}")
+        print(f"Name: {Config.get_name()}")
+        print(f"Scale: {Config.get_scale()}")
+        print(f"Use gravity: {Config.get_use_gravity()}")
+        print(f"Gravity vector: {Config.get_gravity_vec()}")
+        print(f"Magnetic force: {Config.get_magnetic_force()}")
+        print(f"Magnetic direction: {Config.get_magnetic_dir()}")
+        print(f"Initial dipole moment: {Config.get_initial_dipole_moment()}")
+        print(f"Poisson ratio: {Config.get_poisson_ratio()}")
+        print(f"Young's modulus: {Config.get_youngs_modulus()}")
+        print(f"Density: {Config.get_density()}")
+        print(f"Remanence: {Config.get_remanence()}")
         return
     
     Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
@@ -57,24 +65,24 @@ def createScene(root):
     SceneBuilder(root)
 
     # can be overwritten / removed as soon as linked to GUI
-    mesh_loader = MeshLoader(scaling_factor=Config.get_model()["scale"])
-    name = Config.get_model()["name"]
+    mesh_loader = MeshLoader(scaling_factor=Config.get_scale())
+    name = Config.get_name()
     mesh_loader.load_file(path=Path(f"./meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
     mesh_loader.load_file(path=Path(f"./meshes/{name}.stl"), mode=Mode.SURFACE)
 
     elastic_object = ElasticObject(root,
         mesh_loader=mesh_loader,
-        poissonRatio=Config.get_material_parameters()["poisson_ratio"],
-        youngsModulus=Config.get_material_parameters()["youngs_modulus"],
-        density=Config.get_material_parameters()["density"],
+        poissonRatio=Config.get_poisson_ratio(),
+        youngsModulus=Config.get_youngs_modulus(),
+        density=Config.get_density(),
     )
 
     mat_loader = MaterialLoader(elastic_object)
 
-    mat_loader.set_density(Config.get_material_parameters()["density"])
-    mat_loader.set_youngs_modulus(Config.get_material_parameters()["youngs_modulus"])
-    mat_loader.set_poissons_ratio(Config.get_material_parameters()["poisson_ratio"])
-    mat_loader.set_remanence(Config.get_material_parameters()["remanence"])
+    mat_loader.set_density(Config.get_density())
+    mat_loader.set_youngs_modulus(Config.get_youngs_modulus())
+    mat_loader.set_poissons_ratio(Config.get_poisson_ratio())
+    mat_loader.set_remanence(Config.get_remanence())
 
     controller = MagneticController(elastic_object, mat_loader)
     root.addObject(controller)

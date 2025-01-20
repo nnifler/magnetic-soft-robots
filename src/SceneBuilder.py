@@ -6,19 +6,19 @@ import numpy as np
 class SceneBuilder():
     def __init__(self, 
             root,
-            gravity_vec = Config.get_external_forces()["gravity_vec"],
+            gravity_vec = Config.get_gravity_vec(),
             dt = 0.005,
             ) -> None:
         self.root = root
         self.root.dt = dt
-        print((Config.get_external_forces()["gravity_vec"], type(Config.get_external_forces()["gravity_vec"])))
+        print((Config.get_gravity_vec(), type(Config.get_gravity_vec())))
 
         for x in gravity_vec: 
             if not isinstance(x, SupportsFloat): raise TypeError(f"{x} has illegal argument type {type(x)} for gravity component")
         if not len(gravity_vec) == 3: raise ValueError("invalid length for gravity vector")
 
         self.root.gravity = [0]*3
-        if Config.get_external_forces()["use_gravity"]:
+        if Config.get_use_gravity():
             self.root.gravity = gravity_vec.tolist()
         self._build()
 
@@ -30,7 +30,7 @@ class SceneBuilder():
         self._setup_root_simulation()
 
         if Config.get_show_force():
-            for dir in [Config.get_external_forces()["initial_dipole_moment"], Config.get_external_forces()["magnetic_dir"]]:
+            for dir in [Config.get_initial_dipole_moment(), Config.get_magnetic_dir()]:
                 self._build_reference_direction(dir)
 
         return self.root

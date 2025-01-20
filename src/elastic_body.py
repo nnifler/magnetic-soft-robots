@@ -19,7 +19,7 @@ class ElasticObject():
         self.vertex_forces = None
         self.FEM_force_field = None
         self.diagonal_mass = None
-        self.remanence = Config.get_material_parameters()["remanence"]
+        self.remanence = Config.get_remanence()
 
 
         ## Add Object
