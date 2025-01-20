@@ -1,0 +1,96 @@
+import os
+from pathlib import Path
+
+import Sofa.Gui
+
+from src.config import Config
+from src.SceneBuilder import SceneBuilder
+from src.elastic_body import ElasticObject
+from src.magnetic_controller import MagneticController
+from src.material_loader import MaterialLoader
+from src.mesh_loader import MeshLoader, Mode
+
+
+def main():
+    debug = False
+    if debug:
+        print(f"Show force: {Config.get_show_force()}")
+        print(f"Name: {Config.get_name()}")
+        print(f"Scale: {Config.get_scale()}")
+        print(f"Use gravity: {Config.get_use_gravity()}")
+        print(f"Gravity vector: {Config.get_gravity_vec()}")
+        print(f"Magnetic force: {Config.get_magnetic_force()}")
+        print(f"Magnetic direction: {Config.get_magnetic_dir()}")
+        print(f"Initial dipole moment: {Config.get_initial_dipole_moment()}")
+        print(f"Poisson ratio: {Config.get_poisson_ratio()}")
+        print(f"Young's modulus: {Config.get_youngs_modulus()}")
+        print(f"Density: {Config.get_density()}")
+        print(f"Remanence: {Config.get_remanence()}")
+        return
+    
+    Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
+            'Sofa.Component.Collision.Detection.Intersection',
+            'Sofa.Component.Collision.Geometry',
+            'Sofa.Component.Collision.Response.Contact',
+            'Sofa.Component.Constraint.Projective',
+            'Sofa.Component.IO.Mesh',
+            'Sofa.Component.LinearSolver.Iterative',
+            'Sofa.Component.Mapping.Linear',
+            'Sofa.Component.Mass',
+            'Sofa.Component.ODESolver.Backward',
+            'Sofa.Component.SolidMechanics.FEM.Elastic',
+            'Sofa.Component.StateContainer',
+            'Sofa.Component.Topology.Container.Dynamic',
+            'Sofa.Component.Visual',
+            'Sofa.GL.Component.Rendering3D',
+            'Sofa.Component.AnimationLoop',
+            'Sofa.Component.LinearSolver.Direct',
+            'Sofa.Component.Constraint.Lagrangian.Correction',
+            'Sofa.Component.Topology.Mapping',
+            'Sofa.Component.MechanicalLoad'
+        ])
+
+    root = Sofa.Core.Node("root")
+    createScene(root)
+    Sofa.Simulation.init(root)
+
+    Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
+    Sofa.Gui.GUIManager.createGUI(root, __file__)
+    Sofa.Gui.GUIManager.SetDimension(1080, 1080)
+    Sofa.Gui.GUIManager.MainLoop(root)
+    Sofa.Gui.GUIManager.closeGUI()
+
+
+def createScene(root):
+    SceneBuilder(root)
+
+    # can be overwritten / removed as soon as linked to GUI
+    mesh_loader = MeshLoader(scaling_factor=Config.get_scale())
+    name = Config.get_name()
+    mesh_loader.load_file(path=Path(f"./meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
+    mesh_loader.load_file(path=Path(f"./meshes/{name}.stl"), mode=Mode.SURFACE)
+
+    elastic_object = ElasticObject(root,
+        mesh_loader=mesh_loader,
+        poissonRatio=Config.get_poisson_ratio(),
+        youngsModulus=Config.get_youngs_modulus(),
+        density=Config.get_density(),
+    )
+
+    mat_loader = MaterialLoader(elastic_object)
+
+    mat_loader.set_density(Config.get_density())
+    mat_loader.set_youngs_modulus(Config.get_youngs_modulus())
+    mat_loader.set_poissons_ratio(Config.get_poisson_ratio())
+    mat_loader.set_remanence(Config.get_remanence().T) # TODO PR17
+
+    controller = MagneticController(elastic_object, mat_loader)
+    root.addObject(controller)
+
+    return root
+
+
+
+# Function used only if this script is called from a python environment
+if __name__ == '__main__':
+    main()
