@@ -1,15 +1,15 @@
 import os
 import json
 from builtins import ValueError
+from pathlib import Path
 import numpy as np
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit
+    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton, QGridLayout, QMessageBox, QLineEdit, QMenuBar, QMenu, QListWidget, QFileDialog
 )
-from PySide6.QtCore import Qt
-from PySide6.QtCore import QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtCore import Qt, QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
@@ -41,10 +41,9 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
 
         self.library_button = QPushButton("Library")
-        self.save_button = QPushButton("Save")
+        self.library_button.clicked.connect(self.show_library_menu)
         header_layout.addStretch()
         header_layout.addWidget(self.library_button)
-        header_layout.addWidget(self.save_button)
 
         main_layout.addWidget(header_widget)
 
@@ -52,7 +51,7 @@ class MainWindow(QMainWindow):
         content_layout = QHBoxLayout()
 
         # Linke Seitenleiste für Navigation und Parametersteuerung
-        sidebar = QGroupBox("Navigation and Settings Panel")
+        sidebar = QGroupBox("Simulation Settings Panel")
         sidebar_layout = QVBoxLayout(sidebar)
 
         # Materialeigenschaften
@@ -69,6 +68,9 @@ class MainWindow(QMainWindow):
         self.behavior_combo_box = QComboBox()
         self.behavior_combo_box.addItems(["Linear-Elastic", "Plastic", "Viscoelastic"])
 
+        decimal_regex = QRegularExpression(r"^-?\d+[.,]?\d*$")
+        decimal_validator = QRegularExpressionValidator(decimal_regex)
+
         young_modulus_label = QLabel("(E) Young's Modulus:")
         self.young_modulus_spinbox = QDoubleSpinBox()
         self.young_modulus_spinbox.setRange(0, 1e12)
@@ -83,13 +85,22 @@ class MainWindow(QMainWindow):
         self.poisson_spinbox = QDoubleSpinBox()
         self.poisson_spinbox.setRange(0, 0.4999)
         self.poisson_spinbox.setDecimals(4)
+        self.poisson_spinbox.setSingleStep(0.1)
+
+
+        # Validator und Normalisierung für Poisson Ratio
+        self.poisson_spinbox.lineEdit().setValidator(decimal_validator)
+        self.poisson_spinbox.lineEdit().editingFinished.connect(
+            lambda: self.poisson_spinbox.setValue(float(self.poisson_spinbox.text().replace(",", ".")))
+        )
+
 
         density_label = QLabel("(ρ) Density:")
         self.density_spinbox = QDoubleSpinBox()
         self.density_spinbox.setRange(0, 30000)
         self.density_spinbox.setDecimals(2)
         self.unit_selector_density = QComboBox()
-        self.unit_selector_density.addItems(["kg/m³", "g/cm³", "Mg/m³", "T/m³"])
+        self.unit_selector_density.addItems(["kg/m³", "g/cm³", "Mg/m³", "t/m³"])
         self.unit_selector_density.setCurrentIndex(0)
         self.prev_density_index = 0
         self.unit_selector_density.currentIndexChanged.connect(self.update_density_unit)
@@ -100,6 +111,12 @@ class MainWindow(QMainWindow):
         self.remanence_spinbox = QDoubleSpinBox()
         self.remanence_spinbox.setRange(-2.0, 2.0)
         self.remanence_spinbox.setDecimals(3)
+
+        # Validator und Normalisierung für Remanence
+        self.remanence_spinbox.lineEdit().setValidator(decimal_validator)
+        self.remanence_spinbox.lineEdit().editingFinished.connect(
+            lambda: self.remanence_spinbox.setValue(float(self.remanence_spinbox.text().replace(",", ".")))
+        )
 
         # Layout für Materialeigenschaften
         material_layout.addWidget(material_label, 0, 0)
@@ -128,7 +145,7 @@ class MainWindow(QMainWindow):
         field_group = QGroupBox("Magnet Field Settings")
         field_layout = QVBoxLayout(field_group)
 
-        self.field_strength_label = QLabel("Magnetic Field Strength (Tesla):")
+        self.field_strength_label = QLabel("Magnetic Field Strength (T):")
         self.field_strength_slider = QSlider(Qt.Horizontal)
         self.field_strength_slider.setRange(0, 1000)
         self.field_strength_slider.setValue(500)
@@ -166,14 +183,17 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(content_layout)
 
-    def load_materials_from_json(self):
+    def load_materials_from_json(self) -> None:
         """Loads materials from a JSON file"""
-        data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../lib/materials/magnetic_soft_robot_materials.json")
+        # Directory of the current file
+        current_dir = Path(__file__).parent
+        # Path to the JSON file by moving one directory up from the current directory to the selected folder
+        data_path = current_dir / "../lib/materials/magnetic_soft_robot_materials.json"
         json_file_path = data_path
         print(f"Looking for JSON file at: {json_file_path}")
 
         try:
-            with open(json_file_path, "r") as file:
+            with open(json_file_path, "r", encoding="utf-8") as file:
                 self.material_data = json.load(file)
 
             self.material_combo_box.clear()
@@ -185,11 +205,11 @@ class MainWindow(QMainWindow):
         except json.JSONDecodeError as e:
             QMessageBox.warning(self, "Error", f"Error decoding JSON file:\n{e}")
 
-    def update_material_parameters(self):
+    def update_material_parameters(self) -> None:
         """Updates the material parameters with the data from the opened JSON file"""
-        index = self.material_combo_box.currentIndex()
-        if 0 <= index < len(self.material_data):
-            material = self.material_data[index]
+        current_material_index = self.material_combo_box.currentIndex()
+        if 0 <= current_material_index < len(self.material_data):
+            material = self.material_data[current_material_index]
 
             # Dichte mit Umrechnung aktualisieren
             density = Density.fromkgpm3(material.get("density", 0))
@@ -213,7 +233,7 @@ class MainWindow(QMainWindow):
             self.poisson_spinbox.setValue(material.get("poissons_ratio", 0))
             self.remanence_spinbox.setValue(material.get("remanence", 0))
 
-    def update_modulus_unit(self):
+    def update_modulus_unit(self) -> None:
         """Updates the modulus unit if the unit size is changed"""
         value = self.young_modulus_spinbox.value()
         youngs_modulus = [
@@ -236,7 +256,7 @@ class MainWindow(QMainWindow):
         self.young_modulus_spinbox.setValue(round(converted_value, 4))
         self.young_modulus_spinbox.blockSignals(False)
 
-    def update_density_unit(self):
+    def update_density_unit(self) -> None:
         """Updates the density unit if the unit size is changed"""
         value = self.density_spinbox.value()
         density = [
@@ -259,27 +279,30 @@ class MainWindow(QMainWindow):
         self.density_spinbox.setValue(round(converted_value, 2))
         self.density_spinbox.blockSignals(False)
 
-    def update_field_strength_label(self):
+    def update_field_strength_label(self) -> None:
         """Updates the field strength output based on the current position of the slider in tesla values"""
         strength_in_tesla = self.field_strength_slider.value() / 10
-        self.field_strength_label.setText(f"Magnetic Field Strength: {strength_in_tesla:.4f} T")
+        formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
+        self.field_strength_label.setText(f"Magnetic Field Strength: {formatted_strength} T")
 
     def parse_direction_input(self, text: str):
         """
-        Parses the direction input from the user
+        Parses the direction input from the user and ensures that it is a valid vector with 3 components.
 
         Arguments:
         - text: direction input of the user
         """
         try:
-            values = [float(i) for i in map(lambda x: x.strip(), text[1:-1].split(","))]
+            clean_values = text.strip("[]() ").replace(" ", "").replace(";", ",")
+            values = [float(i) for i in clean_values.split(",") if i.strip("- ").replace(".", "").isdigit()]
+
             if len(values) != 3:
                 raise ValueError
             return values
         except ValueError:
             return None
 
-    def apply_parameters(self):
+    def apply_parameters(self) -> None:
         """Print the parameters and throws exception if invalid direction input"""
         direction = self.parse_direction_input(self.field_direction_input.text())
         if direction is None:
@@ -319,3 +342,80 @@ class MainWindow(QMainWindow):
                                        remanence)
 
         sofa_instantiator.main()
+
+    def show_library_menu(self):
+        """Create the library menu"""
+
+        # Create the menu bar
+        context_menu = QMenu(self)
+
+        # Add action to the Library menu
+        open_action = QAction("Open", self)
+        open_action.setShortcut(QKeySequence("Ctrl+O"))
+        open_action.triggered.connect(lambda _: self.open_library(context_menu))
+        context_menu.addAction(open_action)
+
+        import_action = QAction("Import", self)
+        import_action.setShortcut(QKeySequence("Ctrl+I"))
+        import_action.triggered.connect(lambda _: self.import_library(context_menu))
+        context_menu.addAction(import_action)
+
+        export_action = QAction("Export", self)
+        export_action.setShortcut(QKeySequence("Ctrl+E"))
+        export_action.triggered.connect(lambda _: self.export_library(context_menu))
+        context_menu.addAction(export_action)
+
+        context_menu.exec(self.library_button.mapToGlobal(self.library_button.rect().bottomLeft()))
+
+
+    def open_library(self, menu):
+        menu.close()
+
+        popup = QWidget()
+        popup.setWindowTitle("Library")
+        popup.resize(600, 400)
+
+        layout = QVBoxLayout(popup)
+
+        default_label = QLabel("Default Library:")
+        default_list = QListWidget()
+        self.load_default_meshes(default_list)
+
+        custom_label = QLabel("Custom Library:")
+        self.custom_list = QListWidget()
+
+        import_button = QPushButton("Import")
+        import_button.clicked.connect(self.import_custom_mesh)
+
+        layout.addWidget(default_label)
+        layout.addWidget(default_list)
+        layout.addWidget(custom_label)
+        layout.addWidget(self.custom_list)
+        layout.addWidget(import_button)
+
+        popup.show()
+
+    def load_default_meshes(self, list_widget):
+        models_path = os.path.expanduser("~/magnetic-soft-robots/meshes")
+
+        if not os.path.exists(models_path):
+            QMessageBox.warning(self, "Error", f"Models folder not found at: {models_path}")
+            return
+
+        for filename in os.listdir(models_path):
+            if filename.endswith(".obj") or filename.endswith(".stl"):
+                list_widget.addItem(filename)
+
+
+    def import_mesh_file(self):
+        """Importiert eine benutzerdefinierte Mesh-Datei."""
+        file_dialog = QFileDialog(self)
+        file_dialog.setNameFilter("Mesh Files (*.obj *.stl)")
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+
+        if file_dialog.exec():
+            selected_file = file_dialog.selectedFiles()[0]
+            filename = os.path.basename(selected_file)
+            self.custom_list.addItem(filename)
+
+            QMessageBox.information(self, "Import Success", f"Successfully imported: {filename}")
