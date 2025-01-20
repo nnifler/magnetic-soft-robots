@@ -73,7 +73,7 @@ class Config:
     def set_external_forces(cls,
                             use_gravity: bool,
                             gravity_vec: np.ndarray,
-                            magnetic_force: float,
+                            magnetic_force: Tesla,
                             magnetic_dir: np.ndarray,
                             initial_dipole_moment: np.ndarray):
         """
@@ -88,7 +88,7 @@ class Config:
         """
         if gravity_vec.shape != (3,):
             raise ValueError("Gravity vector must have shape [x,y,z].")
-        if magnetic_force <= 0:
+        if magnetic_force.T <= 0:
             raise ValueError("Magnetic force must be positive.")
         if magnetic_dir.shape != (3,):
             raise ValueError("Magnetic direction must have shape [x,y,z].")
@@ -99,7 +99,7 @@ class Config:
         cls._magnetic_force = magnetic_force
         normalised_magnetic_dir = magnetic_dir / np.linalg.norm(magnetic_dir)
         cls._magnetic_dir = normalised_magnetic_dir
-        cls._b_field = magnetic_force * normalised_magnetic_dir
+        cls._b_field = magnetic_force.T * normalised_magnetic_dir
         cls._initial_dipole_moment = initial_dipole_moment
 
     @classmethod
@@ -113,7 +113,7 @@ class Config:
         return cls._gravity_vec
 
     @classmethod
-    def get_magnetic_force(cls) -> float:
+    def get_magnetic_force(cls) -> Tesla:
         """Get the strength of the magnetic field."""
         return cls._magnetic_force
 
@@ -198,7 +198,7 @@ class Config:
         cls.set_model('', 1)
         cls.set_external_forces(True, 
             np.array([0,-9.81,0]), 
-            50, 
+            Tesla.fromT(50), 
             np.array([0,0,1]), 
             np.array([1,0,0])
         )
@@ -236,6 +236,6 @@ class Config:
         """
         cls.set_show_force(True)
         cls.set_model('', 1)
-        cls.set_external_forces(True, np.zeros(3, dtype=int), .01, np.array([1,0,0]), np.zeros(3, dtype=int))
+        cls.set_external_forces(True, np.zeros(3, dtype=int), Tesla.fromT(.01), np.array([1,0,0]), np.zeros(3, dtype=int))
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         cls.set_plugin_list([""])
