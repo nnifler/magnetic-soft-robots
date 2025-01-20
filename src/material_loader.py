@@ -111,7 +111,7 @@ class MaterialLoader:
         Args:
             value (float): remanence to be set
         """
-        self._material_values['remanence'] = value
+        self._material_values['remanence'] = value.T
         self._dirty = True
 
     def get_remanence(self) -> Tesla:
@@ -139,7 +139,7 @@ class MaterialLoader:
             youngModulus=self._material_values['youngs_modulus'],
             poissonRatio=self._material_values['poissons_ratio'],
         )
-        self._eo.remanence = self._material_values['remanence']
+        self._eo.remanence = Tesla.fromT(self._material_values['remanence'])
 
         self._dirty = False
 

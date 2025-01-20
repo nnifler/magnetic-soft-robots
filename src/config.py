@@ -16,7 +16,7 @@ class Config:
     ### External forces ###
     _use_gravity = True
     _gravity_vec = np.array([0,0,0])
-    _magnetic_force = .01
+    _magnetic_force = Tesla.fromT(.01)
     _magnetic_dir = np.array([1,0,0])
     _b_field = np.array([0,0,0])
     _initial_dipole_moment = np.array([0,0,0])
