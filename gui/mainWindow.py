@@ -308,7 +308,7 @@ class MainWindow(QMainWindow):
         field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
         Config.set_show_force(True)
-        Config.set_model("butterfly_disected",
+        Config.set_model("beam",
                          0.02)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
