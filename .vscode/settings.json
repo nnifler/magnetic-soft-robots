@@ -4,6 +4,7 @@
     },
 
     "pylint.args": [
-        "--extension-pkg-whitelist=PySide6"
+        "--extension-pkg-whitelist=PySide6",
+        "--disable=c-extension-no-member",
     ],
 }
