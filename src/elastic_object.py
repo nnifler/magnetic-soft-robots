@@ -63,7 +63,7 @@ class ElasticObject():
 
         # Add Constraints
         positions = self.mesh.position.value.tolist()
-        ind = [idx for idx, pos in positions if pos[0] == 0]
+        ind = [idx for idx, pos in enumerate(positions) if pos[0] == 0]
         constraints = " ".join(str(x) for x in ind)
         eo_node.addObject('FixedConstraint',
                           name="FixedConstraint", indices=constraints)
