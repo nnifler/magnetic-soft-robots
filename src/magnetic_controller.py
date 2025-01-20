@@ -2,12 +2,13 @@ import Sofa
 
 from src.elastic_body import ElasticObject
 from src.material_loader import MaterialLoader
-import src.config as config
+from src.config import Config
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 from typing import Tuple
 import math
+
 
 
 MU0 = (4 * np.pi) / np.pow(10, 7) # Permeability (H/m)
@@ -69,14 +70,14 @@ class MagneticController(Sofa.Core.Controller):
     @staticmethod
     def calculate_rotation(source: np.ndarray, destination: np.ndarray) -> Rotation:
         """
-        Calculates the rotation between two 3d vectors. Applying the result to the source will result in the destination. 
+        Calculates the rotation between two 3d vectors. Applying the result to the source will result in the destination.
 
         Arguments:
         - source: The first 3d vector
         - destination: The second 3d vector
         """
         if np.isclose(source, destination).all(): return Rotation.from_euler('x', 0)
-        if np.isclose(source, -1 * destination).all(): 
+        if np.isclose(source, -1 * destination).all():
             source = Rotation.from_euler('xyz', [0.000000001*np.pi]*3).apply(source)
 
         normalized_source = (source / np.linalg.norm(source)).reshape(3)
@@ -118,7 +119,7 @@ class MagneticController(Sofa.Core.Controller):
             normal, vec1, vec2 = self._normal(cur_positions, tetrahedron)
 
             # Initial direction of the magnetic dipole moment
-            initial = config.INIT
+            initial = Config.get_initial_dipole_moment()
 
             r = self.calculate_rotation(normal, initial)
             self._rotations.append(r)
@@ -151,10 +152,10 @@ class MagneticController(Sofa.Core.Controller):
 
             for node in tetrahedron:
                 if not force_defined_at[node]:
-                    dipole_moment = config.REMANENCE.T * self._volume_per_node / MU0
+                    dipole_moment = Config.get_remanence().T * self._volume_per_node / MU0
 
                     m = dipole_moment * orientation
-                    torque = np.cross(m, config.B_FIELD)
+                    torque = np.cross(m, Config.get_b_field())
                     self._elastic_object.vertex_forces[node].forces = [[torque[0], torque[1], torque[2]]]
 
                     force_defined_at[node] = True
