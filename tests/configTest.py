@@ -3,6 +3,7 @@ from src.config import Config
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
+from src.units.Tesla import Tesla
 
 from random import uniform, choices, choice, randint
 import string
@@ -144,7 +145,7 @@ class TestConfig(unittest.TestCase):
         ref_poisson_ratio = uniform(0,0.4999)
         ref_youngs_modulus = YoungsModulus.fromPa(uniform(0,100))
         ref_density = Density.fromkgpm3(uniform(0,100))
-        ref_remanence = uniform(0,100)
+        ref_remanence = Tesla.fromT(uniform(0,100))
 
         Config.set_material_parameters(
             ref_poisson_ratio,
@@ -156,7 +157,7 @@ class TestConfig(unittest.TestCase):
         self.assertAlmostEqual(Config.get_poisson_ratio(), ref_poisson_ratio, msg="Poisson ratio is not correct")
         self.assertAlmostEqual(Config.get_youngs_modulus().Pa, ref_youngs_modulus.Pa, msg="Youngs modulus is not correct")
         self.assertAlmostEqual(Config.get_density().kgpm3, ref_density.kgpm3, msg="Density is not correct")
-        self.assertAlmostEqual(Config.get_remanence(), ref_remanence, msg="Remanence is not correct")
+        self.assertAlmostEqual(Config.get_remanence().T, ref_remanence.T, msg="Remanence is not correct")
 
     def testMaterialParametersExceptional(self):
         err_poisson_ratio1 = uniform(-100,-1)
@@ -186,6 +187,13 @@ class TestConfig(unittest.TestCase):
 
         for pair in zip(Config.get_plugin_list(), ref_plugin_list):
             self.assertEqual(*pair)
+    
+    def tearDown(self) -> None:
+        """Resets config after each test."""
+        Config.set_show_force(True)
+        Config.set_model('', 1)
+        Config.set_external_forces(True, np.zeros(3, dtype=int), .01, np.array([0,-1,0]), np.zeros(3, dtype=int))
+        Config.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         
 def suite() -> unittest.TestSuite: 
     suite = unittest.TestSuite()
