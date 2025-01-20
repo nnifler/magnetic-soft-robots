@@ -57,14 +57,16 @@ class Config:
             raise ValueError("Scale must be positive.")
         cls._name = name
         cls._scale = scale
-
+        
     @classmethod
-    def get_model(cls) -> dict:
-        """Get the model name and the scaling factor"""
-        return {
-            "name": cls._name,
-            "scale": cls._scale
-        }
+    def get_name(cls) -> str:
+        """Get the name of the model."""
+        return cls._name
+    
+    @classmethod
+    def get_scale(cls) -> float:
+        """Get the scaling factor of the model."""
+        return cls._scale
 
     @classmethod
     def set_external_forces(cls,
@@ -100,16 +102,34 @@ class Config:
         cls._initial_dipole_moment = initial_dipole_moment
 
     @classmethod
-    def get_external_forces(cls) -> dict:
-        """Get the external forces used in the model."""
-        return {
-            "use_gravity": cls._use_gravity,
-            "gravity_vec": cls._gravity_vec,
-            "magnetic_force": cls._magnetic_force,
-            "magnetic_dir": cls._magnetic_dir,
-            "b_field": cls._b_field,
-            "initial_dipole_moment": cls._initial_dipole_moment,
-        }
+    def get_use_gravity(cls) -> bool:
+        """True if the simulation uses gravity."""
+        return cls._use_gravity
+    
+    @classmethod
+    def get_gravity_vec(cls) -> np.ndarray:
+        """Get the gravity vector used in the simulation."""
+        return cls._gravity_vec
+    
+    @classmethod
+    def get_magnetic_force(cls) -> float:
+        """Get the strength of the magnetic field."""
+        return cls._magnetic_force
+    
+    @classmethod
+    def get_magnetic_dir(cls) -> np.ndarray:
+        """Get the direction of the magnetic field."""
+        return cls._magnetic_dir
+    
+    @classmethod
+    def get_b_field(cls) -> np.ndarray:
+        """Get the magnetic field used in the simulation."""
+        return cls._b_field
+    
+    @classmethod
+    def get_initial_dipole_moment(cls) -> np.ndarray:
+        """Get the initial dipole moment all tetrahedrons of the model will have."""
+        return cls._initial_dipole_moment
 
     @classmethod
     def set_material_parameters(cls,
@@ -134,14 +154,24 @@ class Config:
         cls._remanence = remanence
 
     @classmethod
-    def get_material_parameters(cls) -> dict:
-        """Get the material parameters of the model."""
-        return {
-            "poisson_ratio": cls._poisson_ratio,
-            "youngs_modulus": cls._youngs_modulus,
-            "density": cls._density,
-            "remanence": cls._remanence,
-        }
+    def get_poisson_ratio(cls) -> float:
+        """Get the poisson ratio of the model."""
+        return cls._poisson_ratio
+    
+    @classmethod
+    def get_youngs_modulus(cls) -> YoungsModulus:
+        """Get the youngs modulus of the model."""
+        return cls._youngs_modulus
+    
+    @classmethod
+    def get_density(cls) -> Density:
+        """Get the density of the model."""
+        return cls._density
+    
+    @classmethod
+    def get_remanence(cls) -> float:
+        """Get the remanence of the model."""
+        return cls._remanence
 
     @classmethod
     def set_plugin_list(cls, plugin_list: List[str]):

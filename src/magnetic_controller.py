@@ -91,7 +91,7 @@ class MagneticController(Sofa.Core.Controller):
             normal, vec1, vec2 = self._normal(cur_positions, tetrahedron)
 
             # Initial direction of the magnetic dipole moment
-            initial = Config.get_external_forces()["initial_dipole_moment"]
+            initial = Config.get_initial_dipole_moment()
 
             r = self.calculate_rotation(normal, initial)
             self._rotations.append(r)
@@ -129,7 +129,7 @@ class MagneticController(Sofa.Core.Controller):
                     #print(self._elastic_object.vertex_forces[0].forces
                     m = dipole_moment * orientation
 
-                    torque = np.cross(m, Config.get_external_forces()["b_field"])
+                    torque = np.cross(m, Config.get_b_field())
                     # print(type(m), m)
                     self._elastic_object.vertex_forces[vertex].forces = [torque]
 
