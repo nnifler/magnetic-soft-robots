@@ -2,9 +2,8 @@
     "terminal.integrated.env.linux": {
         "QT_QPA_PLATFORM": "xcb"
     },
-
     "pylint.args": [
         "--extension-pkg-whitelist=PySide6",
-        "--disable=c-extension-no-member",
+        "--disable=c-extension-no-member,wildcard-import",
     ],
 }

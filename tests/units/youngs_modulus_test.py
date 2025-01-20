@@ -88,7 +88,7 @@ class TestConversion(unittest.TestCase):
         uut = YoungsModulus.from_Pa(val)
         self.assertEqual(val / 100, uut.hPa)
 
-    def test_Mpa_to_GPa(self):
+    def test_MPa_to_GPa(self):
         val = randrange(1000)
         uut = YoungsModulus.from_MPa(val)
         self.assertEqual(val / 1000, uut.GPa)
