@@ -5,8 +5,9 @@ import unittest
 from pathlib import Path
 import random
 import string
-from src.mesh_loader import MeshLoader, Mode
-from tests.assets.dummy_node import DummyNode
+from src import MeshLoader
+from src.mesh_loader import Mode
+from .assets import DummyNode
 
 
 class TestExceptionalBehavior(unittest.TestCase):
@@ -32,10 +33,18 @@ class TestExceptionalBehavior(unittest.TestCase):
         uut = MeshLoader()
         with self.assertRaises(FileNotFoundError):
             uut.load_file(
-                Path('tests/assets/mesh_loader_test/file_that_should_never_be_created.vtk'), Mode.SURFACE)
+                Path(
+                    'tests/assets/mesh_loader_test/file_that_should_never_be_created.vtk'
+                ),
+                Mode.SURFACE
+            )
         with self.assertRaises(FileNotFoundError):
             uut.load_file(
-                Path('tests/assets/mesh_loader_test/file_that_should_never_be_created.vtk'), Mode.VOLUMETRIC)
+                Path(
+                    'tests/assets/mesh_loader_test/file_that_should_never_be_created.vtk'
+                ),
+                Mode.VOLUMETRIC
+            )
 
     def test_load_dir_not_file(self):
         """
@@ -150,7 +159,7 @@ def suite() -> unittest.TestSuite:
     """
     Provides MeshLoader tests.
     """
-    suite = unittest.TestSuite()
+    test_suite = unittest.TestSuite()
 
     # Insert new tests here
     tests = [
@@ -164,5 +173,5 @@ def suite() -> unittest.TestSuite:
         loaded_tests.append(unittest.TestLoader().loadTestsFromTestCase(test))
 
     # Add tests to test suite
-    suite.addTests(loaded_tests)
-    return suite
+    test_suite.addTests(loaded_tests)
+    return test_suite
