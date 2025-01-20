@@ -11,12 +11,15 @@ import numpy as np
 
 class TestConfig(unittest.TestCase):
     def testShowForce(self):
+        # Test False to True
         Config.set_show_force(False)
         self.assertFalse(Config.get_show_force())
         Config.set_show_force(True)
         self.assertTrue(Config.get_show_force())
+        # Test if method is toggling True and False
         Config.set_show_force(True)
         self.assertTrue(Config.get_show_force())
+        # Test True to False
         Config.set_show_force(False)
         self.assertFalse(Config.get_show_force())
 

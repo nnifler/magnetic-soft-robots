@@ -58,10 +58,9 @@ def createScene(root):
 
     # can be overwritten / removed as soon as linked to GUI
     mesh_loader = MeshLoader(scaling_factor=Config.get_model()["scale"])
-    cwd = os.getcwd()
     name = Config.get_model()["name"]
-    mesh_loader.load_file(path=Path(f"{cwd}/meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
-    mesh_loader.load_file(path=Path(f"{cwd}/meshes/{name}.stl"), mode=Mode.SURFACE)
+    mesh_loader.load_file(path=Path(f"./meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
+    mesh_loader.load_file(path=Path(f"./meshes/{name}.stl"), mode=Mode.SURFACE)
 
     elastic_object = ElasticObject(root,
         mesh_loader=mesh_loader,
@@ -72,7 +71,6 @@ def createScene(root):
 
     mat_loader = MaterialLoader(elastic_object)
 
-    # can be overwritten / removed as soon as linked to GUI
     mat_loader.set_density(Config.get_material_parameters()["density"])
     mat_loader.set_youngs_modulus(Config.get_material_parameters()["youngs_modulus"])
     mat_loader.set_poissons_ratio(Config.get_material_parameters()["poisson_ratio"])
