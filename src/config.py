@@ -11,13 +11,13 @@ class Config:
 
     ### Model ###
     _name = ""
-    _scale = 0.0
+    _scale = 1.0
 
     ### External forces ###
     _use_gravity = True
     _gravity_vec = np.array([0,0,0])
-    _magnetic_force = 0
-    _magnetic_dir = np.array([0,0,0])
+    _magnetic_force = .01
+    _magnetic_dir = np.array([1,0,0])
     _b_field = np.array([0,0,0])
     _initial_dipole_moment = np.array([0,0,0])
 
@@ -188,3 +188,54 @@ class Config:
     def get_plugin_list(cls) -> list:
         """Get the plugins used in the Sofa simulation."""
         return cls._plugin_list
+    
+    @classmethod
+    def set_test_env(cls) -> None:
+        """
+        Set the configuration to values that can be used in the test environment.
+        """
+        cls.set_show_force(False)
+        cls.set_model('', 1)
+        cls.set_external_forces(True, 
+            np.array([0,-9.81,0]), 
+            50, 
+            np.array([0,0,1]), 
+            np.array([1,0,0])
+        )
+        cls.set_material_parameters(0.47, 
+            YoungsModulus.fromGPa(0.1), 
+            Density.fromMgpm3(1.1), 
+            Tesla.fromT(0.35)
+        )
+        cls.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
+            'Sofa.Component.Collision.Detection.Intersection',
+            'Sofa.Component.Collision.Geometry',
+            'Sofa.Component.Collision.Response.Contact',
+            'Sofa.Component.Constraint.Projective',
+            'Sofa.Component.IO.Mesh',
+            'Sofa.Component.LinearSolver.Iterative',
+            'Sofa.Component.Mapping.Linear',
+            'Sofa.Component.Mass',
+            'Sofa.Component.ODESolver.Backward',
+            'Sofa.Component.SolidMechanics.FEM.Elastic',
+            'Sofa.Component.StateContainer',
+            'Sofa.Component.Topology.Container.Dynamic',
+            'Sofa.Component.Visual',
+            'Sofa.GL.Component.Rendering3D',
+            'Sofa.Component.AnimationLoop',
+            'Sofa.Component.LinearSolver.Direct',
+            'Sofa.Component.Constraint.Lagrangian.Correction',
+            'Sofa.Component.Topology.Mapping',
+            'Sofa.Component.MechanicalLoad'
+        ])
+
+    @classmethod
+    def reset(cls) -> None:
+        """
+        Reset the configuration to the default values.
+        """
+        cls.set_show_force(True)
+        cls.set_model('', 1)
+        cls.set_external_forces(True, np.zeros(3, dtype=int), .01, np.array([1,0,0]), np.zeros(3, dtype=int))
+        cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
+        cls.set_plugin_list([""])
