@@ -75,13 +75,14 @@ def create_scene(root: Sofa.Core.Node) -> Sofa.Core.Node:
     mesh_loader = MeshLoader(scaling_factor=Config.get_scale())
     name = Config.get_name()
     mesh_loader.load_file(
-        path=Path(f"./meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
-    mesh_loader.load_file(path=Path(f"./meshes/{name}.stl"), mode=Mode.SURFACE)
+        path=Path(f"./lib/models/{name}.msh"), mode=Mode.VOLUMETRIC)
+    mesh_loader.load_file(
+        path=Path(f"./lib/models/{name}.stl"), mode=Mode.SURFACE)
 
     elastic_object = ElasticObject(root,
                                    mesh_loader=mesh_loader,
-                                   poissonRatio=Config.get_poisson_ratio(),
-                                   youngsModulus=Config.get_youngs_modulus(),
+                                   poisson_ratio=Config.get_poisson_ratio(),
+                                   youngs_modulus=Config.get_youngs_modulus(),
                                    density=Config.get_density(),
                                    )
 
