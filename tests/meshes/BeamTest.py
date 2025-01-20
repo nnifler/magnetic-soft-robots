@@ -6,9 +6,6 @@ import Sofa.Simulation
 
 from src.sofa_instantiator import createScene
 from src.config import Config
-from src.units.YoungsModulus import YoungsModulus
-from src.units.Density import Density
-from src.units.Tesla import Tesla
 
 class TestBeam(unittest.TestCase):
 

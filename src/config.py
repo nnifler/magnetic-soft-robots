@@ -11,13 +11,13 @@ class Config:
 
     ### Model ###
     _name = ""
-    _scale = 0.0
+    _scale = 1.0
 
     ### External forces ###
     _use_gravity = True
     _gravity_vec = np.array([0,0,0])
-    _magnetic_force = 0
-    _magnetic_dir = np.array([0,0,0])
+    _magnetic_force = .01
+    _magnetic_dir = np.array([1,0,0])
     _b_field = np.array([0,0,0])
     _initial_dipole_moment = np.array([0,0,0])
 
@@ -236,6 +236,6 @@ class Config:
         """
         cls.set_show_force(True)
         cls.set_model('', 1)
-        cls.set_external_forces(True, np.zeros(3, dtype=int), .01, np.array([0,-1,0]), np.zeros(3, dtype=int))
+        cls.set_external_forces(True, np.zeros(3, dtype=int), .01, np.array([1,0,0]), np.zeros(3, dtype=int))
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         cls.set_plugin_list([""])
