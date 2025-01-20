@@ -25,7 +25,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=8b3e9c8bb02f4b7b9c8e8e874e17eedf",
         "youngs_modulus": 9450000000.0,
         "density": 1605.0,
-        "poissions_ratio": 0.32,
+        "poissons_ratio": 0.32,
         "remanence": 0.0
     },
     {
@@ -33,7 +33,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=952fbc3268fc4e77917cbe298f5579c5",
         "youngs_modulus": 3400000000.0,
         "density": 1240.0,
-        "poissions_ratio": 0.35,
+        "poissons_ratio": 0.35,
         "remanence": 0.0
     },
     {
@@ -41,7 +41,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=31e8878843304e1880a0d6cf0916ab64",
         "youngs_modulus": 5105000000.0,
         "density": 1210.0,
-        "poissions_ratio": 0.305,
+        "poissons_ratio": 0.305,
         "remanence": 0.0
     },
     {
@@ -49,7 +49,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=ea21177924cb47da91c5e58252bb3598",
         "youngs_modulus": 4020000000.0000005,
         "density": 1350.0,
-        "poissions_ratio": 0.335,
+        "poissons_ratio": 0.335,
         "remanence": 0.0
     },
     {
@@ -57,7 +57,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=30dd30d435d340c1b37628a35a540f75",
         "youngs_modulus": 4650000000.0,
         "density": 1100.0,
-        "poissions_ratio": 0.305,
+        "poissons_ratio": 0.305,
         "remanence": 0.0
     },
     {
@@ -65,7 +65,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=2dedf8dbc3f64ee088093676a2313357",
         "youngs_modulus": 2200000000.0,
         "density": 1160.0,
-        "poissions_ratio": 0.41,
+        "poissons_ratio": 0.41,
         "remanence": 0.0
     },
     {
@@ -73,7 +73,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=7f64bee931cb4c99b7b1341143a6385b",
         "youngs_modulus": 10250000000.0,
         "density": 1610.0,
-        "poissions_ratio": 0.32,
+        "poissons_ratio": 0.32,
         "remanence": 0.0
     },
     {
@@ -81,7 +81,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=9a03199925e0424fa91ca14eb22e2c01",
         "youngs_modulus": 9415000000.0,
         "density": 1610.0,
-        "poissions_ratio": 0.33,
+        "poissons_ratio": 0.33,
         "remanence": 0.0
     },
     {
@@ -89,7 +89,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=a314a2907bed4bb892e3d53230111d61",
         "youngs_modulus": 9184999999.999998,
         "density": 1610.0,
-        "poissions_ratio": 0.318,
+        "poissons_ratio": 0.318,
         "remanence": 0.0
     },
     {
@@ -97,7 +97,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=ec80a719bd74401fac53fc130a3ad5d6",
         "youngs_modulus": 8685000000.0,
         "density": 1610.0,
-        "poissions_ratio": 0.315,
+        "poissons_ratio": 0.315,
         "remanence": 0.0
     },
     {
@@ -105,7 +105,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=0c9017b5eb634b1ca1cfad9bbb4ef855",
         "youngs_modulus": 2355000000.0,
         "density": 1160.0,
-        "poissions_ratio": 0.41,
+        "poissons_ratio": 0.41,
         "remanence": 0.0
     },
     {
@@ -113,7 +113,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=1dd9929f3b664fc9a24dcc28faa90bd8",
         "youngs_modulus": 2179999999.9999995,
         "density": 1130.0,
-        "poissions_ratio": 0.45,
+        "poissons_ratio": 0.45,
         "remanence": 0.0
     },
     {
@@ -121,7 +121,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=8170a5219320412d99bf6de6dc63baf0",
         "youngs_modulus": 1964999999.9999998,
         "density": 1130.0,
-        "poissions_ratio": 0.44,
+        "poissons_ratio": 0.44,
         "remanence": 0.0
     },
     {
@@ -129,7 +129,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=89452c15ac1e4008847ab85bd0a68fe4",
         "youngs_modulus": 2410000000.0,
         "density": 1170.0,
-        "poissions_ratio": 0.41000000000000003,
+        "poissons_ratio": 0.41000000000000003,
         "remanence": 0.0
     },
     {
@@ -137,7 +137,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=1aa0551d2ec944bfb16489ac0a9a907f",
         "youngs_modulus": 2550000000.0,
         "density": 1160.0,
-        "poissions_ratio": 0.44,
+        "poissons_ratio": 0.44,
         "remanence": 0.0
     },
     {
@@ -145,7 +145,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=3740c20c5c2149fdbfbb198011fadfda",
         "youngs_modulus": 2660000000.0,
         "density": 1160.0,
-        "poissions_ratio": 0.43,
+        "poissons_ratio": 0.43,
         "remanence": 0.0
     },
     {
@@ -153,7 +153,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=58db8f07ba8f48148dc7525dedfcd9d3",
         "youngs_modulus": 1750000000.0,
         "density": 1160.0,
-        "poissions_ratio": 0.44,
+        "poissons_ratio": 0.44,
         "remanence": 0.0
     },
     {
@@ -161,7 +161,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=a7b65fdabca54e3f87fcff4395c165c6",
         "youngs_modulus": 2620000000.0,
         "density": 1160.0,
-        "poissions_ratio": 0.41000000000000003,
+        "poissons_ratio": 0.41000000000000003,
         "remanence": 0.0
     },
     {
@@ -169,7 +169,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=4b2ab07bf8404779a932640d2fda2fb9",
         "youngs_modulus": 10800000000.0,
         "density": 1650.0,
-        "poissions_ratio": 0.36,
+        "poissons_ratio": 0.36,
         "remanence": 0.0
     },
     {
@@ -177,7 +177,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=f0e2746d42ed45d7ad85816ce615225d",
         "youngs_modulus": 10580000000.0,
         "density": 1650.0,
-        "poissions_ratio": 0.32499999999999996,
+        "poissons_ratio": 0.32499999999999996,
         "remanence": 0.0
     },
     {
@@ -185,7 +185,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=3dc69b518b834d66b6526145b6442f74",
         "youngs_modulus": 2355000000.0,
         "density": 1100.0,
-        "poissions_ratio": 0.23,
+        "poissons_ratio": 0.23,
         "remanence": 0.0
     },
     {
@@ -193,7 +193,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=ce1527a06a684e30b2cf8fd61f04f3ad",
         "youngs_modulus": 1880000000.0,
         "density": 1120.0,
-        "poissions_ratio": 0.36,
+        "poissons_ratio": 0.36,
         "remanence": 0.0
     },
     {
@@ -201,7 +201,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=593008f990484fd3aec5ea09243bf590",
         "youngs_modulus": 2685000000.0,
         "density": 1130.0,
-        "poissions_ratio": 0.41,
+        "poissons_ratio": 0.41,
         "remanence": 0.0
     },
     {
@@ -209,7 +209,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=827f4826b8aa44b496ab8e830d8046f0",
         "youngs_modulus": 766999999.9999999,
         "density": 1130.0,
-        "poissions_ratio": 0.43,
+        "poissons_ratio": 0.43,
         "remanence": 0.0
     },
     {
@@ -217,7 +217,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=e98501aab2d147fc8ed98348cc6597bc",
         "youngs_modulus": 2450000000.0,
         "density": 1170.0,
-        "poissions_ratio": 0.43,
+        "poissons_ratio": 0.43,
         "remanence": 0.0
     },
     {
@@ -225,7 +225,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=3aa29a8916b14576bb9599be4315269f",
         "youngs_modulus": 5600000000.0,
         "density": 1310.0,
-        "poissions_ratio": 0.35,
+        "poissons_ratio": 0.35,
         "remanence": 0.0
     },
     {
@@ -233,7 +233,7 @@
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=01aa2334d1b847c397854813ecf43a13",
         "youngs_modulus": 17500000.0,
         "density": 899.9999999999999,
-        "poissions_ratio": 0.45,
+        "poissons_ratio": 0.45,
         "remanence": 0.0
     }
 ]

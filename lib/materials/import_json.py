@@ -76,7 +76,7 @@ for row in rows:
         'url': material_link,
         'youngs_modulus': range_property_1,
         'density': range_property_2,
-        'poissions_ratio': range_property_3,
+        'poissons_ratio': range_property_3,
         'remanence': 0.  # nicht wirklich angebbar?
     })
 
