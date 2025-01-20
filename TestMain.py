@@ -6,6 +6,7 @@ import tests.MagneticControllerTest
 import tests.mesh_loader_test
 import tests.material_loader_test
 import tests.configTest
+import tests.scene_builder_test
 
 suite = unittest.TestSuite()
 test_suites = []
@@ -19,6 +20,7 @@ suite.addTests([
     tests.mesh_loader_test.suite(),
     tests.material_loader_test.suite(),
     tests.configTest.suite(),
+    tests.scene_builder_test.suite(),
 ])
 
 runner = unittest.TextTestRunner()
