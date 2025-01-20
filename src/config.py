@@ -3,6 +3,7 @@ from typing import List
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
+from src.units.Tesla import Tesla
 
 class Config:
     ### SOFA UI ###
@@ -24,7 +25,7 @@ class Config:
     _poisson_ratio = 0.0
     _youngs_modulus = YoungsModulus(0)
     _density = Density(0)
-    _remanence = 0
+    _remanence = Tesla(0)
 
     ### Plugins ###
     _plugin_list = [""]
@@ -57,12 +58,12 @@ class Config:
             raise ValueError("Scale must be positive.")
         cls._name = name
         cls._scale = scale
-        
+
     @classmethod
     def get_name(cls) -> str:
         """Get the name of the model."""
         return cls._name
-    
+
     @classmethod
     def get_scale(cls) -> float:
         """Get the scaling factor of the model."""
@@ -105,27 +106,27 @@ class Config:
     def get_use_gravity(cls) -> bool:
         """True if the simulation uses gravity."""
         return cls._use_gravity
-    
+
     @classmethod
     def get_gravity_vec(cls) -> np.ndarray:
         """Get the gravity vector used in the simulation."""
         return cls._gravity_vec
-    
+
     @classmethod
     def get_magnetic_force(cls) -> float:
         """Get the strength of the magnetic field."""
         return cls._magnetic_force
-    
+
     @classmethod
     def get_magnetic_dir(cls) -> np.ndarray:
         """Get the direction of the magnetic field."""
         return cls._magnetic_dir
-    
+
     @classmethod
     def get_b_field(cls) -> np.ndarray:
         """Get the magnetic field used in the simulation."""
         return cls._b_field
-    
+
     @classmethod
     def get_initial_dipole_moment(cls) -> np.ndarray:
         """Get the initial dipole moment all tetrahedrons of the model will have."""
@@ -157,19 +158,19 @@ class Config:
     def get_poisson_ratio(cls) -> float:
         """Get the poisson ratio of the model."""
         return cls._poisson_ratio
-    
+
     @classmethod
     def get_youngs_modulus(cls) -> YoungsModulus:
         """Get the youngs modulus of the model."""
         return cls._youngs_modulus
-    
+
     @classmethod
     def get_density(cls) -> Density:
         """Get the density of the model."""
         return cls._density
-    
+
     @classmethod
-    def get_remanence(cls) -> float:
+    def get_remanence(cls) -> Tesla:
         """Get the remanence of the model."""
         return cls._remanence
 
