@@ -10,36 +10,6 @@ As an engineer, I'd like to simulate my models in software that implements magne
 Make sure that the project is installed according to [README.md]() and [Requirements.txt]().
 
 ## Test
-<span style='color:red'> ---------------------------------------------------------------------\
-<span style='color:red'> Old version, remove as soon as GUI branch is merged\
-<span style='color:red'> ---------------------------------------------------------------------
-
-1. **Set parameters**
-    1. Locate the file [$ magnetic-soft-robots/src/config.py](../../src/config.py)
-    2. Change the value of `POISSON_RATIO` to a random value between 0 and 0.499
-    3. Change the value of `YOUNGS_MODULUS` to a random valid value (use the YoungsModulus class)
-    4. Change the value of `DENSITY` to a random valid value (use the Density class)
-    5. Change the value of `MAGNETIC_FORCE` to a random valid value (use the Tesla class)
-    6. Change the value of `REMANENCE` to a random valid value (use the Tesla class)
-    7. Change the value of `MAGNETIC_DIR` to a random `np.array` with length 1
-    8. Ensure that the value of `SHOW_FORCE` is set to `True`
-
-2. **Start of the application**
-    1. Run the file [$ magnetic-soft-robots/sofa_instantiator.py](../../sofa_instantiator.py)
-
-3. **Start the animation**
-    1. In the simulation window, click the button `Animate`
-    2. Observe the behavior of the model
-    3. If the model does not deform, lower the `YOUNGS_MODULUS`, raise the `MAGNETIC_FORCE` or change the `MAGNETIC_DIR` in the file [$ magnetic-soft-robots/src/config.py](../../src/config.py) and repeat step 2 and 3
-
-<span style='color:red'> ---------------------------------------------------------------------\
-<span style='color:red'> End of old version\
-<span style='color:red'> ---------------------------------------------------------------------
-
-<span style='color:green'> ---------------------------------------------------------------------\
-<span style='color:green'> New version, replaces old version when GUI branch is merged\
-<span style='color:green'> ---------------------------------------------------------------------
-
 1. **Enable show force**
     1. Locate the file [$ magnetic-soft-robots/gui/mainWindow.py](../../gui/mainWindow.py)
     2. Ensure that the function `Config.set_show_force()` is given `True` as a parameter in `apply_parameters()`
@@ -65,11 +35,7 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     2. Observe the behavior of the model
     3. If the model does not deform, repeat step 2-5 and choose a lower `Young's Modulus`, a higher `Magnetic Field Strength` or change the `Direction`
 
-<span style='color:green'> ---------------------------------------------------------------------\
-<span style='color:green'> End of new version\
-<span style='color:green'> ---------------------------------------------------------------------
-
-4. **Stop the simulation**
+6. **Stop the simulation**
     1. When the model does not deform any further, you can close the simulation window
 
 ## Expected Result

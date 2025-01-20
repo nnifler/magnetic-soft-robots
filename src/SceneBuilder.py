@@ -1,37 +1,36 @@
-import Sofa
 import Sofa.Core
-import src.config as config
+from src.config import Config
 from typing import List, SupportsFloat
 import numpy as np
-
 
 class SceneBuilder():
     def __init__(self, 
             root,
-            gravity_vec = config.GRAVITY_VEC,
+            gravity_vec = Config.get_gravity_vec(),
             dt = 0.005,
             ) -> None:
         self.root = root
         self.root.dt = dt
+        print((Config.get_gravity_vec(), type(Config.get_gravity_vec())))
 
         for x in gravity_vec: 
             if not isinstance(x, SupportsFloat): raise TypeError(f"{x} has illegal argument type {type(x)} for gravity component")
         if not len(gravity_vec) == 3: raise ValueError("invalid length for gravity vector")
 
         self.root.gravity = [0]*3
-        if config.USE_GRAVITY:
-            self.root.gravity = gravity_vec 
+        if Config.get_use_gravity():
+            self.root.gravity = gravity_vec.tolist()
         self._build()
 
 
     def _build(self):
         self._load_plugins()
-        if config.SHOW_FORCE: 
+        if Config.get_show_force():
             self._render_force()
         self._setup_root_simulation()
 
-        if config.SHOW_FORCE:
-            for dir in [config.INIT, config.MAGNETIC_DIR]:
+        if Config.get_show_force():
+            for dir in [Config.get_initial_dipole_moment(), Config.get_magnetic_dir()]:
                 self._build_reference_direction(dir)
 
         return self.root
@@ -54,7 +53,7 @@ class SceneBuilder():
 
 
     def _load_plugins(self):
-        self.root.addObject("RequiredPlugin", pluginName=config.PLUGIN_LIST)
+        self.root.addObject("RequiredPlugin", pluginName= Config.get_plugin_list())
 
 
     def _setup_root_simulation(self):
