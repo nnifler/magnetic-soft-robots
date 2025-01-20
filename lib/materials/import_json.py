@@ -29,16 +29,10 @@ materials = [
         "poissons_ratio": 0.45,  # dimensionslos
         "remanence": 2.5e4 * MU_0,  # in T
 
-    },
-    {  # from paper:
-        "name": "TPU Flexa Grey",
-        "url": "https://sls3d.de/wp-content/uploads/sinterit-flexa-soft-datenblatt.pdf",
-        "density": 700,  # in kg/m³
-        "youngs_modulus": 1.8e6,  # in Pa
-        "poissons_ratio": 0.4,  # dimensionslos
-        "remanence": 0,  # in T
     }
 ]
+
+# Maybe research values for material https://sls3d.de/wp-content/uploads/sinterit-flexa-soft-datenblatt.pdf
 
 with open('lib/materials/matweb_export.html') as ht:
     soup = BeautifulSoup(ht, 'html.parser')
@@ -51,7 +45,7 @@ def calculate_mean(range_str: str) -> float:
     """Calculates mean from string with a range
 
     Args:
-        range_str (str): string range ("7-9")
+        range_str (str): string range (e. g. "7-9")
 
     Returns:
         float: mean
