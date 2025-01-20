@@ -287,8 +287,6 @@ class MainWindow(QMainWindow):
             return
 
         # Erfassung der Parameterwerte
-        #material = self.material_combo_box.currentText()
-        #behavior = self.behavior_combo_box.currentText()
         youngs_modulus_val = self.young_modulus_spinbox.value()
         youngs_modulus = [
             YoungsModulus.fromPa(int(youngs_modulus_val)),
@@ -321,6 +319,3 @@ class MainWindow(QMainWindow):
                                        remanence)
 
         sofa_instantiator.main()
-        #print(f"Material: {material}, Verhalten: {behavior}, Elastizitätsmodul: {young_modulus} GPa, "
-        #      f"Poisson-Verhältnis: {poisson_ratio}, Dichte: {density} kg/m³, Remanenz: {remanence} T, "
-        #      f"Feldstärke: {field_strength} Tesla, Richtung: {direction}")
