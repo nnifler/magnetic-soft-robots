@@ -1,16 +1,19 @@
-import json
-from bs4 import BeautifulSoup
-import re
+"""This module imports material data from a HTML file and saves it as a JSON file."""
 
-# Magnetische Feldkonstante (μ0) in T·m/A
-MU_0 = 4 * 3.141592653589793 * 1e-7
+import json
+import re
+from bs4 import BeautifulSoup
+import numpy as np
+
+# Vacuum permeability (μ0) in T·m/A
+MU_0 = 4 * np.pi * 1e-7
 
 materials = [
     {
         "name": "Silicone Rubber",
         "density": 1100,  # in kg/m³
         "youngs_modulus": 1e6,  # in Pa
-        "poissons_ratio": 0.49,  # dimensionslos
+        "poissons_ratio": 0.49,  # dimensionless
         "remanence": 0 * MU_0,  # in T
 
     },
@@ -18,7 +21,7 @@ materials = [
         "name": "Neodymium Powder",
         "density": 7500,  # in kg/m³
         "youngs_modulus": 1.6e10,  # in Pa
-        "poissons_ratio": 0.3,  # dimensionslos
+        "poissons_ratio": 0.3,  # dimensionless
         "remanence": 1.2e6 * MU_0,  # in T
 
     },
@@ -26,13 +29,14 @@ materials = [
         "name": "Magnetic Silicone Composite",
         "density": 1800,  # in kg/m³
         "youngs_modulus": 5e6,  # in Pa
-        "poissons_ratio": 0.45,  # dimensionslos
+        "poissons_ratio": 0.45,  # dimensionless
         "remanence": 2.5e4 * MU_0,  # in T
 
     }
 ]
 
-# Maybe research values for material https://sls3d.de/wp-content/uploads/sinterit-flexa-soft-datenblatt.pdf
+# Maybe research values for material
+# https://sls3d.de/wp-content/uploads/sinterit-flexa-soft-datenblatt.pdf
 
 with open('lib/materials/matweb_export.html', encoding='utf-8') as ht:
     soup = BeautifulSoup(ht, 'html.parser')
@@ -81,8 +85,8 @@ for row in rows:
     })
 
 # JSON-Datei speichern
-file_name = "lib/materials/magnetic_soft_robot_materials.json"
-with open(file_name, "w", encoding='utf-8') as file:
+FILE_NAME = "lib/materials/magnetic_soft_robot_materials.json"
+with open(FILE_NAME, "w", encoding='utf-8') as file:
     json.dump(materials, file, indent=4)
 
-print(f"JSON file '{file_name}' created successfully!")
+print(f"JSON file '{FILE_NAME}' created successfully!")
