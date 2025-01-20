@@ -15,11 +15,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
-from src.units.YoungsModulus import YoungsModulus
-from src.units.Density import Density
-from src.units.Tesla import Tesla
-from src.config import Config
-from src import sofa_instantiator
+from src.units import Density, YoungsModulus, Tesla
+from src import Config, sofa_instantiator
 
 
 class MainWindow(QMainWindow):
@@ -238,7 +235,7 @@ class MainWindow(QMainWindow):
             material = self.material_data[current_material_index]
 
             # Dichte mit Umrechnung aktualisieren
-            density = Density.fromkgpm3(material.get("density", 0))
+            density = Density.from_kgpm3(material.get("density", 0))
             current_density_index = self.unit_selector_density.currentIndex()
             vals = [density.kgpm3, density.gpcm3, density.Mgpm3, density.tpm3]
             converted_density = vals[current_density_index]
@@ -247,7 +244,7 @@ class MainWindow(QMainWindow):
             self.density_spinbox.blockSignals(False)
 
             # Young's Modulus mit Umrechnung aktualisieren
-            youngs_modulus = YoungsModulus.fromPa(
+            youngs_modulus = YoungsModulus.from_Pa(
                 material.get("youngs_modulus", 0))
             current_modulus_index = self.unit_selector_modulus.currentIndex()
             vals = [youngs_modulus.Pa, youngs_modulus.hPa,
@@ -266,10 +263,10 @@ class MainWindow(QMainWindow):
         """
         value = self.young_modulus_spinbox.value()
         youngs_modulus = [
-            YoungsModulus.fromPa(int(value)),
-            YoungsModulus.fromhPa(value),
-            YoungsModulus.fromMPa(value),
-            YoungsModulus.fromGPa(value)
+            YoungsModulus.from_Pa(int(value)),
+            YoungsModulus.from_hPa(value),
+            YoungsModulus.from_MPa(value),
+            YoungsModulus.from_GPa(value)
         ][self.prev_modulus_index]
         vals = [
             youngs_modulus.Pa,
@@ -290,10 +287,10 @@ class MainWindow(QMainWindow):
         """
         value = self.density_spinbox.value()
         density = [
-            Density.fromkgpm3(value),
-            Density.fromgpcm3(value),
-            Density.fromMgpm3(value),
-            Density.fromtpm3(value)
+            Density.from_kgpm3(value),
+            Density.from_gpcm3(value),
+            Density.from_Mgpm3(value),
+            Density.from_tpm3(value)
         ][self.prev_density_index]
         vals = [
             density.kgpm3,
@@ -356,23 +353,23 @@ class MainWindow(QMainWindow):
         # Erfassung der Parameterwerte
         youngs_modulus_val = self.young_modulus_spinbox.value()
         youngs_modulus = [
-            YoungsModulus.fromPa(int(youngs_modulus_val)),
-            YoungsModulus.fromhPa(youngs_modulus_val),
-            YoungsModulus.fromMPa(youngs_modulus_val),
-            YoungsModulus.fromGPa(youngs_modulus_val)
+            YoungsModulus.from_Pa(int(youngs_modulus_val)),
+            YoungsModulus.from_hPa(youngs_modulus_val),
+            YoungsModulus.from_MPa(youngs_modulus_val),
+            YoungsModulus.from_GPa(youngs_modulus_val)
         ][self.unit_selector_modulus.currentIndex()]
         poisson_ratio = self.poisson_spinbox.value()
         density_val = self.density_spinbox.value()
         density = [
-            Density.fromkgpm3(density_val),
-            Density.fromgpcm3(density_val),
-            Density.fromMgpm3(density_val),
-            Density.fromtpm3(density_val)
+            Density.from_kgpm3(density_val),
+            Density.from_gpcm3(density_val),
+            Density.from_Mgpm3(density_val),
+            Density.from_tpm3(density_val)
         ][self.unit_selector_density.currentIndex()]
         remanence_val = self.remanence_spinbox.value()
-        remanence = Tesla.fromT(remanence_val)
+        remanence = Tesla.from_T(remanence_val)
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
-        field_strength = Tesla.fromT(field_strength_val)
+        field_strength = Tesla.from_T(field_strength_val)
 
         Config.set_show_force(True)
         Config.set_model("beam",
