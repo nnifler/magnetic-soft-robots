@@ -59,7 +59,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(Config.get_use_gravity(), ref_use_gravity, msg="Use gravity is not correct")
         for pair in zip(Config.get_gravity_vec(), ref_gravity_vec):
             self.assertAlmostEqual(*pair, msg="Gravity vector is not correct")
-        self.assertAlmostEqual(Config.get_magnetic_force(), ref_magnetic_force, msg="Magnetic force is not correct")
+        self.assertAlmostEqual(Config.get_magnetic_force().T, ref_magnetic_force.T, msg="Magnetic force is not correct")
         for elem in np.cross(Config.get_magnetic_dir(), ref_magnetic_dir):
             self.assertAlmostEqual(elem, 0, msg="Magnetic direction is not correct")
         self.assertGreaterEqual(np.dot(Config.get_magnetic_dir(), ref_magnetic_dir), 0, msg="Magnetic direction is not correct")
