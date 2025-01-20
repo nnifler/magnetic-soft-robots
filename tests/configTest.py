@@ -190,10 +190,7 @@ class TestConfig(unittest.TestCase):
     
     def tearDown(self) -> None:
         """Resets config after each test."""
-        Config.set_show_force(True)
-        Config.set_model('', 1)
-        Config.set_external_forces(True, np.zeros(3, dtype=int), .01, np.array([0,-1,0]), np.zeros(3, dtype=int))
-        Config.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
+        Config.reset()
         
 def suite() -> unittest.TestSuite: 
     suite = unittest.TestSuite()
