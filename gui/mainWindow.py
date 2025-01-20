@@ -2,6 +2,7 @@ import os
 import json
 from builtins import ValueError
 from pathlib import Path
+import numpy as np
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
@@ -12,6 +13,9 @@ from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
 from src.units.YoungsModulus import YoungsModulus
 from src.units.Density import Density
+from src.units.Tesla import Tesla
+from src.config import Config
+from src import sofa_instantiator
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -90,7 +94,7 @@ class MainWindow(QMainWindow):
         self.poisson_spinbox.lineEdit().editingFinished.connect(
             lambda: self.poisson_spinbox.setValue(float(self.poisson_spinbox.text().replace(",", ".")))
         )
-    
+
 
         density_label = QLabel("(ρ) Density:")
         self.density_spinbox = QDoubleSpinBox()
@@ -234,7 +238,7 @@ class MainWindow(QMainWindow):
         """Updates the modulus unit if the unit size is changed"""
         value = self.young_modulus_spinbox.value()
         youngs_modulus = [
-            YoungsModulus.fromPa(value),
+            YoungsModulus.fromPa(int(value)),
             YoungsModulus.fromhPa(value),
             YoungsModulus.fromMPa(value),
             YoungsModulus.fromGPa(value)
@@ -307,19 +311,40 @@ class MainWindow(QMainWindow):
             return
 
         # Erfassung der Parameterwerte
-        material = self.material_combo_box.currentText()
-        behavior = self.behavior_combo_box.currentText()
-        young_modulus = self.young_modulus_spinbox.value()
+        youngs_modulus_val = self.young_modulus_spinbox.value()
+        youngs_modulus = [
+            YoungsModulus.fromPa(int(youngs_modulus_val)),
+            YoungsModulus.fromhPa(youngs_modulus_val),
+            YoungsModulus.fromMPa(youngs_modulus_val),
+            YoungsModulus.fromGPa(youngs_modulus_val)
+        ][self.unit_selector_modulus.currentIndex()]
         poisson_ratio = self.poisson_spinbox.value()
-        density = self.density_spinbox.value()
-        remanence = self.remanence_spinbox.value()
+        density_val = self.density_spinbox.value()
+        density = [
+            Density.fromkgpm3(density_val),
+            Density.fromgpcm3(density_val),
+            Density.fromMgpm3(density_val),
+            Density.fromtpm3(density_val)
+        ][self.unit_selector_density.currentIndex()]
+        remanence_val = self.remanence_spinbox.value()
+        remanence = Tesla(remanence_val)
         field_strength = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
 
-        print(f"Material: {material}, behavior: {behavior}, Young Modulus: {young_modulus} GPa, "
-              f"Poisson-Ratio: {poisson_ratio}, Density: {density} kg/m³, Remanence: {remanence} T, "
-              f"Fieldstrength: {field_strength} T, Direction: {direction}")
+        Config.set_show_force(True)
+        Config.set_model("beam",
+                         0.02)
+        Config.set_external_forces(True,
+                                   np.array([0, -9.81, 0]),
+                                   field_strength,
+                                   np.array(direction),
+                                   np.array([1, 0, 0]))
+        Config.set_material_parameters(poisson_ratio,
+                                       youngs_modulus,
+                                       density,
+                                       remanence)
 
-    
+        sofa_instantiator.main()
+
     def show_library_menu(self):
         """Create the library menu"""
 
@@ -344,10 +369,10 @@ class MainWindow(QMainWindow):
 
         context_menu.exec(self.library_button.mapToGlobal(self.library_button.rect().bottomLeft()))
 
-    
+
     def open_library(self, menu):
         menu.close()
-        
+
         popup = QWidget()
         popup.setWindowTitle("Library")
         popup.resize(600, 400)
@@ -378,12 +403,12 @@ class MainWindow(QMainWindow):
         if not os.path.exists(models_path):
             QMessageBox.warning(self, "Error", f"Models folder not found at: {models_path}")
             return
-        
+
         for filename in os.listdir(models_path):
             if filename.endswith(".obj") or filename.endswith(".stl"):
                 list_widget.addItem(filename)
 
-    
+
     def import_mesh_file(self):
         """Importiert eine benutzerdefinierte Mesh-Datei."""
         file_dialog = QFileDialog(self)
