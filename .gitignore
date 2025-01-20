@@ -1,5 +1,7 @@
 __pycache__
-.venv
+.venv*
 *.ini
 .DS_Store
 *.log
+*.env
+.idea
