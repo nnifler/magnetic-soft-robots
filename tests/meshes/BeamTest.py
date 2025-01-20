@@ -1,21 +1,15 @@
 import unittest
-from math import isclose
 
 import Sofa
 
 import Sofa.Simulation
 from sofa_instantiator import createScene
 
-def isInPositionArray(value, array):
-    for element in array:
-        if all([isclose(p1, p2, rel_tol=1e-5) for p1, p2 in zip(element, value)]):
-            return True
-    return False
-
 class TestBeam(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Called once before all the tests in the class"""
         # TODO: Make sure that beam object is used (only really doable as soon as LINK is in main)
         cls.root = Sofa.Core.Node("root")
         createScene(cls.root)
@@ -28,6 +22,7 @@ class TestBeam(unittest.TestCase):
         cls.topo = cls.elastic_object.getObject('topo')
 
     def setUp(self):
+        """Called before each test"""
         Sofa.Simulation.reset(self.root)
 
     def testVolumeMesh(self):
