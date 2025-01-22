@@ -6,4 +6,5 @@
         "--extension-pkg-whitelist=PySide6",
         "--disable=c-extension-no-member,wildcard-import",
     ],
+    "autoDocstring.docstringFormat": "google",
 }
