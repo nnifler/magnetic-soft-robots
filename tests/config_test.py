@@ -38,7 +38,7 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             Config.set_model("test", err_scale)
 
-    def testExternalForces(self):
+    def test_external_forces(self):
         ref_use_gravity = choice([True, False])
         ref_gravity_vec = np.random.uniform(0, 100, 3)
         ref_magnetic_force = Tesla.from_T(uniform(0, 100))

@@ -55,15 +55,13 @@ class MaterialLoader:
 
     def get_density(self) -> Density:
         """Returns current density from the connected ElasticObject.
-
-        Raises:
-            ValueError: If read is dirty.
+        If the read is dirty, updates the connected ElasticObject.
 
         Returns:
             Density: current density.
         """
         if self._dirty:
-            raise ValueError('Dirty read.')
+            self.update_elastic_object()
         return Density(self._material_values['density'])
 
     def set_youngs_modulus(self, value: YoungsModulus) -> None:
@@ -77,15 +75,13 @@ class MaterialLoader:
 
     def get_youngs_modulus(self) -> YoungsModulus:
         """Returns current density from the connected ElasticObject.
-
-        Raises:
-            ValueError: If read is dirty.
+        If the read is dirty, updates the connected ElasticObject.
 
         Returns:
             YoungsModulus: current Young's modulus.
         """
         if self._dirty:
-            raise ValueError('Dirty read.')
+            self.update_elastic_object()
         return YoungsModulus(self._material_values['youngs_modulus'])
 
     # TODO: add unit
@@ -100,15 +96,13 @@ class MaterialLoader:
 
     def get_poissons_ratio(self) -> float:
         """Returns current Poisson's ratio from the connected ElasticObject.
-
-        Raises:
-            ValueError: If read is dirty.
+        If the read is dirty, updates the connected ElasticObject.
 
         Returns:
             float: current Poisson's ratio
         """
         if self._dirty:
-            raise ValueError('Dirty read.')
+            self.update_elastic_object()
         return self._material_values['poissons_ratio']
 
     def set_remanence(self, value: Tesla) -> None:
@@ -122,15 +116,13 @@ class MaterialLoader:
 
     def get_remanence(self) -> Tesla:
         """Returns current remanence from the connected ElasticObject.
-
-        Raises:
-            ValueError: If read is dirty.
+        If the read is dirty, updates the connected ElasticObject.
 
         Returns:
             Tesla: current remanence
         """
         if self._dirty:
-            raise ValueError('Dirty read.')
+            self.update_elastic_object()
         return Tesla(self._material_values['remanence'])
 
     def update_elastic_object(self) -> None:

@@ -12,7 +12,7 @@ class ElasticObject():
        the elastic object - the MSR - that is simulated."""
 
     def __init__(self, root: Sofa.Core.Node, mesh_loader: MeshLoader, poisson_ratio: float,
-                 youngs_modulus: YoungsModulus, density: Density):
+                 youngs_modulus: YoungsModulus, density: Density) -> None:
         """Initializes the ElasticObject with the given parameters.
 
         Args:

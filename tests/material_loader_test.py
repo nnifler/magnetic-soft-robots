@@ -74,8 +74,8 @@ class TestExceptionalBehavior(unittest.TestCase):
         d = Density.from_kgpm3(uniform(0, 20))
 
         uut.set_density(d)
-        with self.assertRaises(ValueError):
-            uut.get_density()
+        _ = uut.get_density()
+        eo.diagonal_mass.setDataValues.assert_called()
 
     def test_youngs_modulus(self):
         eo = unittest.mock.Mock()
@@ -83,8 +83,8 @@ class TestExceptionalBehavior(unittest.TestCase):
         y = YoungsModulus.from_GPa(uniform(0, 20))
 
         uut.set_youngs_modulus(y)
-        with self.assertRaises(ValueError):
-            uut.get_youngs_modulus()
+        _ = uut.get_youngs_modulus()
+        eo.FEM_force_field.setDataValues.assert_called()
 
     def test_poissons_ratio(self):
         eo = unittest.mock.Mock()
@@ -92,8 +92,8 @@ class TestExceptionalBehavior(unittest.TestCase):
         expected_poissons_ratio = uniform(-0.499, 0.499)
 
         uut.set_poissons_ratio(expected_poissons_ratio)
-        with self.assertRaises(ValueError):
-            _ = uut.get_poissons_ratio(),
+        _ = uut.get_poissons_ratio()
+        eo.FEM_force_field.setDataValues.assert_called()
 
     def test_remanence(self):
         eo = unittest.mock.Mock()
@@ -101,8 +101,8 @@ class TestExceptionalBehavior(unittest.TestCase):
         r = Tesla.from_T(uniform(-100, 100))
 
         uut.set_remanence(r)
-        with self.assertRaises(ValueError):
-            uut.get_remanence()
+        _ = uut.get_remanence()
+        self.assertEqual(eo.remanence.T, r.T)
 
 
 def suite() -> unittest.TestSuite:
