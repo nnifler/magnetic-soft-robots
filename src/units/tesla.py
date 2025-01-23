@@ -17,7 +17,7 @@ class Tesla(BaseUnit):
         super().__init__(0)  # Initialize super object with non-negative value
         self._value = value
 
-    class Unit(Enum):
+    class UnitFactor(Enum):
         """Enum class for Tesla unit conversion factors."""
         T = 1
 
@@ -39,7 +39,7 @@ class Tesla(BaseUnit):
         Returns:
             Tesla: The Tesla Object with the given value.
         """
-        return Tesla(value * Tesla.Unit.T.value)
+        return Tesla(value * Tesla.UnitFactor.T.value)
 
     @property
     def T(self) -> float:
@@ -48,7 +48,7 @@ class Tesla(BaseUnit):
         Returns:
             float: The value of the Tesla Object in T.
         """
-        return self._value / self.Unit.T.value
+        return self._value / self.UnitFactor.T.value
 
     @T.setter
     def T(self, value: int) -> None:
@@ -57,4 +57,4 @@ class Tesla(BaseUnit):
         Args:
             value (int): The value of the Tesla Object in T.
         """
-        self._value = value * self.Unit.T.value
+        self._value = value * self.UnitFactor.T.value

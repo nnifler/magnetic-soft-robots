@@ -7,7 +7,7 @@ from . import BaseUnit
 
 class YoungsModulus(BaseUnit):
     """Unit class for YoungsModulus. The base unit is Pa."""
-    class Unit(Enum):
+    class UnitFactor(Enum):
         """Enum class for YoungsModulus unit conversion factors."""
         Pa = 1
         hPa = 100
@@ -37,7 +37,7 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        return YoungsModulus(value * YoungsModulus.Unit.Pa.value)
+        return YoungsModulus(value * YoungsModulus.UnitFactor.Pa.value)
 
     @property
     def Pa(self) -> int:
@@ -46,7 +46,7 @@ class YoungsModulus(BaseUnit):
         Returns:
             int: The value of the YoungsModulus Object in Pa.
         """
-        return self._value // self.Unit.Pa.value
+        return self._value // self.UnitFactor.Pa.value
 
     @Pa.setter
     def Pa(self, value: int) -> None:
@@ -60,7 +60,7 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        self._value = value * self.Unit.Pa.value
+        self._value = value * self.UnitFactor.Pa.value
 
     @staticmethod
     def from_hPa(value: float) -> YoungsModulus:
@@ -77,7 +77,7 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        return YoungsModulus(value * YoungsModulus.Unit.hPa.value)
+        return YoungsModulus(value * YoungsModulus.UnitFactor.hPa.value)
 
     @property
     def hPa(self) -> float:
@@ -86,7 +86,7 @@ class YoungsModulus(BaseUnit):
         Returns:
             float: The value of the YoungsModulus Object in hPa.
         """
-        return self._value / self.Unit.hPa.value
+        return self._value / self.UnitFactor.hPa.value
 
     @hPa.setter
     def hPa(self, value: float) -> None:
@@ -100,7 +100,7 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        self._value = value * self.Unit.hPa.value
+        self._value = value * self.UnitFactor.hPa.value
 
     @staticmethod
     def from_MPa(value: float) -> YoungsModulus:
@@ -117,7 +117,7 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        return YoungsModulus(value * YoungsModulus.Unit.MPa.value)
+        return YoungsModulus(value * YoungsModulus.UnitFactor.MPa.value)
 
     @property
     def MPa(self) -> float:
@@ -126,14 +126,14 @@ class YoungsModulus(BaseUnit):
         Returns:
             float: The value of the YoungsModulus Object in MPa.
         """
-        return self._value / self.Unit.MPa.value
+        return self._value / self.UnitFactor.MPa.value
 
     @MPa.setter
     def MPa(self, value: float) -> None:
 
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        self._value = value * self.Unit.MPa.value
+        self._value = value * self.UnitFactor.MPa.value
 
     @staticmethod
     def from_GPa(value: float) -> YoungsModulus:
@@ -150,7 +150,7 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        return YoungsModulus(value * YoungsModulus.Unit.GPa.value)
+        return YoungsModulus(value * YoungsModulus.UnitFactor.GPa.value)
 
     @property
     def GPa(self) -> float:
@@ -159,7 +159,7 @@ class YoungsModulus(BaseUnit):
         Returns:
             float: The value of the YoungsModulus Object in GPa.
         """
-        return self._value / self.Unit.GPa.value
+        return self._value / self.UnitFactor.GPa.value
 
     @GPa.setter
     def GPa(self, value: float) -> None:
@@ -173,4 +173,4 @@ class YoungsModulus(BaseUnit):
         """
         if value < 0:
             raise ValueError('Value cannot be negative!')
-        self._value = value * self.Unit.GPa.value
+        self._value = value * self.UnitFactor.GPa.value

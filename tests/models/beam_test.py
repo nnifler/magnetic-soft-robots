@@ -83,7 +83,7 @@ class TestBeam(unittest.TestCase):
                 msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
             )
 
-    def test_volume_to_surface_ink_simulation(self):
+    def test_volume_to_surface_link_simulation(self):
         for _ in range(10):
             Sofa.Simulation.animate(self.root, self.root.dt.value)
             for i, pos in enumerate(self.ogl.position.value):

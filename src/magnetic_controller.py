@@ -181,7 +181,6 @@ class MagneticController(Sofa.Core.Controller):
 
                     m = dipole_moment * orientation
                     torque = np.cross(m, Config.get_b_field())
-                    self._elastic_object.vertex_forces[node].forces = [
-                        [torque[0], torque[1], torque[2]]]
+                    self._elastic_object.vertex_forces[node].forces = [torque]
 
                     force_defined_at[node] = True
