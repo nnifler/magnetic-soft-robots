@@ -1,16 +1,16 @@
+"""This script instantiates the Sofa simulation."""
+
 from pathlib import Path
 
 import Sofa.Gui
 
-from src.config import Config
-from src.SceneBuilder import SceneBuilder
-from src.elastic_body import ElasticObject
-from src.magnetic_controller import MagneticController
-from src.material_loader import MaterialLoader
-from src.mesh_loader import MeshLoader, Mode
+from . import Config, SceneBuilder, ElasticObject, MagneticController, MaterialLoader, MeshLoader
+from .mesh_loader import Mode
 
 
 def main():
+    """Main function that instantiates the Sofa simulation.
+    """
     debug = False
     if debug:
         print(f"Show force: {Config.get_show_force()}")
@@ -26,31 +26,31 @@ def main():
         print(f"Density: {Config.get_density()}")
         print(f"Remanence: {Config.get_remanence()}")
         return
-    
+
     Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
-            'Sofa.Component.Collision.Detection.Intersection',
-            'Sofa.Component.Collision.Geometry',
-            'Sofa.Component.Collision.Response.Contact',
-            'Sofa.Component.Constraint.Projective',
-            'Sofa.Component.IO.Mesh',
-            'Sofa.Component.LinearSolver.Iterative',
-            'Sofa.Component.Mapping.Linear',
-            'Sofa.Component.Mass',
-            'Sofa.Component.ODESolver.Backward',
-            'Sofa.Component.SolidMechanics.FEM.Elastic',
-            'Sofa.Component.StateContainer',
-            'Sofa.Component.Topology.Container.Dynamic',
-            'Sofa.Component.Visual',
-            'Sofa.GL.Component.Rendering3D',
-            'Sofa.Component.AnimationLoop',
-            'Sofa.Component.LinearSolver.Direct',
-            'Sofa.Component.Constraint.Lagrangian.Correction',
-            'Sofa.Component.Topology.Mapping',
-            'Sofa.Component.MechanicalLoad'
-        ])
+                            'Sofa.Component.Collision.Detection.Intersection',
+                            'Sofa.Component.Collision.Geometry',
+                            'Sofa.Component.Collision.Response.Contact',
+                            'Sofa.Component.Constraint.Projective',
+                            'Sofa.Component.IO.Mesh',
+                            'Sofa.Component.LinearSolver.Iterative',
+                            'Sofa.Component.Mapping.Linear',
+                            'Sofa.Component.Mass',
+                            'Sofa.Component.ODESolver.Backward',
+                            'Sofa.Component.SolidMechanics.FEM.Elastic',
+                            'Sofa.Component.StateContainer',
+                            'Sofa.Component.Topology.Container.Dynamic',
+                            'Sofa.Component.Visual',
+                            'Sofa.GL.Component.Rendering3D',
+                            'Sofa.Component.AnimationLoop',
+                            'Sofa.Component.LinearSolver.Direct',
+                            'Sofa.Component.Constraint.Lagrangian.Correction',
+                            'Sofa.Component.Topology.Mapping',
+                            'Sofa.Component.MechanicalLoad'
+                            ])
 
     root = Sofa.Core.Node("root")
-    createScene(root)
+    create_scene(root)
     Sofa.Simulation.init(root)
 
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
@@ -60,21 +60,31 @@ def main():
     Sofa.Gui.GUIManager.closeGUI()
 
 
-def createScene(root):
+def create_scene(root: Sofa.Core.Node) -> Sofa.Core.Node:
+    """Creates the scene for the Sofa simulation with the given argument as the root node.
+
+    Args:
+        root (Sofa.Core.Node): The root node.
+
+    Returns:
+        Sofa.Core.Node: The root node.
+    """
     SceneBuilder(root)
 
     # can be overwritten / removed as soon as linked to GUI
     mesh_loader = MeshLoader(scaling_factor=Config.get_scale())
     name = Config.get_name()
-    mesh_loader.load_file(path=Path(f"./meshes/{name}.msh"), mode=Mode.VOLUMETRIC)
-    mesh_loader.load_file(path=Path(f"./meshes/{name}.stl"), mode=Mode.SURFACE)
+    mesh_loader.load_file(
+        path=Path(f"./lib/models/{name}.msh"), mode=Mode.VOLUMETRIC)
+    mesh_loader.load_file(
+        path=Path(f"./lib/models/{name}.stl"), mode=Mode.SURFACE)
 
     elastic_object = ElasticObject(root,
-        mesh_loader=mesh_loader,
-        poissonRatio=Config.get_poisson_ratio(),
-        youngsModulus=Config.get_youngs_modulus(),
-        density=Config.get_density(),
-    )
+                                   mesh_loader=mesh_loader,
+                                   poisson_ratio=Config.get_poisson_ratio(),
+                                   youngs_modulus=Config.get_youngs_modulus(),
+                                   density=Config.get_density(),
+                                   )
 
     mat_loader = MaterialLoader(elastic_object)
 
@@ -87,7 +97,6 @@ def createScene(root):
     root.addObject(controller)
 
     return root
-
 
 
 # Function used only if this script is called from a python environment

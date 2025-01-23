@@ -1,3 +1,5 @@
+"""This module provides a class to load meshes into the Sofa Scene."""
+
 from pathlib import Path
 from os.path import getsize
 from typing import Optional
@@ -23,9 +25,15 @@ endings = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # SURFACE
 
 
 class MeshLoader():
-    """Loads meshes into the Sofa Scene, if provided with a Path"""
+    """Loads meshes into the Sofa Scene."""
 
     def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.) -> None:
+        """Initializes the MeshLoader.
+
+        Args:
+            name (str, optional): The name of the sofa loader. Defaults to "meshLoader".
+            scaling_factor (float, optional): The scaling factor of the model. Defaults to 1..
+        """
         self._path: list = [None, None]
         self._name = name
         self._scaling = scaling_factor
@@ -34,15 +42,15 @@ class MeshLoader():
         """Loads a filepath into loader
 
         Args:
-            path (Path): file that gets loaded
-            mode (Mode): mesh type
+            path (Path): The path to the mesh file.
+            mode (Mode): The type of the mesh.
 
         Raises:
-            FileNotFoundError: if given `path` is no file
-            ValueError: if file suffix is unknown
-            ValueError: if surface mode is selected but the file is a volumetric mesh
-            ValueError: if volumetric mesh is selected but the file is a surface mesh
-            ValueError: if the file is empty
+            FileNotFoundError: If given path is no file.
+            ValueError: If file suffix is unknown.
+            ValueError: If surface mode is selected but the file is a volumetric mesh.
+            ValueError: If volumetric mesh is selected but the file is a surface mesh.
+            ValueError: If the file is empty.
         """
         # TODO: integrity check for file?
 
@@ -71,24 +79,24 @@ class MeshLoader():
 
         with open(path, mode="r+b") as f:
             f.readline()
-        
+
         if getsize(path) == 0:
             raise ValueError(f"File {path} empty! Not a valid mesh")
 
         self._path[mode.value] = path
 
     def load_mesh_into(self, node: Sofa.Core.Node, mode: Mode) -> Sofa.Core.Object:
-        """Loads mesh into `node`.
+        """Loads mesh into node.
 
         Args:
-            node (Sofa.Core.Node): node the mesh loads into
-            mode (Mode): mesh type
+            node (Sofa.Core.Node): The node the mesh loads into.
+            mode (Mode): The type of the mesh.
 
         Raises:
-            FileNotFoundError: path is not set yet
+            FileNotFoundError: If path is not set.
 
         Returns:
-            Sofa.Core.Object: new object created by this method
+            Sofa.Core.Object: The loaded mesh SOFA object.
         """
 
         path: Optional[Path] = self._path[mode.value]
@@ -106,12 +114,12 @@ class MeshLoader():
         return mesh
 
     def reference(self, mode: Mode) -> str:
-        """References the loader in other SOFA objects
+        """References the loader in other SOFA objects.
 
         Args:
-            mode (Mode): mesh type
+            mode (Mode): The type of the mesh.
 
         Returns:
-            str: reference string
+            str: The reference string.
         """
         return "@"+self._name+"_"+mode.name.lower()
