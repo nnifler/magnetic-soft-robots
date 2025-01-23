@@ -1,1 +1,1 @@
-python .\TestMain.py > $null 
+python .\test_main.py > $null 

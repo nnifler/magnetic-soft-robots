@@ -1,1 +1,1 @@
-python ./TestMain.py > /dev/null
+python ./test_main.py > /dev/null
