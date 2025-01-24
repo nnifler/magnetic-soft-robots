@@ -37,7 +37,7 @@ class TestButterfly(unittest.TestCase):
 
     def test_surface_mesh(self):
         # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 411
+        ref_amount_nodes = 427
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 818
 
@@ -83,10 +83,10 @@ class TestButterfly(unittest.TestCase):
                 msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
             )
 
-    # This test does not pass no matter what I set for places.
-    # Question is, if the test is even worth it, because the visual model does not have to be super accurate.
-    # Should I instead write a manual test for that? Just if it looks like the models fit together.
-    # For accurate values the user should still have the analysis tools.
+    # This test does not pass right now, because BarycentricMapping is too inaccurate.
+    # I dont want to change the mapping in this branch, because it would affect the the number of nodes in the ogl model.
+    # Then the tests in the gripper branch would fail when both gripper and butterfly are merged.
+    # Once both branches are merged, I will change the mapping to IdentityMapping and fix the tests.
 
     # def test_volume_to_surface_link_simulation(self):
     #    for _ in range(10):
