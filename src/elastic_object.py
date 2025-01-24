@@ -62,11 +62,24 @@ class ElasticObject():
         )
 
         # Add Constraints
-        positions = self.mesh.position.value.tolist()
-        ind = [idx for idx, pos in enumerate(positions) if pos[0] == 0]
-        constraints = " ".join(str(x) for x in ind)
+        visualize_constraints = False
+        if Config.get_name() == "beam":
+            eo_node.addObject('BoxROI', name='constraint_roi',
+                              box='0 0 0 0 0 0',
+                              drawBoxes=1 if visualize_constraints else 0)
+        elif Config.get_name() == "gripper3arm":
+            eo_node.addObject('BoxROI', name='constraint_roi',
+                              box='-0.05 -0.05 0.01 0.05 0.05 0.03',
+                              drawBoxes=1 if visualize_constraints else 0)
+        else:
+            eo_node.addObject('BoxROI', name='constraint_roi',
+                              box='0 0 0 0 0 0',
+                              drawBoxes=1 if visualize_constraints else 0)
+        # If True, forces will be added and displayed on the vertices used as a constraint
+        # (use only for debugging)
         eo_node.addObject('FixedConstraint',
-                          name="FixedConstraint", indices=constraints)
+                          # name="FixedConstraint", indices=constraints)
+                          name='FixedConstraint', indices='@constraint_roi.indices')
         eo_node.addObject('LinearSolverConstraintCorrection')
 
         # Add Surface
