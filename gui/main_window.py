@@ -18,7 +18,7 @@ from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 from src.units import Density, YoungsModulus, Tesla
 from src import Config, sofa_instantiator
 
-from . import MSRHeaderWidget, MSRMaterialGroup
+from gui import MSRHeaderWidget, MSRMaterialGroup
 
 class MainWindow(QMainWindow):
     """Main window of the application."""
