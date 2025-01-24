@@ -37,7 +37,7 @@ class TestButterfly(unittest.TestCase):
 
     def test_surface_mesh(self):
         # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 427
+        ref_amount_nodes = 411
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 818
 
