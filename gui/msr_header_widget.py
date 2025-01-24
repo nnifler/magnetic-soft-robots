@@ -8,6 +8,11 @@ from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
 
 class MSRHeaderWidget(QWidget):
+    """Implements the Header 
+
+    Args:
+        QWidget (_type_): Base class.
+    """
     def __init__(self) -> None:
         super().__init__()
 
