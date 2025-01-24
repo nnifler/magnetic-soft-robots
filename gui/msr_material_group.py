@@ -47,7 +47,10 @@ class MSRMaterialParameter():
 
         if len(units) == 0:
             self.unit_selector = QLabel("")
-        elif len(units) > 0:
+        elif len(units) == 1:
+            self.unit_selector = QLabel(f"{units[0]}")
+            self._unit_index = 0
+        elif len(units) > 1:
             self.unit_selector = QComboBox()
             self.unit_selector.addItems(units)
             self._unit_index = index
