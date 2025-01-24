@@ -64,11 +64,12 @@ class ElasticObject():
         # Add Constraints
         visualize_constraints = False
         use_constraints = True
-        if Config.get_name() == "beam":
+        model_name = Config.get_name()
+        if model_name == "beam":
             eo_node.addObject('BoxROI', name='constraint_roi',
                               box='-0.005 0 0 0.005 0.05 0.05',
                               drawBoxes=1 if visualize_constraints else 0)
-        elif Config.get_name() == "gripper3arm":
+        elif model_name == "gripper_3_arm" or model_name == "gripper_4_arm":
             eo_node.addObject('BoxROI', name='constraint_roi',
                               box='-0.05 -0.05 0.01 0.05 0.05 0.03',
                               drawBoxes=1 if visualize_constraints else 0)
