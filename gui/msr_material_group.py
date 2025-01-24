@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
     QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton,
@@ -6,15 +8,16 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
-import json
-from pathlib import Path
-
 from src.units import BaseUnit, Density, YoungsModulus, Tesla
 
 
 class MSRMaterialParameter():
+    """Bundles all information needed for parameter definition. 
+    One instance should be created for each parameter.
+    Includes widgets and unit management.
+    """
     decimal_validator = QRegularExpressionValidator(QRegularExpression(r"^-?\d+[.,]?\d*$"))
-    
+
     def __init__(self, name: str,
                  range: tuple[float, float],
                  units: list[str],
@@ -23,12 +26,11 @@ class MSRMaterialParameter():
                  step: float = 1.,
                  decimals: int = 4,
                  index: int = 0,
-                 
+
         ):
         self.label = QLabel(text=name)
         self.spinbox = QDoubleSpinBox()
         self.unit_selector: QLabel | QComboBox = None
-         
 
         self._decimals = decimals
         self._units = units
@@ -61,11 +63,11 @@ class MSRMaterialParameter():
 
 
     def _change_unit(self) -> None:
-        """Updates the density unit if the unit size is changed.
+        """Method called when switching units in the QComboBox.
         """
-        if len(self._units) <= 1: 
+        if len(self._units) <= 1:
             return
-        
+
         value = self.spinbox.value()
         unit = self._setter[self._unit_index](value)
         cur_index = self.unit_selector.currentIndex()
@@ -77,6 +79,11 @@ class MSRMaterialParameter():
         self.spinbox.blockSignals(False)
 
     def value(self) -> BaseUnit | float:
+        """Returns the value of the corresponding QDoubleSpinBox.
+
+        Returns:
+            BaseUnit | float: Subclass of BaseUnit for every implemented unit, float else.
+        """
         val = self.spinbox.value()
         if len(self._units) == 0:
             return val
@@ -85,6 +92,12 @@ class MSRMaterialParameter():
 
 
 class MSRMaterialGroup(QGroupBox):
+    """Qt Widget for the material parameter definitions.
+
+    Args:
+        QGroupBox: Base class.
+    """
+
     def __init__(self) -> None:
         super().__init__("Material Configuration")
         self._layout = QGridLayout(self)
@@ -105,8 +118,10 @@ class MSRMaterialGroup(QGroupBox):
                 name="(E) Young's Modulus:",
                 range=(0, 1e12),
                 units=["Pa", "hPa", "MPa", "GPa"],
-                getter=[YoungsModulus.Pa, YoungsModulus.hPa, YoungsModulus.MPa, YoungsModulus.GPa],
-                setter=[YoungsModulus.from_Pa, YoungsModulus.from_hPa, YoungsModulus.from_MPa, YoungsModulus.from_GPa],
+                getter=[YoungsModulus.Pa, YoungsModulus.hPa,
+                        YoungsModulus.MPa, YoungsModulus.GPa],
+                setter=[YoungsModulus.from_Pa, YoungsModulus.from_hPa,
+                        YoungsModulus.from_MPa, YoungsModulus.from_GPa],
                 index=3,
                 step=10,
             ),
@@ -122,8 +137,10 @@ class MSRMaterialGroup(QGroupBox):
                 name="(ρ) Density:",
                 range=(0, 30000),
                 units=["kg/m³", "g/cm³", "Mg/m³", "t/m³"],
-                getter=[Density.kgpm3, Density.gpcm3, Density.Mgpm3, Density.tpm3],
-                setter=[Density.from_kgpm3, Density.from_gpcm3, Density.from_Mgpm3, Density.from_tpm3],
+                getter=[Density.kgpm3, Density.gpcm3,
+                        Density.Mgpm3, Density.tpm3],
+                setter=[Density.from_kgpm3, Density.from_gpcm3,
+                        Density.from_Mgpm3, Density.from_tpm3],
                 decimals=2,
             ),
             "remanence": MSRMaterialParameter(
@@ -138,7 +155,7 @@ class MSRMaterialGroup(QGroupBox):
 
         self._material_combo_box.currentIndexChanged.connect(
             self.update_material_parameters)
-        
+
         self._layout.addWidget(material_label, 0, 0)
         self._layout.addWidget(self._material_combo_box, 0, 1)
 

@@ -109,6 +109,7 @@ class MainWindow(QMainWindow):
         self.field_strength_label.setText(
             f"Magnetic Field Strength: {formatted_strength} T")
 
+
     def parse_direction_input(self, text: str) -> Optional[List[float]]:
         """Parses the direction input from the user 
         and ensures that it is a valid vector with 3 components.
@@ -135,6 +136,7 @@ class MainWindow(QMainWindow):
         except ValueError:
             return None
 
+
     def apply_parameters(self) -> None:
         """Print the parameters and throws exception if invalid direction input.
         """
@@ -155,7 +157,7 @@ class MainWindow(QMainWindow):
                                    field_strength,
                                    np.array(direction),
                                    np.array([1, 0, 0]))
-        
+
         params = self.material_group.parameters
         Config.set_material_parameters(params["poissons_ratio"].value(),
                                        params["youngs_modulus"].value(),
@@ -181,6 +183,7 @@ class MainWindow(QMainWindow):
         for filename in os.listdir(models_path):
             if filename.endswith(".obj") or filename.endswith(".stl"):
                 list_widget.addItem(filename)
+
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.
