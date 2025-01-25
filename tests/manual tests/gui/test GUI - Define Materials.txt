@@ -32,6 +32,7 @@ Test:
         a. Selection between different sizes for Youngs Modulus
         b. Selection between different sizes for Density
         c. The values change correctly when changing between unit sizes
+        d. No selection with one choice appears
 4. Check the console output: Ensure that no unexpected errors or warnings occur in the integrated terminal.
 
 Expected result
