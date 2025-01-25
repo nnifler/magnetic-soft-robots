@@ -99,10 +99,10 @@ class MSRHeaderWidget(QWidget):
         self._popup.show()
 
     def update_loaded_model(self, model_name: str) -> None:
-        """Updates the loaded mesh in the config.
+        """Updates the loaded model in the config.
 
         Args:
-            currentText (str): The currently selected file name in the widget.
+            model_name (str): The currently selected model in the widget.
         """
         # TODO: make scaling factor configurable
         Config.set_model(model_name, .02)  # use .02 for now
