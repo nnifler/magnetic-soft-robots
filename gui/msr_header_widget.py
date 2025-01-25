@@ -11,6 +11,7 @@ from PySide6.QtGui import QKeySequence, QAction
 class MSRHeaderWidget(QWidget):
     """Implements the header of the GUI as a QWidget.
     """
+
     def __init__(self) -> None:
         """Initializes the header widget.
         """
@@ -29,7 +30,6 @@ class MSRHeaderWidget(QWidget):
         self.library_button.clicked.connect(self.show_library_menu)
         header_layout.addStretch()
         header_layout.addWidget(self.library_button)
-
 
     def show_library_menu(self) -> None:
         """Creates the library menu.
@@ -59,7 +59,6 @@ class MSRHeaderWidget(QWidget):
 
         context_menu.exec(self.library_button.mapToGlobal(
             self.library_button.rect().bottomLeft()))
-
 
     def open_library(self, menu: QMenu) -> None:
         """Opens the library popup menu.

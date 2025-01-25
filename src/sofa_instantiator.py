@@ -60,7 +60,8 @@ def main():
     Sofa.Gui.GUIManager.closeGUI()
 
 
-def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node: # DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
+# DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
+def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
     """Creates the scene for the Sofa simulation with the given argument as the root node.
 
     Args:
