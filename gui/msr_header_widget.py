@@ -2,10 +2,14 @@
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QMenu, QListWidget
+    QLabel, QPushButton, QMenu, QListWidget, QMessageBox
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
+from pathlib import Path
+
+from src import Config
+# from src.mesh_loader import Mode as MeshMode, endings as mesh_endings # used for commented code
 
 
 class MSRHeaderWidget(QWidget):
@@ -68,26 +72,66 @@ class MSRHeaderWidget(QWidget):
         """
         menu.close()
 
-        popup = QWidget()
-        popup.setWindowTitle("Library")
-        popup.resize(600, 400)
+        self._popup = QWidget()
+        self._popup.setWindowTitle("Library")
+        self._popup.resize(600, 400)
 
-        layout = QVBoxLayout(popup)
+        layout = QVBoxLayout(self._popup)
 
         default_label = QLabel("Default Library:")
-        default_list = QListWidget()
-        self.load_default_meshes(default_list)
+        self._default_list = QListWidget()
+        self.load_default_meshes()
+        self._default_list.currentTextChanged.connect(
+            self.update_loaded_mesh)
 
         custom_label = QLabel("Custom Library:")
         custom_list = QListWidget()
 
         import_button = QPushButton("Import")
-        import_button.clicked.connect(self.import_custom_mesh)
+        # TODO Implement import_custom_mesh or use super? (GUI refactoring issue)
+        # import_button.clicked.connect(self.import_custom_mesh)
 
         layout.addWidget(default_label)
-        layout.addWidget(default_list)
+        layout.addWidget(self._default_list)
         layout.addWidget(custom_label)
         layout.addWidget(custom_list)
         layout.addWidget(import_button)
 
-        popup.show()
+        self._popup.show()
+
+    def update_loaded_mesh(self, currentText: str) -> None:
+        """Updates the loaded mesh in the config.
+
+        Args:
+            currentText (str): The currently selected file name in the widget.
+        """
+        # TODO: make scaling factor configurable
+        Config.set_model(currentText, 1.)
+
+    def load_default_meshes(self) -> None:
+        """Loads the default meshes from the default folder into the list widget.
+
+        Args:
+            list_widget (QListWidget): The list widget to add the items to.
+        """
+
+        models_path = Path(__file__).parent.parent / "lib/models"
+
+        if not models_path.exists:
+            QMessageBox.warning(
+                self, "Error", f"Models folder not found at: {models_path}")
+            return
+
+        # previous implementation: problem with both surface and volumetric mesh endings
+        # self._default_list_filenames = []
+        # for filepath in models_path.iterdir():
+        #     if filepath.suffix not in mesh_endings[MeshMode.SURFACE.value]:
+        #         return
+        #     self._default_list.addItem(filepath.stem)
+        #     self._default_list_filenames.append(filepath.stem)
+
+        self._default_list_filenames = list(
+            {path.stem for path in models_path.iterdir()})
+        # use set comprehension to remove duplicates
+        for filename in self._default_list_filenames:
+            self._default_list.addItem(filename)

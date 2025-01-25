@@ -7,8 +7,7 @@ import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QPushButton,
-    QMessageBox, QLineEdit, QListWidget, QFileDialog
+    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
@@ -161,23 +160,6 @@ class MainWindow(QMainWindow):
                                        params["remanence"].value())
 
         sofa_instantiator.main()
-
-    def load_default_meshes(self, list_widget: QListWidget) -> None:
-        """Loads the default meshes from the default folder into the list widget.
-
-        Args:
-            list_widget (QListWidget): The list widget to add the items to.
-        """
-        models_path = os.path.expanduser("~/magnetic-soft-robots/meshes")
-
-        if not os.path.exists(models_path):
-            QMessageBox.warning(
-                self, "Error", f"Models folder not found at: {models_path}")
-            return
-
-        for filename in os.listdir(models_path):
-            if filename.endswith(".obj") or filename.endswith(".stl"):
-                list_widget.addItem(filename)
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.
