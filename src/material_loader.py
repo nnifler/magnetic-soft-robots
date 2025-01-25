@@ -133,9 +133,11 @@ class MaterialLoader:
         self._eo.diagonal_mass.setDataValues(
             massDensity=self._material_values['density'])
         self._eo.FEM_force_field.setDataValues(
-            youngModulus=self._material_values['youngs_modulus'],
-            poissonRatio=self._material_values['poissons_ratio'],
+            youngModulus=[self._material_values['youngs_modulus']]*3,
+            # TODO: why multiply????? see Documentation, not Corotational takes Vec instead of float
+            poissonRatio=self._material_values['poissons_ratio']
         )
+
         self._eo.remanence = Tesla.from_T(self._material_values['remanence'])
 
         self._dirty = False

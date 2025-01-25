@@ -29,7 +29,7 @@ class TestNormalBehavior(unittest.TestCase):
         uut.set_youngs_modulus(y)
         uut.update_elastic_object()
         _, kwargs = eo.FEM_force_field.setDataValues.call_args
-        self.assertEqual(kwargs['youngModulus'], expected_modulus)
+        self.assertEqual(kwargs['youngModulus'], [expected_modulus]*3)
         self.assertEqual(uut.get_youngs_modulus().Pa, expected_modulus)
 
     def test_poissons_ratio(self):

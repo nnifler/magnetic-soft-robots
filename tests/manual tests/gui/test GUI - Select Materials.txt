@@ -24,4 +24,4 @@ Expected result
 	1. Sub-widget appears correctly.
 	2. Label is correct and complete.
 	3. Drop-down menu for material selection is available and working.
-	7. No errors or warnings in the console.
+	4. No errors or warnings in the console.

@@ -52,13 +52,21 @@ class ElasticObject():
         self.diagonal_mass = eo_node.addObject(
             'DiagonalMass', name="Mass", massDensity=density.kgpm3)
         self.FEM_force_field = eo_node.addObject(
-            'TetrahedralCorotationalFEMForceField',
+            # 'TetrahedralCorotationalFEMForceField',
+            'TetrahedronFEMForceField',
             template="Vec3d",
             name="FEM",
             method="large",
             poissonRatio=poisson_ratio,
             youngModulus=youngs_modulus.Pa,
-            computeGlobalMatrix=False
+            # plasticYieldThreshold = 2e-5,
+            # 2e-5 is low value, but proportion is about realistic -> von Mises yield condition
+            # plasticMaxThreshold = 2.5e-2, # this is very high,
+            # plasticCreep = 0.1, # strain from long term stress
+            computeGlobalMatrix=False,
+            computeVonMisesStress=0,
+            showVonMisesStressPerNode=0,
+            showVonMisesStressPerElement=0,
         )
 
         # Add Constraints
@@ -72,6 +80,10 @@ class ElasticObject():
         elif model_name == "gripper_3_arm" or model_name == "gripper_4_arm":
             eo_node.addObject('BoxROI', name='constraint_roi',
                               box='-0.05 -0.05 0.01 0.05 0.05 0.03',
+                              drawBoxes=1 if visualize_constraints else 0)
+        elif model_name == "butterfly" or model_name == "simple_butterfly":
+            eo_node.addObject('BoxROI', name='constraint_roi',
+                              box='-0.1 -0.6 -0.2 0.1 0.05 0.1',
                               drawBoxes=1 if visualize_constraints else 0)
         else:
             use_constraints = False
@@ -95,7 +107,12 @@ class ElasticObject():
         collision.addObject('TriangleSetTopologyContainer',
                             name="Container", src="@../Container")
         collision.addObject('MechanicalObject', name="surfaceDOFs")
-        collision.addObject('PointCollisionModel', name="CollisionModel")
+        collision.addObject('PointCollisionModel',
+                            name="PointCollisionModel", selfCollision=True)
+        collision.addObject('TriangleCollisionModel',
+                            name="TriangleCollisionModel", selfCollision=True)
+        collision.addObject('LineCollisionModel',
+                            name="LineCollisionModel", selfCollision=True)
         collision.addObject('IdentityMapping', name="CollisionMapping",
                             input="@../../dofs", output="@surfaceDOFs")
 
