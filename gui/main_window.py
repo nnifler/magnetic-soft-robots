@@ -97,6 +97,9 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(content_layout)
 
+        # Default values
+        Config.set_model("beam", 0.02)
+
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
         on the current position of the slider in tesla values.
@@ -145,8 +148,6 @@ class MainWindow(QMainWindow):
         field_strength = Tesla.from_T(field_strength_val)
 
         Config.set_show_force(True)
-        Config.set_model("beam",
-                         0.02)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,

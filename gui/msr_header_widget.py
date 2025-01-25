@@ -79,7 +79,8 @@ class MSRHeaderWidget(QWidget):
 
         default_label = QLabel("Default Library:")
         default_list = QListWidget()
-        self.load_default_models(default_list)
+        self.load_default_models(default_list,
+                                 Path(__file__).parent.parent / "lib/models")
         default_list.currentTextChanged.connect(
             self.update_loaded_model)
 
@@ -107,15 +108,12 @@ class MSRHeaderWidget(QWidget):
         # TODO: make scaling factor configurable
         Config.set_model(model_name, .02)  # use .02 for now
 
-    def load_default_models(self, list_widget: QListWidget) -> None:
+    def load_default_models(self, list_widget: QListWidget, models_path: Path) -> None:
         """Loads the default models from the default folder into the list widget.
 
         Args:
             list_widget (QListWidget): The list widget to add the items to.
         """
-
-        models_path = Path(__file__).parent.parent / "lib/models"
-
         if not models_path.exists:
             QMessageBox.warning(
                 self, "Error", f"Models folder not found at: {models_path}")
