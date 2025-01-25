@@ -46,7 +46,8 @@ def main():
                             'Sofa.Component.LinearSolver.Direct',
                             'Sofa.Component.Constraint.Lagrangian.Correction',
                             'Sofa.Component.Topology.Mapping',
-                            'Sofa.Component.MechanicalLoad'
+                            'Sofa.Component.MechanicalLoad',
+                            'Sofa.Component.Engine.Select',
                             ])
 
     root = Sofa.Core.Node("root")
