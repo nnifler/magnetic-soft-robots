@@ -16,7 +16,8 @@ class MSRMaterialParameter():
     One instance should be created for each parameter.
     Includes widgets and unit management.
     """
-    decimal_validator = QRegularExpressionValidator(QRegularExpression(r"^-?\d+[.,]?\d*$"))
+    decimal_validator = QRegularExpressionValidator(
+        QRegularExpression(r"^-?\d+[.,]?\d*$"))
 
     def __init__(self, name: str,
                  value_range: tuple[float, float],
@@ -27,7 +28,7 @@ class MSRMaterialParameter():
                  decimals: int = 4,
                  index: int = 0,
 
-        ) -> None:
+                 ) -> None:
         """Initialize a wrapper for material parameters.
 
         Args:
@@ -72,7 +73,6 @@ class MSRMaterialParameter():
             self.unit_selector.currentIndexChanged.connect(
                 self._change_unit
             )
-
 
     def _change_unit(self) -> None:
         """Method called when switching units in the QComboBox.
@@ -182,7 +182,6 @@ class MSRMaterialGroup(QGroupBox):
             self._layout.addWidget(param.spinbox, i, 1)
             self._layout.addWidget(param.unit_selector, i, 2)
 
-
     def load_materials_from_json(self) -> None:
         """Loads materials from a JSON file.
         """
@@ -240,6 +239,8 @@ class MSRMaterialGroup(QGroupBox):
             youngs_modulus_param.spinbox.setValue(round(converted_modulus, 4))
             youngs_modulus_param.spinbox.blockSignals(False)
 
-            # poisson's ratio and remanence set manually 
-            self.parameters["poissons_ratio"].spinbox.setValue(material.get("poissons_ratio", 0))
-            self.parameters["remanence"].spinbox.setValue(material.get("remanence", 0))
+            # poisson's ratio and remanence set manually
+            self.parameters["poissons_ratio"].spinbox.setValue(
+                material.get("poissons_ratio", 0))
+            self.parameters["remanence"].spinbox.setValue(
+                material.get("remanence", 0))

@@ -18,6 +18,7 @@ from src import Config, sofa_instantiator
 
 from gui import MSRHeaderWidget, MSRMaterialGroup
 
+
 class MainWindow(QMainWindow):
     """Main window of the application."""
 
@@ -97,7 +98,6 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(content_layout)
 
-
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
         on the current position of the slider in tesla values.
@@ -106,7 +106,6 @@ class MainWindow(QMainWindow):
         formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
         self.field_strength_label.setText(
             f"Magnetic Field Strength: {formatted_strength} T")
-
 
     def parse_direction_input(self, text: str) -> Optional[List[float]]:
         """Parses the direction input from the user 
@@ -133,7 +132,6 @@ class MainWindow(QMainWindow):
             return values
         except ValueError:
             return None
-
 
     def apply_parameters(self) -> None:
         """Print the parameters and throws exception if invalid direction input.
@@ -164,7 +162,6 @@ class MainWindow(QMainWindow):
 
         sofa_instantiator.main()
 
-
     def load_default_meshes(self, list_widget: QListWidget) -> None:
         """Loads the default meshes from the default folder into the list widget.
 
@@ -181,7 +178,6 @@ class MainWindow(QMainWindow):
         for filename in os.listdir(models_path):
             if filename.endswith(".obj") or filename.endswith(".stl"):
                 list_widget.addItem(filename)
-
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.
