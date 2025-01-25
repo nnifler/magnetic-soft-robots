@@ -121,7 +121,7 @@ class ElasticObject():
         visu.loader = self._mesh_loader.load_mesh_into(visu, Mode.SURFACE)
         visu.addObject('OglModel', name="model", src=self._mesh_loader.reference(
             Mode.SURFACE), color=[1., 1., 1.], updateNormals=False)
-        visu.addObject('BarycentricMapping')
+        visu.addObject('IdentityMapping')
 
         l = len(self.mesh.position.value)
         self.vertex_forces = [None] * l
