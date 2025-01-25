@@ -1,21 +1,19 @@
 """This module contains the main window of the application."""
 
 import os
-import json
 from builtins import ValueError
-from pathlib import Path
 from typing import Optional, List
 import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton,
-    QGridLayout, QMessageBox, QLineEdit, QMenu, QListWidget, QFileDialog
+    QLabel, QSlider, QPushButton,
+    QMessageBox, QLineEdit, QListWidget, QFileDialog
 )
 from PySide6.QtCore import Qt, QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
+from PySide6.QtGui import QRegularExpressionValidator
 
-from src.units import Density, YoungsModulus, Tesla
+from src.units import Tesla
 from src import Config, sofa_instantiator
 
 from gui import MSRHeaderWidget, MSRMaterialGroup

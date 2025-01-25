@@ -59,9 +59,10 @@ class ElasticObject():
             method="large",
             poissonRatio=poisson_ratio,
             youngModulus=youngs_modulus.Pa,
-            # plasticYieldThreshold = 2e-5, # 2e-5 is low value, but proportion is about realistic -> von Mises yield condition
-            # plasticMaxThreshold = 2.5e-2, # this is very high, 
-            # plasticCreep = 0.1, # strain from long term stress 
+            # plasticYieldThreshold = 2e-5, 
+            # 2e-5 is low value, but proportion is about realistic -> von Mises yield condition
+            # plasticMaxThreshold = 2.5e-2, # this is very high,
+            # plasticCreep = 0.1, # strain from long term stress
             computeGlobalMatrix=False,
             computeVonMisesStress=0,
             showVonMisesStressPerNode=0,

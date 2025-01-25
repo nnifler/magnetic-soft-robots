@@ -1,10 +1,11 @@
+"""This module provides a toolkit for the GUI header definition."""
+
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton,
-    QGridLayout, QMessageBox, QLineEdit, QMenu, QListWidget, QFileDialog
+    QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QMenu, QListWidget
 )
-from PySide6.QtCore import Qt, QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QKeySequence, QAction
 
 
 class MSRHeaderWidget(QWidget):
@@ -79,7 +80,7 @@ class MSRHeaderWidget(QWidget):
         self.load_default_meshes(default_list)
 
         custom_label = QLabel("Custom Library:")
-        self.custom_list = QListWidget()
+        custom_list = QListWidget()
 
         import_button = QPushButton("Import")
         import_button.clicked.connect(self.import_custom_mesh)
@@ -87,7 +88,7 @@ class MSRHeaderWidget(QWidget):
         layout.addWidget(default_label)
         layout.addWidget(default_list)
         layout.addWidget(custom_label)
-        layout.addWidget(self.custom_list)
+        layout.addWidget(custom_list)
         layout.addWidget(import_button)
 
         popup.show()
