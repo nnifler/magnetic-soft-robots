@@ -29,7 +29,7 @@ class MSRHeaderWidget(QWidget):
         msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
         header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
 
-        self.library_button = QPushButton("Library")
+        self.library_button = QPushButton("Models")
         self.library_button.clicked.connect(self.show_library_menu)
         header_layout.addStretch()
         header_layout.addWidget(self.library_button)
@@ -72,19 +72,19 @@ class MSRHeaderWidget(QWidget):
         menu.close()
 
         self._popup = QWidget()  # garbage collcted without self
-        self._popup.setWindowTitle("Library")
+        self._popup.setWindowTitle("Models")
         self._popup.resize(600, 400)
 
         layout = QVBoxLayout(self._popup)
 
-        default_label = QLabel("Default Library:")
+        default_label = QLabel("Default Models:")
         default_list = QListWidget()
         self.load_default_models(default_list,
                                  Path(__file__).parent.parent / "lib/models")
         default_list.currentTextChanged.connect(
             self.update_loaded_model)
 
-        custom_label = QLabel("Custom Library:")
+        custom_label = QLabel("Custom Models:")
         custom_list = QListWidget()
 
         import_button = QPushButton("Import")
