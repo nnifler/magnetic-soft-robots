@@ -1,10 +1,10 @@
-# Manual Test for the User Story 'LINK - SOFA Interface'
+# Manual Test for the User Story 'GUI - Select Meshes'
 
 ### Test Goal
-Check whether the user inputs via the GUI get processed correctly, are added to the config class and the Sofa simulation can be started from the GUI.
+Check whether the input in the Models interface gets progressed properly so it is visible in the SOFA simulation.
 
 ### User Story
-As any user, I’d like to see the changes I set in the GUI take effect on the simulation.
+As a material science engineer, I’d like to switch between several meshes to compare my material’s behaviour on different geometries, so that I can evaluate material properties on different test subjects.
 
 ## Prerequisites
 Make sure that the project is installed according to [README.md]() and [Requirements.txt]().
@@ -21,4 +21,4 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     1. Click the `Apply` button at the bottom of the GUI.
 
 ## Expected Result
-The in step 2.2 selected model is shown in the SOFA GUI.
+The in step 2.ii selected model is shown in the SOFA GUI.
