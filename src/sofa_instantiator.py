@@ -4,8 +4,8 @@ from pathlib import Path
 
 import Sofa.Gui
 
-from . import Config, SceneBuilder, ElasticObject, MagneticController, MaterialLoader, MeshLoader
-from .mesh_loader import Mode
+from src import Config, SceneBuilder, ElasticObject, MagneticController, MaterialLoader, MeshLoader
+from src.mesh_loader import Mode
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
                             ])
 
     root = Sofa.Core.Node("root")
-    create_scene(root)
+    createScene(root)
     Sofa.Simulation.init(root)
 
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
@@ -60,7 +60,8 @@ def main():
     Sofa.Gui.GUIManager.closeGUI()
 
 
-def create_scene(root: Sofa.Core.Node) -> Sofa.Core.Node:
+# DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
+def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
     """Creates the scene for the Sofa simulation with the given argument as the root node.
 
     Args:
