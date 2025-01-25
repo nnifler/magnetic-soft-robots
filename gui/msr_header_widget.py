@@ -72,44 +72,44 @@ class MSRHeaderWidget(QWidget):
         """
         menu.close()
 
-        self._popup = QWidget()
+        self._popup = QWidget()  # garbage collcted without self
         self._popup.setWindowTitle("Library")
         self._popup.resize(600, 400)
 
         layout = QVBoxLayout(self._popup)
 
         default_label = QLabel("Default Library:")
-        self._default_list = QListWidget()
-        self.load_default_meshes()
-        self._default_list.currentTextChanged.connect(
-            self.update_loaded_mesh)
+        default_list = QListWidget()
+        self.load_default_models(default_list)
+        default_list.currentTextChanged.connect(
+            self.update_loaded_model)
 
         custom_label = QLabel("Custom Library:")
         custom_list = QListWidget()
 
         import_button = QPushButton("Import")
-        # TODO Implement import_custom_mesh or use super? (GUI refactoring issue)
-        # import_button.clicked.connect(self.import_custom_mesh)
+        # TODO Implement import_custom_model or use super? (GUI refactoring issue)
+        # import_button.clicked.connect(self.import_custom_model)
 
         layout.addWidget(default_label)
-        layout.addWidget(self._default_list)
+        layout.addWidget(default_list)
         layout.addWidget(custom_label)
         layout.addWidget(custom_list)
         layout.addWidget(import_button)
 
         self._popup.show()
 
-    def update_loaded_mesh(self, currentText: str) -> None:
+    def update_loaded_model(self, model_name: str) -> None:
         """Updates the loaded mesh in the config.
 
         Args:
             currentText (str): The currently selected file name in the widget.
         """
         # TODO: make scaling factor configurable
-        Config.set_model(currentText, 1.)
+        Config.set_model(model_name, .02)  # use .02 for now
 
-    def load_default_meshes(self) -> None:
-        """Loads the default meshes from the default folder into the list widget.
+    def load_default_models(self, list_widget: QListWidget) -> None:
+        """Loads the default models from the default folder into the list widget.
 
         Args:
             list_widget (QListWidget): The list widget to add the items to.
@@ -130,8 +130,7 @@ class MSRHeaderWidget(QWidget):
         #     self._default_list.addItem(filepath.stem)
         #     self._default_list_filenames.append(filepath.stem)
 
-        self._default_list_filenames = list(
-            {path.stem for path in models_path.iterdir()})
+        model_names = list({path.stem for path in models_path.iterdir()})
         # use set comprehension to remove duplicates
-        for filename in self._default_list_filenames:
-            self._default_list.addItem(filename)
+        for model_name in model_names:
+            list_widget.addItem(model_name)
