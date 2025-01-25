@@ -52,13 +52,20 @@ class ElasticObject():
         self.diagonal_mass = eo_node.addObject(
             'DiagonalMass', name="Mass", massDensity=density.kgpm3)
         self.FEM_force_field = eo_node.addObject(
-            'TetrahedralCorotationalFEMForceField',
+            # 'TetrahedralCorotationalFEMForceField',
+            'TetrahedronFEMForceField',
             template="Vec3d",
             name="FEM",
             method="large",
             poissonRatio=poisson_ratio,
             youngModulus=youngs_modulus.Pa,
-            computeGlobalMatrix=False
+            # plasticYieldThreshold = 2e-5, # 2e-5 is low value, but proportion is about realistic -> von Mises yield condition
+            # plasticMaxThreshold = 2.5e-2, # this is very high, 
+            # plasticCreep = 0.1, # strain from long term stress 
+            computeGlobalMatrix=False,
+            computeVonMisesStress=0,
+            showVonMisesStressPerNode=0,
+            showVonMisesStressPerElement=0,
         )
 
         # Add Constraints
