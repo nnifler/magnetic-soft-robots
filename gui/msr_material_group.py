@@ -27,7 +27,19 @@ class MSRMaterialParameter():
                  decimals: int = 4,
                  index: int = 0,
 
-        ):
+        ) -> None:
+        """Initialize a wrapper for material parameters.
+
+        Args:
+            name (str): Descriptive name of the Parameter selection: '(symbol) Parameter Name:'
+            range (tuple[float, float]): Valid value range (lo, hi)
+            units (list[str]): String representations of available units
+            setter (list): Unit.from_X methods in the same order as units (if implemented)
+            getter (list): Unit.X properties in the same order as units
+            step (float, optional): Step size for spinbox. Defaults to 1..
+            decimals (int, optional): Decimal places in spinbox. Defaults to 4.
+            index (int, optional): Starting index of unit selection. Defaults to 0.
+        """
         self.label = QLabel(text=name)
         self.spinbox = QDoubleSpinBox()
         self.unit_selector: QLabel | QComboBox = None
@@ -99,13 +111,15 @@ class MSRMaterialGroup(QGroupBox):
     """
 
     def __init__(self) -> None:
+        """Initializes MSRMaterialGroup.
+        """
         super().__init__("Material Configuration")
         self._layout = QGridLayout(self)
 
         material_label = QLabel("Select Material:")
         self._material_combo_box = QComboBox()
 
-        self.material_data: list = []  # Platz für JSON-Daten
+        self.material_data: list = []  # filled later with JSON-file
         self.load_materials_from_json()
 
         behavior_label = QLabel("Material Behavior:")
@@ -226,6 +240,6 @@ class MSRMaterialGroup(QGroupBox):
             youngs_modulus_param.spinbox.setValue(round(converted_modulus, 4))
             youngs_modulus_param.spinbox.blockSignals(False)
 
-            # Poisson's Ratio und Remanenz direkt setzen
+            # poisson's ratio and remanence set manually 
             self.parameters["poissons_ratio"].spinbox.setValue(material.get("poissons_ratio", 0))
             self.parameters["remanence"].spinbox.setValue(material.get("remanence", 0))
