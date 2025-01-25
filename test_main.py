@@ -15,6 +15,8 @@ suite.addTests([
     mesh_loader_test_suite(),
     scene_builder_test_suite(),
     beam_test_suite(),
+    simple_butterfly_test_suite(),
+    butterfly_test_suite(),
 ])
 
 runner = unittest.TextTestRunner()
