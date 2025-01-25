@@ -1,12 +1,12 @@
+"""This module provides a toolkit for material parameter definition."""
+
 import json
 from pathlib import Path
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton,
-    QGridLayout, QMessageBox, QLineEdit, QMenu, QListWidget, QFileDialog
+    QGroupBox, QLabel, QDoubleSpinBox, QComboBox, QGridLayout, QMessageBox
 )
-from PySide6.QtCore import Qt, QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import BaseUnit, Density, YoungsModulus, Tesla
 
@@ -19,7 +19,7 @@ class MSRMaterialParameter():
     decimal_validator = QRegularExpressionValidator(QRegularExpression(r"^-?\d+[.,]?\d*$"))
 
     def __init__(self, name: str,
-                 range: tuple[float, float],
+                 value_range: tuple[float, float],
                  units: list[str],
                  setter: list,
                  getter: list,
@@ -32,7 +32,7 @@ class MSRMaterialParameter():
 
         Args:
             name (str): Descriptive name of the Parameter selection: '(symbol) Parameter Name:'
-            range (tuple[float, float]): Valid value range (lo, hi)
+            value_range (tuple[float, float]): Valid value range (lo, hi)
             units (list[str]): String representations of available units
             setter (list): Unit.from_X methods in the same order as units (if implemented)
             getter (list): Unit.X properties in the same order as units
@@ -49,7 +49,7 @@ class MSRMaterialParameter():
         self._setter = setter
         self._getter = getter
 
-        self.spinbox.setRange(*range)
+        self.spinbox.setRange(*value_range)
         self.spinbox.setDecimals(decimals)
         self.spinbox.setSingleStep(step)
 
@@ -99,8 +99,8 @@ class MSRMaterialParameter():
         val = self.spinbox.value()
         if len(self._units) == 0:
             return val
-        else:
-            return self._setter[self._unit_index](val)
+
+        return self._setter[self._unit_index](val)
 
 
 class MSRMaterialGroup(QGroupBox):
@@ -130,7 +130,7 @@ class MSRMaterialGroup(QGroupBox):
         self.parameters = {
             "youngs_modulus": MSRMaterialParameter(
                 name="(E) Young's Modulus:",
-                range=(0, 1e12),
+                value_range=(0, 1e12),
                 units=["Pa", "hPa", "MPa", "GPa"],
                 getter=[YoungsModulus.Pa, YoungsModulus.hPa,
                         YoungsModulus.MPa, YoungsModulus.GPa],
@@ -141,7 +141,7 @@ class MSRMaterialGroup(QGroupBox):
             ),
             "poissons_ratio": MSRMaterialParameter(
                 name="(ν) Poisson's Ratio:",
-                range=(0, 0.4999),
+                value_range=(0, 0.4999),
                 units=[],
                 setter=[],
                 getter=[],
@@ -149,7 +149,7 @@ class MSRMaterialGroup(QGroupBox):
             ),
             "density": MSRMaterialParameter(
                 name="(ρ) Density:",
-                range=(0, 30000),
+                value_range=(0, 30000),
                 units=["kg/m³", "g/cm³", "Mg/m³", "t/m³"],
                 getter=[Density.kgpm3, Density.gpcm3,
                         Density.Mgpm3, Density.tpm3],
@@ -159,7 +159,7 @@ class MSRMaterialGroup(QGroupBox):
             ),
             "remanence": MSRMaterialParameter(
                 name="(T) Remanence:",
-                range=(-2.0, 2.0),
+                value_range=(-2.0, 2.0),
                 units=["T"],
                 getter=[Tesla.T],
                 setter=[Tesla.from_T],
