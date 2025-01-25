@@ -77,6 +77,10 @@ class ElasticObject():
             eo_node.addObject('BoxROI', name='constraint_roi',
                               box='-0.005 0 0 0.005 0.05 0.05',
                               drawBoxes=1 if visualize_constraints else 0)
+        elif model_name == "gripper_3_arm" or model_name == "gripper_4_arm":
+            eo_node.addObject('BoxROI', name='constraint_roi',
+                              box='-0.05 -0.05 0.01 0.05 0.05 0.03',
+                              drawBoxes=1 if visualize_constraints else 0)
         elif model_name == "butterfly" or model_name == "simple_butterfly":
             eo_node.addObject('BoxROI', name='constraint_roi',
                               box='-0.1 -0.6 -0.2 0.1 0.05 0.1',
