@@ -1,22 +1,22 @@
 """This module contains the main window of the application."""
 
 import os
-import json
 from builtins import ValueError
-from pathlib import Path
 from typing import Optional, List
 import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QDoubleSpinBox, QComboBox, QPushButton,
-    QGridLayout, QMessageBox, QLineEdit, QMenu, QListWidget, QFileDialog
+    QLabel, QSlider, QPushButton,
+    QMessageBox, QLineEdit, QListWidget, QFileDialog
 )
 from PySide6.QtCore import Qt, QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
+from PySide6.QtGui import QRegularExpressionValidator
 
-from src.units import Density, YoungsModulus, Tesla
+from src.units import Tesla
 from src import Config, sofa_instantiator
+
+from gui import MSRHeaderWidget, MSRMaterialGroup
 
 
 class MainWindow(QMainWindow):
@@ -39,21 +39,7 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout(central_widget)
 
         # Header-View
-        header_widget = QWidget()
-        header_widget.setFixedHeight(30)  # Maximal 1 cm Höhe
-        header_layout = QHBoxLayout(header_widget)
-        header_layout.setContentsMargins(5, 0, 5, 0)
-        header_layout.setSpacing(5)  # Minimaler Abstand zwischen Buttons
-
-        msr_label = QLabel("MSR")
-        msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
-        header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
-
-        self.library_button = QPushButton("Library")
-        self.library_button.clicked.connect(self.show_library_menu)
-        header_layout.addStretch()
-        header_layout.addWidget(self.library_button)
-
+        header_widget = MSRHeaderWidget()
         main_layout.addWidget(header_widget)
 
         # Hauptinhalt - Horizontal Layout
@@ -64,96 +50,8 @@ class MainWindow(QMainWindow):
         sidebar_layout = QVBoxLayout(sidebar)
 
         # Materialeigenschaften
-        material_group = QGroupBox("Material Configuration")
-        material_layout = QGridLayout(material_group)
-
-        material_label = QLabel("Select Material:")
-        self.material_combo_box = QComboBox()
-
-        self.material_data = []  # Platz für JSON-Daten
-        self.load_materials_from_json()
-
-        behavior_label = QLabel("Material Behavior:")
-        self.behavior_combo_box = QComboBox()
-        self.behavior_combo_box.addItems(
-            ["Linear-Elastic", "Plastic", "Viscoelastic"])
-
-        decimal_regex = QRegularExpression(r"^-?\d+[.,]?\d*$")
-        decimal_validator = QRegularExpressionValidator(decimal_regex)
-
-        young_modulus_label = QLabel("(E) Young's Modulus:")
-        self.young_modulus_spinbox = QDoubleSpinBox()
-        self.young_modulus_spinbox.setRange(0, 1e12)
-        self.young_modulus_spinbox.setDecimals(4)
-        self.unit_selector_modulus = QComboBox()
-        self.unit_selector_modulus.addItems(["Pa", "hPa", "MPa", "GPa"])
-        self.unit_selector_modulus.setCurrentIndex(3)
-        self.prev_modulus_index = 3
-        self.unit_selector_modulus.currentIndexChanged.connect(
-            self.update_modulus_unit)
-
-        poisson_label = QLabel("(ν) Poisson Ratio:")
-        self.poisson_spinbox = QDoubleSpinBox()
-        self.poisson_spinbox.setRange(0, 0.4999)
-        self.poisson_spinbox.setDecimals(4)
-        self.poisson_spinbox.setSingleStep(0.1)
-
-        # Validator und Normalisierung für Poisson Ratio
-        self.poisson_spinbox.lineEdit().setValidator(decimal_validator)
-        self.poisson_spinbox.lineEdit().editingFinished.connect(
-            lambda: self.poisson_spinbox.setValue(
-                float(self.poisson_spinbox.text().replace(",", ".")))
-        )
-
-        density_label = QLabel("(ρ) Density:")
-        self.density_spinbox = QDoubleSpinBox()
-        self.density_spinbox.setRange(0, 30000)
-        self.density_spinbox.setDecimals(2)
-        self.unit_selector_density = QComboBox()
-        self.unit_selector_density.addItems(
-            ["kg/m³", "g/cm³", "Mg/m³", "t/m³"])
-        self.unit_selector_density.setCurrentIndex(0)
-        self.prev_density_index = 0
-        self.unit_selector_density.currentIndexChanged.connect(
-            self.update_density_unit)
-
-        self.material_combo_box.currentIndexChanged.connect(
-            self.update_material_parameters)
-
-        remanence_label = QLabel("Remanence (T):")
-        self.remanence_spinbox = QDoubleSpinBox()
-        self.remanence_spinbox.setRange(-2.0, 2.0)
-        self.remanence_spinbox.setDecimals(3)
-
-        # Validator und Normalisierung für Remanence
-        self.remanence_spinbox.lineEdit().setValidator(decimal_validator)
-        self.remanence_spinbox.lineEdit().editingFinished.connect(
-            lambda: self.remanence_spinbox.setValue(
-                float(self.remanence_spinbox.text().replace(",", ".")))
-        )
-
-        # Layout für Materialeigenschaften
-        material_layout.addWidget(material_label, 0, 0)
-        material_layout.addWidget(self.material_combo_box, 0, 1)
-
-        material_layout.addWidget(behavior_label, 1, 0)
-        material_layout.addWidget(self.behavior_combo_box, 1, 1)
-
-        material_layout.addWidget(young_modulus_label, 2, 0)
-        material_layout.addWidget(self.young_modulus_spinbox, 2, 1)
-        material_layout.addWidget(self.unit_selector_modulus, 2, 2)
-
-        material_layout.addWidget(poisson_label, 3, 0)
-        material_layout.addWidget(self.poisson_spinbox, 3, 1)
-
-        material_layout.addWidget(density_label, 4, 0)
-        material_layout.addWidget(self.density_spinbox, 4, 1)
-        material_layout.addWidget(self.unit_selector_density, 4, 2)
-
-        material_layout.addWidget(remanence_label, 5, 0)
-        material_layout.addWidget(self.remanence_spinbox, 5, 1)
-
-        sidebar_layout.addWidget(material_group)
+        self.material_group = MSRMaterialGroup()
+        sidebar_layout.addWidget(self.material_group)
 
         # Magnetfeldsteuerung
         field_group = QGroupBox("Magnet Field Settings")
@@ -200,112 +98,6 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(content_layout)
 
-    def load_materials_from_json(self) -> None:
-        """Loads materials from a JSON file.
-        """
-        # Directory of the current file
-        current_dir = Path(__file__).parent
-        # Path to the JSON file
-        # by moving one directory up from the current directory to the selected folder
-        data_path = current_dir / "../lib/materials/magnetic_soft_robot_materials.json"
-        json_file_path = data_path
-        print(f"Looking for JSON file at: {json_file_path}")
-
-        try:
-            with open(json_file_path, "r", encoding="utf-8") as file:
-                self.material_data = json.load(file)
-
-            self.material_combo_box.clear()
-            for material in self.material_data:
-                self.material_combo_box.addItem(
-                    material.get("name", "Unknown Material"))
-
-        except FileNotFoundError:
-            QMessageBox.warning(
-                self, "Error", "Materials JSON file not found.")
-        except json.JSONDecodeError as e:
-            QMessageBox.warning(
-                self, "Error", f"Error decoding JSON file:\n{e}")
-
-    def update_material_parameters(self) -> None:
-        """Updates the material parameters with the data from the opened JSON file.
-        """
-        current_material_index = self.material_combo_box.currentIndex()
-        if 0 <= current_material_index < len(self.material_data):
-            material = self.material_data[current_material_index]
-
-            # Dichte mit Umrechnung aktualisieren
-            density = Density.from_kgpm3(material.get("density", 0))
-            current_density_index = self.unit_selector_density.currentIndex()
-            vals = [density.kgpm3, density.gpcm3, density.Mgpm3, density.tpm3]
-            converted_density = vals[current_density_index]
-            self.density_spinbox.blockSignals(True)
-            self.density_spinbox.setValue(round(converted_density, 2))
-            self.density_spinbox.blockSignals(False)
-
-            # Young's Modulus mit Umrechnung aktualisieren
-            youngs_modulus = YoungsModulus.from_Pa(
-                material.get("youngs_modulus", 0))
-            current_modulus_index = self.unit_selector_modulus.currentIndex()
-            vals = [youngs_modulus.Pa, youngs_modulus.hPa,
-                    youngs_modulus.MPa, youngs_modulus.GPa]
-            converted_modulus = vals[current_modulus_index]
-            self.young_modulus_spinbox.blockSignals(True)
-            self.young_modulus_spinbox.setValue(round(converted_modulus, 4))
-            self.young_modulus_spinbox.blockSignals(False)
-
-            # Poisson's Ratio und Remanenz direkt setzen
-            self.poisson_spinbox.setValue(material.get("poissons_ratio", 0))
-            self.remanence_spinbox.setValue(material.get("remanence", 0))
-
-    def update_modulus_unit(self) -> None:
-        """Updates the modulus unit if the unit size is changed.
-        """
-        value = self.young_modulus_spinbox.value()
-        youngs_modulus = [
-            YoungsModulus.from_Pa(int(value)),
-            YoungsModulus.from_hPa(value),
-            YoungsModulus.from_MPa(value),
-            YoungsModulus.from_GPa(value)
-        ][self.prev_modulus_index]
-        vals = [
-            youngs_modulus.Pa,
-            youngs_modulus.hPa,
-            youngs_modulus.MPa,
-            youngs_modulus.GPa
-        ]
-        cur_index = self.unit_selector_modulus.currentIndex()
-        converted_value = vals[cur_index]
-        self.prev_modulus_index = cur_index
-
-        self.young_modulus_spinbox.blockSignals(True)
-        self.young_modulus_spinbox.setValue(round(converted_value, 4))
-        self.young_modulus_spinbox.blockSignals(False)
-
-    def update_density_unit(self) -> None:
-        """Updates the density unit if the unit size is changed.
-        """
-        value = self.density_spinbox.value()
-        density = [
-            Density.from_kgpm3(value),
-            Density.from_gpcm3(value),
-            Density.from_Mgpm3(value),
-            Density.from_tpm3(value)
-        ][self.prev_density_index]
-        vals = [
-            density.kgpm3,
-            density.gpcm3,
-            density.Mgpm3,
-            density.tpm3
-        ]
-        cur_index = self.unit_selector_density.currentIndex()
-        converted_value = vals[cur_index]
-        self.prev_density_index = cur_index
-
-        self.density_spinbox.blockSignals(True)
-        self.density_spinbox.setValue(round(converted_value, 2))
-        self.density_spinbox.blockSignals(False)
-
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
         on the current position of the slider in tesla values.
@@ -350,24 +142,6 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Invalid direction.")
             return
 
-        # Erfassung der Parameterwerte
-        youngs_modulus_val = self.young_modulus_spinbox.value()
-        youngs_modulus = [
-            YoungsModulus.from_Pa(int(youngs_modulus_val)),
-            YoungsModulus.from_hPa(youngs_modulus_val),
-            YoungsModulus.from_MPa(youngs_modulus_val),
-            YoungsModulus.from_GPa(youngs_modulus_val)
-        ][self.unit_selector_modulus.currentIndex()]
-        poisson_ratio = self.poisson_spinbox.value()
-        density_val = self.density_spinbox.value()
-        density = [
-            Density.from_kgpm3(density_val),
-            Density.from_gpcm3(density_val),
-            Density.from_Mgpm3(density_val),
-            Density.from_tpm3(density_val)
-        ][self.unit_selector_density.currentIndex()]
-        remanence_val = self.remanence_spinbox.value()
-        remanence = Tesla.from_T(remanence_val)
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
@@ -379,73 +153,14 @@ class MainWindow(QMainWindow):
                                    field_strength,
                                    np.array(direction),
                                    np.array([1, 0, 0]))
-        Config.set_material_parameters(poisson_ratio,
-                                       youngs_modulus,
-                                       density,
-                                       remanence)
+
+        params = self.material_group.parameters
+        Config.set_material_parameters(params["poissons_ratio"].value(),
+                                       params["youngs_modulus"].value(),
+                                       params["density"].value(),
+                                       params["remanence"].value())
 
         sofa_instantiator.main()
-
-    def show_library_menu(self) -> None:
-        """Creates the library menu.
-        """
-
-        # Create the menu bar
-        context_menu = QMenu(self)
-
-        # Add action to the Library menu
-        open_action = QAction("Open", self)
-        open_action.setShortcut(QKeySequence("Ctrl+O"))
-        open_action.triggered.connect(
-            lambda _: self.open_library(context_menu))
-        context_menu.addAction(open_action)
-
-        import_action = QAction("Import", self)
-        import_action.setShortcut(QKeySequence("Ctrl+I"))
-        import_action.triggered.connect(
-            lambda _: self.import_library(context_menu))
-        context_menu.addAction(import_action)
-
-        export_action = QAction("Export", self)
-        export_action.setShortcut(QKeySequence("Ctrl+E"))
-        export_action.triggered.connect(
-            lambda _: self.export_library(context_menu))
-        context_menu.addAction(export_action)
-
-        context_menu.exec(self.library_button.mapToGlobal(
-            self.library_button.rect().bottomLeft()))
-
-    def open_library(self, menu: QMenu) -> None:
-        """Opens the library popup menu.
-
-        Args:
-            menu (QMenu): The menu to close when opening the popup.
-        """
-        menu.close()
-
-        popup = QWidget()
-        popup.setWindowTitle("Library")
-        popup.resize(600, 400)
-
-        layout = QVBoxLayout(popup)
-
-        default_label = QLabel("Default Library:")
-        default_list = QListWidget()
-        self.load_default_meshes(default_list)
-
-        custom_label = QLabel("Custom Library:")
-        self.custom_list = QListWidget()
-
-        import_button = QPushButton("Import")
-        import_button.clicked.connect(self.import_custom_mesh)
-
-        layout.addWidget(default_label)
-        layout.addWidget(default_list)
-        layout.addWidget(custom_label)
-        layout.addWidget(self.custom_list)
-        layout.addWidget(import_button)
-
-        popup.show()
 
     def load_default_meshes(self, list_widget: QListWidget) -> None:
         """Loads the default meshes from the default folder into the list widget.
