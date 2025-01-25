@@ -8,12 +8,11 @@ from PySide6.QtGui import QRegularExpressionValidator, QKeySequence, QAction
 
 
 class MSRHeaderWidget(QWidget):
-    """Implements the Header 
-
-    Args:
-        QWidget (_type_): Base class.
+    """Implements the header of the GUI as a QWidget.
     """
     def __init__(self) -> None:
+        """Initializes the header widget.
+        """
         super().__init__()
 
         self.setFixedHeight(30)  # Maximal 1 cm Höhe
