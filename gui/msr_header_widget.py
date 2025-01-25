@@ -1,13 +1,12 @@
 """This module provides a toolkit for the GUI header definition."""
 
+from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QMenu, QListWidget, QMessageBox
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
-from pathlib import Path
-
 from src import Config
 # from src.mesh_loader import Mode as MeshMode, endings as mesh_endings # used for commented code
 
