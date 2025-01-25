@@ -15,6 +15,8 @@ suite.addTests([
     mesh_loader_test_suite(),
     scene_builder_test_suite(),
     beam_test_suite(),
+    gripper_3_arm_test_suite(),
+    gripper_4_arm_test_suite(),
     simple_butterfly_test_suite(),
     butterfly_test_suite(),
 ])
