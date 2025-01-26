@@ -81,14 +81,15 @@ class MSRHeaderWidget(QWidget):
         custom_label = QLabel("Custom Models:")
         custom_list = QListWidget()
 
-        self.load_default_models(default_list,
-                                 Path(__file__).parent.parent / "lib/models")
+        lib_path = Path(__file__).parents[1] / "lib"
+
+        self.load_models(default_list, lib_path / "models")
         default_list.currentTextChanged.connect(
             lambda model_name:
             self.update_loaded_model(model_name, False, [custom_list]))
 
-        self.load_default_models(custom_list,
-                                 Path(__file__).parent.parent / "lib/models")  # TODO: change to custom model path
+        # TODO: change to custom model path
+        self.load_models(custom_list, lib_path / "models")
         custom_list.currentTextChanged.connect(
             lambda model_name:
             self.update_loaded_model(model_name, True, [default_list]))
@@ -125,11 +126,12 @@ class MSRHeaderWidget(QWidget):
         Config.set_model(model_name, scale)
         # Config.set_model(model_name, scaling, custom_model)  # My idea how custom models could be implemented
 
-    def load_default_models(self, list_widget: QListWidget, models_path: Path) -> None:
+    def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
         """Loads the default models from the default folder into the list widget.
 
         Args:
             list_widget (QListWidget): The list widget to add the items to.
+            models_path (Path): The path to the models folder.
         """
         if not models_path.exists:
             QMessageBox.warning(
