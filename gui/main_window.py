@@ -7,8 +7,7 @@ import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QPushButton,
-    QMessageBox, QLineEdit, QListWidget, QFileDialog
+    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
@@ -67,7 +66,7 @@ class MainWindow(QMainWindow):
             self.update_field_strength_label)
 
         field_direction_label = QLabel("Direction (Vector):")
-        self.field_direction_input = QLineEdit("[0, 0, 1]")
+        self.field_direction_input = QLineEdit("[0, -1, 0]")
         self.field_direction_input.setPlaceholderText(
             "Enter direction as [x, y, z]")
 
@@ -97,6 +96,9 @@ class MainWindow(QMainWindow):
         content_layout.addWidget(visualization_area)
 
         main_layout.addLayout(content_layout)
+
+        # Default values
+        Config.set_model("beam", 0.02)
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
@@ -145,9 +147,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(True)
-        Config.set_model("beam",
-                         0.02)
+        Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
@@ -161,23 +161,6 @@ class MainWindow(QMainWindow):
                                        params["remanence"].value())
 
         sofa_instantiator.main()
-
-    def load_default_meshes(self, list_widget: QListWidget) -> None:
-        """Loads the default meshes from the default folder into the list widget.
-
-        Args:
-            list_widget (QListWidget): The list widget to add the items to.
-        """
-        models_path = os.path.expanduser("~/magnetic-soft-robots/meshes")
-
-        if not os.path.exists(models_path):
-            QMessageBox.warning(
-                self, "Error", f"Models folder not found at: {models_path}")
-            return
-
-        for filename in os.listdir(models_path):
-            if filename.endswith(".obj") or filename.endswith(".stl"):
-                list_widget.addItem(filename)
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.
