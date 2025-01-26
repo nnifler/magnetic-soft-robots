@@ -53,6 +53,27 @@ class MainWindow(QMainWindow):
         self.material_group = MSRMaterialGroup()
         sidebar_layout.addWidget(self.material_group)
 
+        # Model information
+        model_group = QGroupBox("Model Settings")
+        model_layout = QVBoxLayout(model_group)
+
+        bounding_box_coords_a = QLabel("Constraint Box corner 1:")
+        self.bounding_box_coords_a = QLineEdit()
+        self.bounding_box_coords_a.setPlaceholderText(
+            "Enter first corner as [x, y, z]")
+
+        bounding_box_coords_b = QLabel("Constraint Box corner 2:")
+        self.bounding_box_coords_b = QLineEdit()
+        self.bounding_box_coords_b.setPlaceholderText(
+            "Enter second corner as [x, y, z]")
+
+        model_layout.addWidget(bounding_box_coords_a)
+        model_layout.addWidget(self.bounding_box_coords_a)
+        model_layout.addWidget(bounding_box_coords_b)
+        model_layout.addWidget(self.bounding_box_coords_b)
+
+        sidebar_layout.addWidget(model_group)
+
         # Magnetfeldsteuerung
         field_group = QGroupBox("Magnet Field Settings")
         field_layout = QVBoxLayout(field_group)
@@ -75,6 +96,8 @@ class MainWindow(QMainWindow):
             r"^\s*\[\s*(-?\d+(\.\d+)?\s*,\s*){2}-?\d+(\.\d+)?\s*\]\s*$")
         validator = QRegularExpressionValidator(vector_regex)
         self.field_direction_input.setValidator(validator)
+        self.bounding_box_coords_a.setValidator(validator)
+        self.bounding_box_coords_b.setValidator(validator)
 
         field_layout.addWidget(self.field_strength_label)
         field_layout.addWidget(self.field_strength_slider)
@@ -159,6 +182,20 @@ class MainWindow(QMainWindow):
                                        params["youngs_modulus"].value(),
                                        params["density"].value(),
                                        params["remanence"].value())
+
+        bounding_box_a = self.parse_direction_input(
+            self.bounding_box_coords_a.text())
+        bounding_box_b = self.parse_direction_input(
+            self.bounding_box_coords_b.text())
+
+        if bounding_box_a is None or bounding_box_b is None:
+            print("bounding box through existing constraints")
+            pass  # TODO: allow existing elif
+        else:
+            print("bounding box through user input",
+                  bounding_box_a, bounding_box_b)
+            pass
+            # TODO: Config.set_constraints(np.array(bounding_box_a), np.array(bounding_box_b))
 
         sofa_instantiator.main()
 
