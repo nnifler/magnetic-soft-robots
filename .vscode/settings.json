@@ -7,4 +7,5 @@
         "--disable=c-extension-no-member,wildcard-import",
     ],
     "autoDocstring.docstringFormat": "google",
+    "editor.formatOnSave": true,
 }
