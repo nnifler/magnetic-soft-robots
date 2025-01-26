@@ -28,27 +28,27 @@ class TestGripper3Arm(unittest.TestCase):
 
     def test_volume_mesh(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 1441
+        ref_amount_nodes = 466
         # Extracted from beam.msh (line beginning with 3 in $Elements)
-        ref_amount_tetras = 4203
+        ref_amount_tetras = 1131
 
         self.assertEqual(len(self.mech_obj.position.value), ref_amount_nodes)
         self.assertEqual(len(self.topo.tetrahedra.value), ref_amount_tetras)
 
     def test_surface_mesh(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 1441
+        ref_amount_nodes = 466
         # Extracted from beam.msh (first line under $Elements)
-        ref_amount_faces = 2612
+        ref_amount_faces = 848
 
         self.assertEqual(len(self.ogl.position.value), ref_amount_nodes)
         self.assertEqual(len(self.ogl.triangles.value), ref_amount_faces)
 
     def test_volume_mesh_simulation(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 1441
+        ref_amount_nodes = 466
         # Extracted from beam.msh (line beginning with 3 in $Elements)
-        ref_amount_tetras = 4203
+        ref_amount_tetras = 1131
 
         for _ in range(10):
             Sofa.Simulation.animate(self.root, self.root.dt.value)
@@ -59,9 +59,9 @@ class TestGripper3Arm(unittest.TestCase):
 
     def test_surface_mesh_simulation(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 1441
+        ref_amount_nodes = 466
         # Extracted from beam.msh (first line under $Elements)
-        ref_amount_faces = 2612
+        ref_amount_faces = 848
 
         for _ in range(10):
             Sofa.Simulation.animate(self.root, self.root.dt.value)
