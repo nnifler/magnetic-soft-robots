@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
             self.update_field_strength_label)
 
         field_direction_label = QLabel("Direction (Vector):")
-        self.field_direction_input = QLineEdit("[0, 0, 1]")
+        self.field_direction_input = QLineEdit("[0, -1, 0]")
         self.field_direction_input.setPlaceholderText(
             "Enter direction as [x, y, z]")
 
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(True)
+        Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
