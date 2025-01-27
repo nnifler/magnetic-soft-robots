@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("beam", 0.02)
+        Config.set_model("butterfly", 0.02)
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 

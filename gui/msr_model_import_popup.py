@@ -68,7 +68,7 @@ class MSRModelImportPopup(QWidget):
 
     def _import(self) -> None:
         """Copies entries into import mesh folder."""
-        name = '_'.join(self.name_definition.text()).split(sep=" ")
+        name = '_'.join(self.name_definition.text().strip().split(sep=" "))
         dst = f"lib/imported_models/{name}"
         vol_path = self.vol_path_label.text()
         surf_path = self.surf_path_label.text()
