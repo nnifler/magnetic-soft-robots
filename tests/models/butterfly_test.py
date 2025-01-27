@@ -36,8 +36,8 @@ class TestButterfly(unittest.TestCase):
         self.assertEqual(len(self.topo.tetrahedra.value), ref_amount_tetras)
 
     def test_surface_mesh(self):
-        # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 411
+        # Extracted from beam.msh (first line under $Nodes)
+        ref_amount_nodes = 427
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 818
 
@@ -58,8 +58,8 @@ class TestButterfly(unittest.TestCase):
                              ref_amount_tetras)
 
     def test_surface_mesh_simulation(self):
-        # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 411
+        # Extracted from beam.msh (first line under $Nodes)
+        ref_amount_nodes = 427
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 818
 
@@ -88,25 +88,22 @@ class TestButterfly(unittest.TestCase):
     # Then the tests in the gripper branch would fail when both gripper and butterfly are merged.
     # Once both branches are merged, I will change the mapping to IdentityMapping and fix the tests.
 
-    # def test_volume_to_surface_link_simulation(self):
-    #    for _ in range(10):
-    #        Sofa.Simulation.animate(self.root, self.root.dt.value)
-    #        for i, pos in enumerate(self.ogl.position.value):
-    #            self.assertAlmostEqual(
-    #                pos[0], self.mech_obj.position.value[i][0],
-    #                places=0,
-    #                msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
-    #            )
-    #            self.assertAlmostEqual(
-    #                pos[1], self.mech_obj.position.value[i][1],
-    #                places=0,
-    #                msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
-    #            )
-    #            self.assertAlmostEqual(
-    #                pos[2], self.mech_obj.position.value[i][2],
-    #                places=0,
-    #                msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
-    #            )
+    def test_volume_to_surface_link_simulation(self):
+        for _ in range(10):
+            Sofa.Simulation.animate(self.root, self.root.dt.value)
+            for i, pos in enumerate(self.ogl.position.value):
+                self.assertAlmostEqual(
+                    pos[0], self.mech_obj.position.value[i][0],
+                    msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
+                )
+                self.assertAlmostEqual(
+                    pos[1], self.mech_obj.position.value[i][1],
+                    msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
+                )
+                self.assertAlmostEqual(
+                    pos[2], self.mech_obj.position.value[i][2],
+                    msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
+                )
 
     @classmethod
     def tearDownClass(self) -> None:
