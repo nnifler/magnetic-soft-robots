@@ -57,15 +57,15 @@ class MainWindow(QMainWindow):
         model_group = QGroupBox("Model Settings")
         model_layout = QVBoxLayout(model_group)
 
-        bounding_box_coords_a = QLabel("Constraint Box corner 1:")
+        bounding_box_coords_a = QLabel("Constraint Box Lower Corner:")
         self.bounding_box_coords_a = QLineEdit()
         self.bounding_box_coords_a.setPlaceholderText(
-            "Enter first corner as [x, y, z]")
+            "Enter as [x, y, z], leave empty for default model")
 
-        bounding_box_coords_b = QLabel("Constraint Box corner 2:")
+        bounding_box_coords_b = QLabel("Constraint Box Upper Corner:")
         self.bounding_box_coords_b = QLineEdit()
         self.bounding_box_coords_b.setPlaceholderText(
-            "Enter second corner as [x, y, z]")
+            "Enter as [x, y, z], leave empty for default model")
 
         model_layout.addWidget(bounding_box_coords_a)
         model_layout.addWidget(self.bounding_box_coords_a)
