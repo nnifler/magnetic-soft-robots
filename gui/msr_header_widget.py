@@ -82,15 +82,15 @@ class MSRHeaderWidget(QWidget):
         lib_path = Path(__file__).parents[1] / "lib"
 
         self.load_models(default_list, lib_path / "models")
-        default_list.currentTextChanged.connect(
-            lambda model_name:
-            self.update_loaded_model(model_name, False, [custom_list]))
+        default_list.itemClicked.connect(
+            lambda item:
+            self.update_loaded_model(item.text(), False, [custom_list]))
 
         # TODONE: change to custom model path
         self.load_models(custom_list, lib_path / "imported_models")
-        custom_list.currentTextChanged.connect(
-            lambda model_name:
-            self.update_loaded_model(model_name, True, [default_list]))
+        custom_list.itemClicked.connect(
+            lambda item:
+            self.update_loaded_model(item.text(), True, [default_list]))
 
         close_button = QPushButton("Close")
         close_button.clicked.connect(self._popup_open.close)
