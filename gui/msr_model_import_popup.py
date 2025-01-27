@@ -27,10 +27,10 @@ class MSRModelImportPopup(QWidget):
 
         self.mesh_loader = MeshLoader()
 
-        self.surface_formats = self.mesh_loader.get_supported_meshes(
-            Mode.SURFACE)
-        self.volumetric_formats = self.mesh_loader.get_supported_meshes(
-            Mode.VOLUMETRIC)
+        self.surface_formats = {".stl"}
+        # self.mesh_loader.get_supported_meshes(Mode.SURFACE)
+        self.volumetric_formats = {".msh"}
+        # self.mesh_loader.get_supported_meshes(Mode.VOLUMETRIC)
 
         self.name_label = QLabel("Model Name:")
         self.name_definition = QLineEdit()
@@ -117,8 +117,8 @@ class MSRModelImportPopup(QWidget):
         vol_path_str = self.vol_path_label.text()
         surf_path_str = self.surf_path_label.text()
 
-        vol_path = Path(vol_path_str)
-        surf_path = Path(surf_path_str)
+        # vol_path = Path(vol_path_str)
+        # surf_path = Path(surf_path_str)
 
         if vol_path_str in {"", "[path not set]"} or surf_path_str in {"", "[path not set]"}:
             QMessageBox.warning(
@@ -131,8 +131,8 @@ class MSRModelImportPopup(QWidget):
 
             dst = f"lib/imported_models/{name}"
             os.makedirs("lib/imported_models", exist_ok=True)
-            copy2(vol_path_str, dst+'_v'+vol_path.suffix)
-            copy2(surf_path_str, dst+'_s'+surf_path.suffix)
+            copy2(vol_path_str, dst+'.msh')  # +'_v'+vol_path.suffix)
+            copy2(surf_path_str, dst+'.stl')  # +'_s'+surf_path.suffix)
 
             QMessageBox.information(
                 self, "Success", "Model imported successfully.")
