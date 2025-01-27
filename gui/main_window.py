@@ -189,13 +189,10 @@ class MainWindow(QMainWindow):
             self.bounding_box_coords_b.text())
 
         if bounding_box_a is None or bounding_box_b is None:
-            print("bounding box through existing constraints")
-            pass  # TODO: allow existing elif
+            Config.set_default_constraints()
         else:
-            print("bounding box through user input",
-                  bounding_box_a, bounding_box_b)
-            pass
-            # TODO: Config.set_constraints(np.array(bounding_box_a), np.array(bounding_box_b))
+            Config.set_constraints(
+                np.array(bounding_box_a), np.array(bounding_box_b))
 
         sofa_instantiator.main()
 
