@@ -132,7 +132,7 @@ class MSRHeaderWidget(QWidget):
             list_widget (QListWidget): The list widget to add the items to.
             models_path (Path): The path to the models folder.
         """
-        if not models_path.exists:
+        if not models_path.exists():
             QMessageBox.warning(
                 self, "Error", f"Models folder not found at: {models_path}")
             return
@@ -145,7 +145,8 @@ class MSRHeaderWidget(QWidget):
         #     self._default_list.addItem(filepath.stem)
         #     self._default_list_filenames.append(filepath.stem)
 
-        model_names = list({path.stem for path in models_path.iterdir()})
+        model_names = list(
+            {path.stem for path in models_path.iterdir()} - {".gitkeep"})
         # use set comprehension to remove duplicates
         for model_name in model_names:
             list_widget.addItem(model_name)

@@ -27,8 +27,10 @@ class MSRModelImportPopup(QWidget):
 
         self.mesh_loader = MeshLoader()
 
-        self.surface_formats = self.get_supported_meshes(Mode.SURFACE)
-        self.volumetric_formats = self.get_supported_meshes(Mode.VOLUMETRIC)
+        self.surface_formats = self.mesh_loader.get_supported_meshes(
+            Mode.SURFACE)
+        self.volumetric_formats = self.mesh_loader.get_supported_meshes(
+            Mode.VOLUMETRIC)
 
         self.name_label = QLabel("Model Name:")
         self.name_definition = QLineEdit()
@@ -97,7 +99,8 @@ class MSRModelImportPopup(QWidget):
             QMessageBox: If no mesh is selected.
             QMessageBox: If import fails.
         """
-        name = '_'.join(self.name_definition.text().strip().split(sep=" "))
+        name = self.name_definition.text()
+
         if not name:
             QMessageBox.warning(
                 self, "Warning", "Please provide a name for the model.")
@@ -110,37 +113,30 @@ class MSRModelImportPopup(QWidget):
                 self, "Warning", "Model with this name already exists.")
             return
 
-        vol_path = self.vol_path_label.text()
-        surf_path = self.surf_path_label.text()
+        name = '_'.join(name.strip().split(sep=" "))
+        vol_path_str = self.vol_path_label.text()
+        surf_path_str = self.surf_path_label.text()
 
-        if vol_path in {"", "[path not set]"} and surf_path in {"", "[path not set]"}:
+        vol_path = Path(vol_path_str)
+        surf_path = Path(surf_path_str)
+
+        if vol_path_str in {"", "[path not set]"} or surf_path_str in {"", "[path not set]"}:
             QMessageBox.warning(
-                self, "Warning", "Please select at least one mesh type.")
+                self, "Warning", "At least one mesh path not set.")
             return
 
         try:
-            if surf_path not in {"", "[path not set]"}:
-                self.mesh_loader.load_file(Path(surf_path), Mode.SURFACE)
-            if vol_path not in {"", "[path not set]"}:
-                self.mesh_loader.load_file(Path(vol_path), Mode.VOLUMETRIC)
+            self.mesh_loader.load_file(Path(surf_path_str), Mode.SURFACE)
+            self.mesh_loader.load_file(Path(vol_path_str), Mode.VOLUMETRIC)
 
             dst = f"lib/imported_models/{name}"
             os.makedirs("lib/imported_models", exist_ok=True)
-            if vol_path not in {"", "[path not set]"}:
-                copy2(vol_path, dst+'.msh')
-            if surf_path not in {"", "[path not set]"}:
-                copy2(surf_path, dst+'.stl')
+            copy2(vol_path_str, dst+'_v'+vol_path.suffix)
+            copy2(surf_path_str, dst+'_s'+surf_path.suffix)
 
             QMessageBox.information(
                 self, "Success", "Model imported successfully.")
             self.close()
+
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Failed to import model {e}")
-
-    def get_supported_meshes(self, mode: Mode) -> set:
-        """Returns supported mesh formats for the given mesh type."""
-        if mode == Mode.SURFACE:
-            return {".obj", ".stl", ".vtk", ".off", ".msh"}
-        elif mode == Mode.VOLUMETRIC:
-            return {".msh", ".off", ".vtk"}
-        return set()

@@ -123,3 +123,7 @@ class MeshLoader():
             str: The reference string.
         """
         return "@"+self._name+"_"+mode.name.lower()
+
+    def get_supported_meshes(self, mode: Mode) -> set:
+        """Returns supported mesh formats for the given mesh type."""
+        return set(endings[mode.value])
