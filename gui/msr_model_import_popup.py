@@ -103,6 +103,13 @@ class MSRModelImportPopup(QWidget):
                 self, "Warning", "Please provide a name for the model.")
             return
 
+        existing_files = os.listdir("lib/imported_models")
+        existing_names = {os.path.splitext(file)[0] for file in existing_files}
+        if name in existing_names:
+            QMessageBox.warning(
+                self, "Warning", "Model with this name already exists.")
+            return
+
         vol_path = self.vol_path_label.text()
         surf_path = self.surf_path_label.text()
 
