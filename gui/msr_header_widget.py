@@ -3,12 +3,11 @@
 from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QMenu, QListWidget, QMessageBox
-)
+    QWidget, QVBoxLayout, QHBoxLayout,     QLabel, QPushButton, QMenu, QListWidget, QMessageBox,)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
 from src import Config
+from gui import MSRModelImportPopup
 # from src.mesh_loader import Mode as MeshMode, endings as mesh_endings # used for commented code
 
 
@@ -19,10 +18,13 @@ class MSRHeaderWidget(QWidget):
         """Initializes the header widget."""
         super().__init__()
 
-        self.setFixedHeight(30)  # Maximal 1 cm Höhe
+        self._popup_open: QWidget = None
+        self._popup_import: QWidget = MSRModelImportPopup()
+
+        self.setFixedHeight(30)  # max 1cm height
         header_layout = QHBoxLayout(self)
         header_layout.setContentsMargins(5, 0, 5, 0)
-        header_layout.setSpacing(5)  # Minimaler Abstand zwischen Buttons
+        header_layout.setSpacing(5)  # min distance between buttons
 
         msr_label = QLabel("MSR")
         msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
@@ -38,42 +40,38 @@ class MSRHeaderWidget(QWidget):
 
         # Create the menu bar
         context_menu = QMenu(self)
+        context_menu.triggered.connect(context_menu.close)
 
         # Add action to the Library menu
         open_action = QAction("Open", self)
         open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(
-            lambda _: self._open_models_popup(context_menu))
+            self._open_models_popup)
         context_menu.addAction(open_action)
 
         import_action = QAction("Import", self)
         import_action.setShortcut(QKeySequence("Ctrl+I"))
         import_action.triggered.connect(
-            lambda _: self.import_library(context_menu))
+            self._popup_import.show)
         context_menu.addAction(import_action)
 
         export_action = QAction("Export", self)
         export_action.setShortcut(QKeySequence("Ctrl+E"))
         export_action.triggered.connect(
-            lambda _: self.export_library(context_menu))
+            lambda _: self.export_library())
         context_menu.addAction(export_action)
 
         context_menu.exec(self._models_button.mapToGlobal(
             self._models_button.rect().bottomLeft()))
 
-    def _open_models_popup(self, menu: QMenu) -> None:
-        """Opens the models popup menu.
+    def _open_models_popup(self) -> None:
+        """Opens the Models popup menu."""
 
-        Args:
-            menu (QMenu): The menu to close when opening the popup.
-        """
-        menu.close()
+        self._popup_open = QWidget()
+        self._popup_open.setWindowTitle("Models")
+        self._popup_open.resize(600, 400)
 
-        self._popup = QWidget()  # garbage collected without self
-        self._popup.setWindowTitle("Models")
-        self._popup.resize(600, 400)
-
-        layout = QVBoxLayout(self._popup)
+        layout = QVBoxLayout(self._popup_open)
 
         default_label = QLabel("Default Models:")
         default_list = QListWidget()
@@ -88,14 +86,14 @@ class MSRHeaderWidget(QWidget):
             lambda model_name:
             self.update_loaded_model(model_name, False, [custom_list]))
 
-        # TODO: change to custom model path
-        self.load_models(custom_list, lib_path / "models")
+        # TODONE: change to custom model path
+        self.load_models(custom_list, lib_path / "imported_models")
         custom_list.currentTextChanged.connect(
             lambda model_name:
             self.update_loaded_model(model_name, True, [default_list]))
 
-        import_button = QPushButton("Close")
-        import_button.clicked.connect(self._popup.close)
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self._popup_open.close)
         # TODO Implement import_custom_model or use super? (GUI refactoring issue)
         # import_button.clicked.connect(self.import_custom_model)
 
@@ -103,9 +101,9 @@ class MSRHeaderWidget(QWidget):
         layout.addWidget(default_list)
         layout.addWidget(custom_label)
         layout.addWidget(custom_list)
-        layout.addWidget(import_button)
+        layout.addWidget(close_button)
 
-        self._popup.show()
+        self._popup_open.show()
 
     def update_loaded_model(self, model_name: str, custom_model: bool,
                             other_widgets: List[QListWidget] = None, scale=0.02) -> None:
@@ -123,8 +121,9 @@ class MSRHeaderWidget(QWidget):
             for widget in other_widgets:
                 widget.clearSelection()
 
-        Config.set_model(model_name, scale)
-        # Config.set_model(model_name, scaling, custom_model)  # My idea how custom models could be implemented
+        # Config.set_model(model_name, scale)
+        # My idea how custom models could be implemented
+        Config.set_model(model_name, scale, custom_model)
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
         """Loads the default models from the default folder into the list widget.
