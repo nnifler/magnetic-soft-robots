@@ -43,7 +43,7 @@ class MSRMaterialParameter():
         """
         self.label = QLabel(text=name)
         self.spinbox = QDoubleSpinBox()
-        self.unit_selector: QLabel | QComboBox = None
+        self.unit_selector: QComboBox | QLabel = None
 
         self._decimals = decimals
         self._units = units
