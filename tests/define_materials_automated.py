@@ -9,6 +9,20 @@ from src.units import YoungsModulus
 
 
 class TestYoungModulus(unittest.TestCase):
+    """3. Input field with label for Young modulus: \n
+            a. Input of positive values with up to four decimal digits possible \n
+            b. Input of invalid characters not possible (negative numbers, non-numeric characters except comma or dot for decimal separator) \n\n
+
+            checked for:
+            default unit
+            using 4 digits 
+            provided unit selection
+            text in associated label
+            unit conversion
+            success of values in range
+            rejection of values below zero
+        """
+
     def setUp(self):
         super().setUp()
         self.app = QApplication([])
@@ -24,22 +38,6 @@ class TestYoungModulus(unittest.TestCase):
     def tearDown(self):
         super().tearDown()
         self.app.shutdown()
-
-    def testYoungsModulus(self):
-        """3. Input field with label for Young modulus: \n
-            a. Input of positive values with up to four decimal digits possible \n
-            b. Input of invalid characters not possible (negative numbers, non-numeric characters except comma or dot for decimal separator) \n\n
-
-            checked for:
-            default unit
-            using 4 digits 
-            provided unit selection
-            text in associated label
-            unit conversion
-            success of values in range
-            rejection of values below zero
-
-        """
 
     def testLabel(self):
         self.assertTrue("Young's Modulus" in self.ym.label.text(),
