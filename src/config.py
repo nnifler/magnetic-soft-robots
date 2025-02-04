@@ -241,7 +241,7 @@ class Config:
         return cls._remanence
 
     @classmethod
-    def set_plugin_list(cls, plugin_list: List[str]):
+    def set_plugin_list(cls, plugin_list: List[str]) -> None:
         """Set the plugins used in the Sofa simulation.
 
         Args:
@@ -259,7 +259,7 @@ class Config:
         return cls._plugin_list
 
     @classmethod
-    def set_constraints(cls, point_a: np.ndarray, point_b: np.ndarray):
+    def set_constraints(cls, point_a: np.ndarray, point_b: np.ndarray) -> None:
         """Set the constraints for the model.
 
         Args:
