@@ -2,10 +2,12 @@
 
 from pathlib import Path
 
+import numpy as np
 import Sofa.Gui
 
 from src import Config, SceneBuilder, ElasticObject, MagneticController, MaterialLoader, MeshLoader
 from src.mesh_loader import Mode
+from src.simulation_analyser import SimulationAnalyser
 
 
 def main():
@@ -52,6 +54,7 @@ def main():
 
     root = Sofa.Core.Node("root")
     createScene(root)
+    analyser = SimulationAnalyser(root)
     Sofa.Simulation.init(root)
 
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
