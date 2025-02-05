@@ -19,6 +19,7 @@ suite.addTests([
     gripper_4_arm_test_suite(),
     simple_butterfly_test_suite(),
     butterfly_test_suite(),
+    simulation_analyser_test_suite(),
 ])
 
 runner = unittest.TextTestRunner()
