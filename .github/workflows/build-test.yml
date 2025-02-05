@@ -32,16 +32,13 @@ jobs:
         python3.10 -m pip install --upgrade pip
         python3.10 -m pip install coverage pybind11==2.9.1
         python3.10 -m pip install -r requirements.txt
-
-    - name: Install Sofa dependencies
+    
+    - name: Test with unittest
       run: |
         export SOFA_ROOT=$PWD/sofa_install
         export PYTHONPATH=$PWD/sofa_install/plugins/SofaPython3/lib/python3/site-packages:$PYTHONPATH
         echo $SOFA_ROOT
         echo $PYTHONPATH
-    
-    - name: Test with unittest
-      run: |
         python3.10 test_main.py
 
     - name: Analyse code coverage of tests with coverage
