@@ -36,8 +36,8 @@ class TestGripper4Arm(unittest.TestCase):
         self.assertEqual(len(self.topo.tetrahedra.value), ref_amount_tetras)
 
     def test_surface_mesh(self):
-        # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 1496
+        # Extracted from beam.msh (first line under $Nodes)
+        ref_amount_nodes = 1679
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 2988
 
@@ -58,8 +58,8 @@ class TestGripper4Arm(unittest.TestCase):
                              ref_amount_tetras)
 
     def test_surface_mesh_simulation(self):
-        # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 1496
+        # Extracted from beam.msh (first line under $Nodes)
+        ref_amount_nodes = 1679
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 2988
 
@@ -89,17 +89,14 @@ class TestGripper4Arm(unittest.TestCase):
             for i, pos in enumerate(self.ogl.position.value):
                 self.assertAlmostEqual(
                     pos[0], self.mech_obj.position.value[i][0],
-                    places=2,
                     msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
                 )
                 self.assertAlmostEqual(
                     pos[1], self.mech_obj.position.value[i][1],
-                    places=2,
                     msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
                 )
                 self.assertAlmostEqual(
                     pos[2], self.mech_obj.position.value[i][2],
-                    places=2,
                     msg=f"Position {i} ({pos}) in surface mesh is not the same as position {i} in volume mesh ({self.mech_obj.position.value[i]})"
                 )
 

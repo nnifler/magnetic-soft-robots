@@ -158,7 +158,7 @@ class MSRMaterialGroup(QGroupBox):
                 decimals=2,
             ),
             "remanence": MSRMaterialParameter(
-                name="(T) Remanence:",
+                name="(B<sub>R</sub>) Remanence:",
                 value_range=(-2.0, 2.0),
                 units=["T"],
                 getter=[Tesla.T],
