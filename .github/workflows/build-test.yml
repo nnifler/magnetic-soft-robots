@@ -35,8 +35,8 @@ jobs:
 
     - name: Install Sofa dependencies
       run: |
-        export SOFA_ROOT=./sofa_install
-        export PYTHONPATH=./sofa_install/plugins/SofaPython3/lib/python3/site-packages:$PYTHONPATH
+        export SOFA_ROOT=$PWD/sofa_install
+        export PYTHONPATH=$PWD/sofa_install/plugins/SofaPython3/lib/python3/site-packages:$PYTHONPATH
         echo $SOFA_ROOT
         echo $PYTHONPATH
     
