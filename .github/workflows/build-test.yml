@@ -28,7 +28,6 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-#        sudo apt install libopengl0
         sudo apt install pybind11-dev
         python -m pip install --upgrade pip
         pip install coverage pybind11==2.9.1
