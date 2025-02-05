@@ -1,0 +1,37 @@
+# Git info for PluginExample
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+62c77d76c535706396f45b3af2f51e198a11fd53
+
+## Branches containing current commit
+## git branch -a --contains 62c77d76c535706396f45b3af2f51e198a11fd53 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/7/head
+  remotes/origin/pr/7/merge
+  remotes/origin/v24.06
+  remotes/origin/v24.06_update_workflow
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/PluginExample (fetch)
+origin	https://github.com/sofa-framework/PluginExample (push)
+
+## More info
+## git log --pretty -n 1
+commit 62c77d76c535706396f45b3af2f51e198a11fd53
+Author: Hugo <hugo.talbot@sofa-framework.org>
+Date:   Wed Mar 13 10:40:50 2024 +0100
+
+    Update Vec3 and .get() access (#6)
+    
+    * Update Vec3 and .get() access
+    
+    * Better formatting
+    
+    ---------
+    
+    Co-authored-by: Alex Bilger <alxbilger@users.noreply.github.com>

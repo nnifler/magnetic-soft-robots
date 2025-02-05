@@ -1,0 +1,26 @@
+# Git info for CSparseSolvers
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+6049c384b130ffdebd8e426994353eac74bc6f57
+
+## Branches containing current commit
+## git branch -a --contains 6049c384b130ffdebd8e426994353eac74bc6f57 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/CSparseSolvers (fetch)
+origin	https://github.com/sofa-framework/CSparseSolvers (push)
+
+## More info
+## git log --pretty -n 1
+commit 6049c384b130ffdebd8e426994353eac74bc6f57
+Author: Frederick Roy <fredroy@users.noreply.github.com>
+Date:   Mon Apr 1 22:17:11 2024 +0900
+
+    fix assertion (#4)

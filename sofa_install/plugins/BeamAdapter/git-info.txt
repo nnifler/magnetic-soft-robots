@@ -1,0 +1,27 @@
+# Git info for BeamAdapter
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+4f0f30c7025740e808865d392c1bac7df3627e9b
+
+## Branches containing current commit
+## git branch -a --contains 4f0f30c7025740e808865d392c1bac7df3627e9b 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/149/head
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/BeamAdapter (fetch)
+origin	https://github.com/sofa-framework/BeamAdapter (push)
+
+## More info
+## git log --pretty -n 1
+commit 4f0f30c7025740e808865d392c1bac7df3627e9b
+Author: Frederick Roy <fredroy@users.noreply.github.com>
+Date:   Tue May 14 05:24:27 2024 +0900
+
+    Example: apply SOFA's fix on TopologicalMapping (#124)

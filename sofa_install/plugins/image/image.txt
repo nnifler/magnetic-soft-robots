@@ -1,0 +1,22 @@
+
+************************************
+*         image.txt    	   	   *
+************************************
+
+
+
+AUTHORS :
+ - Benjamin Gilles
+ - Matthieu Nesme
+ - Brina Goyette
+
+
+
+
+LICENCE :
+ - LGPL
+
+
+
+OTHER COMMENTS :
+

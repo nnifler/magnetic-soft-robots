@@ -1,0 +1,33 @@
+# Git info for SofaMJEDFEM
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+b67b9b26da9b59d0d91213c4ba8e59a78f53ff32
+
+## Branches containing current commit
+## git branch -a --contains b67b9b26da9b59d0d91213c4ba8e59a78f53ff32 
+* (HEAD detached at b67b9b2)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/4/head
+  remotes/origin/pr/4/merge
+  remotes/origin/tag/release-v24.06
+  remotes/origin/v24.06
+  remotes/origin/v24.06_update_workflow
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/SofaMJEDFEM.git (fetch)
+origin	https://github.com/sofa-framework/SofaMJEDFEM.git (push)
+
+## More info
+## git log --pretty -n 1
+commit b67b9b26da9b59d0d91213c4ba8e59a78f53ff32
+Merge: 552635b 9269fc0
+Author: Paul Baksic <30337881+bakpaul@users.noreply.github.com>
+Date:   Fri Mar 22 11:37:22 2024 +0100
+
+    Merge pull request #3 from sofa-framework/bakpaul-patch-1
+    
+    Update ci.yml

@@ -1,0 +1,41 @@
+# Git info for Tearing
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+5b99ce4349cd30bfba9ccc787db3146dcf19c4d3
+
+## Branches containing current commit
+## git branch -a --contains 5b99ce4349cd30bfba9ccc787db3146dcf19c4d3 
+* (HEAD detached at 5b99ce4)
+  main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+  remotes/origin/tag/v24.06.00
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/InfinyTech3D/Tearing.git (fetch)
+origin	https://github.com/InfinyTech3D/Tearing.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 5b99ce4349cd30bfba9ccc787db3146dcf19c4d3
+Author: rmolazem <ronak.molazem@infinytech3d.com>
+Date:   Fri Jun 7 10:32:30 2024 +0200
+
+    [Doc] Add Tearing Documentation in md (#44)
+    
+    * Documentation of the plugin.
+    
+    * Image is resized.
+    
+    * Final modifications.
+    
+    * Update README.md to point doc
+    
+    * Update README.md
+    
+    ---------
+    
+    Co-authored-by: erik pernod <erik.pernod@gmail.com>

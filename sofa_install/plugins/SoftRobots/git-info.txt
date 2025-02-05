@@ -1,0 +1,23 @@
+# Git info for SoftRobots
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+9f18097c5d3da30a8e64f5db6ae1eeaa251cf7eb
+
+## Branches containing current commit
+## git branch -a --contains 9f18097c5d3da30a8e64f5db6ae1eeaa251cf7eb 
+* (HEAD detached at origin/v24.06)
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/SoftRobots (fetch)
+origin	https://github.com/SofaDefrost/SoftRobots (push)
+
+## More info
+## git log --pretty -n 1
+commit 9f18097c5d3da30a8e64f5db6ae1eeaa251cf7eb
+Author: EulalieCoevoet <eulalie.coevoet@gmail.com>
+Date:   Tue Jun 4 23:48:19 2024 +0200
+
+    Update ci.yml

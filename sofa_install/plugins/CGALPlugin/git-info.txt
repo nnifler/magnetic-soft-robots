@@ -1,0 +1,29 @@
+# Git info for CGALPlugin
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+77cb8d08cf671b106370b8503143d01ba2794efe
+
+## Branches containing current commit
+## git branch -a --contains 77cb8d08cf671b106370b8503143d01ba2794efe 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/17/head
+  remotes/origin/pr/17/merge
+  remotes/origin/v24.06
+  remotes/origin/v24.06_update_workflow
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/CGALPlugin (fetch)
+origin	https://github.com/sofa-framework/CGALPlugin (push)
+
+## More info
+## git log --pretty -n 1
+commit 77cb8d08cf671b106370b8503143d01ba2794efe
+Author: Alex Bilger <alxbilger@users.noreply.github.com>
+Date:   Fri May 17 14:12:20 2024 +0200
+
+    Fix module name for 4 components (#16)

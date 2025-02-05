@@ -1,0 +1,23 @@
+# Git info for SofaSphFluid
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+096efeb4a12e690a31f619dab857c4a717334376
+
+## Branches containing current commit
+## git branch -a --contains 096efeb4a12e690a31f619dab857c4a717334376 
+* (HEAD detached at origin/v24.06)
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/SofaSphFluid (fetch)
+origin	https://github.com/sofa-framework/SofaSphFluid (push)
+
+## More info
+## git log --pretty -n 1
+commit 096efeb4a12e690a31f619dab857c4a717334376
+Author: bakpaul <paul.baksic@outlook.fr>
+Date:   Wed Jun 5 23:12:15 2024 +0200
+
+    [CI] Update workflow to match branch name

@@ -1,0 +1,23 @@
+# Git info for STLIB
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+2ac71476b64092871c5fcbf38be83a3891ec6acb
+
+## Branches containing current commit
+## git branch -a --contains 2ac71476b64092871c5fcbf38be83a3891ec6acb 
+* (HEAD detached at origin/v24.06)
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/STLIB (fetch)
+origin	https://github.com/SofaDefrost/STLIB (push)
+
+## More info
+## git log --pretty -n 1
+commit 2ac71476b64092871c5fcbf38be83a3891ec6acb
+Author: bakpaul <paul.baksic@outlook.fr>
+Date:   Wed Jun 5 22:42:25 2024 +0200
+
+    update CI

@@ -1,0 +1,13 @@
+# WARNING: 
+# REGRESSION_TEST DOES NOT SUPPORT DASHES ("-") IN SCENE NAMES.
+# USE UNDERSCORES ("_") INSTEAD.
+
+### References relative path ###
+../regression/references
+
+### Sph Plugin ###
+SPHFluidForceField.scn 100 1e-4 1 1
+SPHFluidForceField_benchmarks.scn 100 1e-4 1 1
+SPHFluidSurfaceMapping.scn 100 1e-4 1 1
+SPHParticleSink.scn 100 1e-4 1 1
+SPHParticleSource.scn 100 1e-4 1 1

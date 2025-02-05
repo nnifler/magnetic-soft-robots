@@ -1,0 +1,117 @@
+************************************* Invoked: Wed Feb 5 19:42:56 2025
+[0] Arguments: /home/julius/Downloads/SOFA_v24.06.00_Linux.run
+[1] Operations sanity check succeeded.
+[3] Using metadata cache from "/home/julius/.cache/qt-installer-framework/5de43817-beeb-3e81-bc84-4c1a7d0b8172"
+[3] Found 0 cached items.
+[3] Language: en-US
+[8003] Fetching latest update information...
+[8007] Loading component scripts...
+[19926] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[19926] Warning: Numeric mode unsupported in the posix collation implementation
+[32159] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[32159] Warning: Numeric mode unsupported in the posix collation implementation
+[32226] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[32226] Warning: Numeric mode unsupported in the posix collation implementation
+[38333] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[38333] Warning: Numeric mode unsupported in the posix collation implementation
+[38342] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[38342] Warning: Numeric mode unsupported in the posix collation implementation
+[39717] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[39717] Warning: Numeric mode unsupported in the posix collation implementation
+[43175] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[43175] Warning: Numeric mode unsupported in the posix collation implementation
+[46721] Warning: Case insensitive sorting unsupported in the posix collation implementation
+[46721] Warning: Numeric mode unsupported in the posix collation implementation
+[137544] Loading component scripts...
+[137548] Selected components without dependencies:
+Runtime 
+Development
+[137548] Installation space required: "1.17 GB" Temporary space required: "256.00 MB" Local repository size: "0.00 bytes"
+[137555] Cache and install directories are on the same volume. Volume mount point: "/" Free space available: "186.52 GB"
+[140165] backup  operation: Mkdir
+[140165] 	- arguments: /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140165] Done
+[140165] perform  operation: Mkdir
+[140165] 	- arguments: /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140165] Done
+[140165] Preparing the installation...
+[140165] Install size: 2 components
+[140194] Preparing to unpack components...
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00collections.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Development concurrent operation: Extract
+[140197] 	- arguments: installer://Development/24.06.00lib.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00lib.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00plugins.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00etc.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Development concurrent operation: Extract
+[140197] 	- arguments: installer://Development/24.06.00plugins.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00share.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00content.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00include.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Development concurrent operation: Extract
+[140197] 	- arguments: installer://Development/24.06.00collections.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Runtime concurrent operation: Extract
+[140197] 	- arguments: installer://Runtime/24.06.00bin.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[140197] backup Development concurrent operation: Extract
+[140197] 	- arguments: installer://Development/24.06.00include.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[140197] Started
+[152793] Unpacking components...
+[152794] perform Runtime concurrent operation: Extract
+[152794] 	- arguments: installer://Runtime/24.06.00plugins.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152794] Started
+[152794] perform Runtime concurrent operation: Extract
+[152794] 	- arguments: installer://Runtime/24.06.00share.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152794] Started
+[152794] perform Development concurrent operation: Extract
+[152794] 	- arguments: installer://Development/24.06.00include.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152794] Started
+[152794] perform Development concurrent operation: Extract
+[152794] 	- arguments: installer://Development/24.06.00plugins.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152794] Started
+[152794] perform Runtime concurrent operation: Extract
+[152794] 	- arguments: installer://Runtime/24.06.00bin.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152794] Started
+[152795] perform Runtime concurrent operation: Extract
+[152795] 	- arguments: installer://Runtime/24.06.00collections.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152795] Started
+[152795] perform Runtime concurrent operation: Extract
+[152795] 	- arguments: installer://Runtime/24.06.00lib.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152795] Started
+[152795] perform Development concurrent operation: Extract
+[152795] 	- arguments: installer://Development/24.06.00lib.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152795] Started
+[152795] perform Development concurrent operation: Extract
+[152795] 	- arguments: installer://Development/24.06.00collections.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152795] Started
+[152795] perform Runtime concurrent operation: Extract
+[152795] 	- arguments: installer://Runtime/24.06.00content.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152795] Started
+[152796] perform Runtime concurrent operation: Extract
+[152796] 	- arguments: installer://Runtime/24.06.00include.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152796] Started
+[152796] perform Runtime concurrent operation: Extract
+[152796] 	- arguments: installer://Runtime/24.06.00etc.7z, /home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install
+[152796] Started
+[160224] Writing maintenance tool: "/home/julius/Documents/ba_inf_5/tpse/magnetic-soft-robots/sofa_install/maintenancetool.new"
+[160224] Writing maintenance tool.
+[160350] Wrote permissions for maintenance tool.
+[160376] Maintenance tool hard restart: false.
+[160377] Installation finished!

@@ -1,0 +1,41 @@
+# Git info for InfinyToolkit
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+bf6c1e583eb98e4fce8d46c9e267f74cf60d9839
+
+## Branches containing current commit
+## git branch -a --contains bf6c1e583eb98e4fce8d46c9e267f74cf60d9839 
+* (HEAD detached at bf6c1e5)
+  main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+  remotes/origin/tag/v24.06.00
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/InfinyTech3D/InfinyToolkit.git (fetch)
+origin	https://github.com/InfinyTech3D/InfinyToolkit.git (push)
+
+## More info
+## git log --pretty -n 1
+commit bf6c1e583eb98e4fce8d46c9e267f74cf60d9839
+Author: erik pernod <erik.pernod@gmail.com>
+Date:   Wed Jun 5 12:02:49 2024 +0200
+
+    [ci] Add Regression tests for scene including SofaCarving (#25)
+    
+    * [ci] Add regression tests references
+    
+    * [ci] Add regression to github workflow
+    
+    * [ci] up workflow
+    
+    * Remove scenes with SofaCarving
+    
+    * Update ci.yml
+    
+    * Update RegressionStateScenes.regression-tests
+    
+    * [ci] Add TetrahedronBeamMultiMaterial scene Regression

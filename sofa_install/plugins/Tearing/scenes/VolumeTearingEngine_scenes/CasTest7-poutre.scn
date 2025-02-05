@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<!-- Automatic Hexahedron removing with Hexa2Tetra mapping example: Element removed are define in: Not yet supported -->
+
+<Node name="root" gravity="0 0 0" dt="0.01">
+    <RequiredPlugin pluginName="SofaOpenglVisual"/>
+    <RequiredPlugin pluginName='SofaBoundaryCondition'/>
+    <RequiredPlugin pluginName='SofaEngine'/>
+    <RequiredPlugin pluginName='SofaImplicitOdeSolver'/>
+    <RequiredPlugin pluginName='SofaMeshCollision'/>
+    <RequiredPlugin pluginName='SofaMiscCollision'/>
+    <RequiredPlugin pluginName='SofaSimpleFem'/>
+    <RequiredPlugin pluginName='SofaTopologyMapping'/> 
+	
+	<RequiredPlugin name='tearing'/>
+	
+    <DefaultPipeline name="PenalityContactForceField21" verbose="0" />
+    <BruteForceDetection name="N2" />
+    <CollisionResponse name="PenalityContactForceField22" response="PenalityContactForceField" />
+    <MinProximityIntersection name="Proximity" alarmDistance="0.8" contactDistance="0.5" />
+    <DefaultCollisionGroupManager name="PenalityContactForceField23" />
+    
+    
+    <Node name="Model">
+        <RegularGridTopology name="grid" n="40 5 5" min="0 0 0" max="50 5 5" p0="0 0 0" />
+        <MechanicalObject name="ref_positions" />
+        
+        <TetrahedronSetTopologyContainer name="ref_tetra" />
+        <TetrahedronSetTopologyModifier name="Modifier" />
+        <TetrahedronSetGeometryAlgorithms template="Vec3d" name="ref_GeomAlgo" />
+        <Hexa2TetraTopologicalMapping input="@grid" output="@ref_tetra" />
+    </Node>
+    
+    <Node name="Cube" gravity="0 0 0">
+        <EulerImplicitSolver name="cg_odesolver" printLog="0"  rayleighStiffness="0.1" rayleighMass="0.1" />
+        <CGLinearSolver template="GraphScattered" name="linear solver" iterations="25" tolerance="1e-09" threshold="1e-09" />
+        <MechanicalObject name="Mo" template="Vec3d" position="@../Model/ref_positions.position" />
+        
+        <TetrahedronSetTopologyContainer name="Tetra_topo" src="@../Model/ref_tetra"/>
+        <TetrahedronSetTopologyModifier name="Modifier" />
+        <TetrahedronSetGeometryAlgorithms template="Vec3d" name="GeomAlgo" />
+        
+        <!--UniformMass template="Vec3d,double" name="PenalityContactForceField25" vertexMass="0.25" /-->
+		<DiagonalMass template="Vec3d,double" name="mass" massDensity="1.0" />
+        <TetrahedralCorotationalFEMForceField template="Vec3d" name="FEM" method="large" poissonRatio="0.4" youngModulus="100000" assembling="0" />
+        
+        <BoxROI template="Vec3d" name="box_roi" box="0 0 0 0 5 5" indices="0" drawSize="1"  drawBoxes="1"/>
+        <FixedConstraint template="Vec3d" name="PenalityContactForceField27" indices="@box_roi.indices" drawSize="0" />
+		
+		<BoxROI template="Vec3d" name="PulledSide" box="49 0 0 51 5 5" drawBoxes="1" drawSize="1"/>
+		<ConstantForceField name="CFF" indices="@PulledSide.indices" force="0 -50 0" showArrowSize=".01" />
+		
+		<VolumeTearingEngine name="VolumeTearingEngine" input_position="@Mo.position"/>
+		
+        <Node name="Triangles" gravity="0 -9.81 0">
+            <TriangleSetTopologyContainer name="Triangle_topo" />
+            <TriangleSetTopologyModifier name="Modifier" />
+            <TriangleSetGeometryAlgorithms template="Vec3d" name="GeomAlgo" />
+            <Tetra2TriangleTopologicalMapping name="PenalityContactForceField29" input="@../Tetra_topo" output="@Triangle_topo" />
+
+            <TriangleCollisionModel name="PenalityContactForceField30" />
+            <Node name="Visu" gravity="0 -9.81 0">
+                <OglModel template="Vec3d" name="Visual" material="Default Diffuse 1 1 0 0 1 Ambient 1 0.2 0 0 1 Specular 0 1 0 0 1 Emissive 0 1 0 0 1 Shininess 0 45" />
+                <IdentityMapping template="Vec3d,Vec3d" name="PenalityContactForceField33" input="@.." output="@Visual" />
+            </Node>
+
+        </Node>
+        
+    </Node>
+</Node>

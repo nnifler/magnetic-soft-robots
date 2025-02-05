@@ -1,0 +1,24 @@
+# Git info for SoftRobots.Inverse
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+dde5720a26b6bdbbe6457919052def916729bc2b
+
+## Branches containing current commit
+## git branch -a --contains dde5720a26b6bdbbe6457919052def916729bc2b 
+* (HEAD detached at dde5720)
+  remotes/origin/tag/release-v24.06
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/SoftRobots.Inverse.git (fetch)
+origin	https://github.com/SofaDefrost/SoftRobots.Inverse.git (push)
+
+## More info
+## git log --pretty -n 1
+commit dde5720a26b6bdbbe6457919052def916729bc2b
+Author: EulalieCoevoet <eulalie.coevoet@gmail.com>
+Date:   Tue Jun 4 23:48:50 2024 +0200
+
+    Update ci.yml

@@ -1,0 +1,29 @@
+# Git info for InvertibleFVM
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+8831d015aeaecae61d0d74db3aef491dbf878429
+
+## Branches containing current commit
+## git branch -a --contains 8831d015aeaecae61d0d74db3aef491dbf878429 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/InvertibleFVM (fetch)
+origin	https://github.com/sofa-framework/InvertibleFVM (push)
+
+## More info
+## git log --pretty -n 1
+commit 8831d015aeaecae61d0d74db3aef491dbf878429
+Merge: d4acd85 e3d57fa
+Author: Hugo <hugo.talbot@sofa-framework.org>
+Date:   Tue Feb 27 07:57:40 2024 +0100
+
+    Merge pull request #3 from hugtalbot/2024_fix_compilation_and_warning
+    
+    Fix compilation for v24.06

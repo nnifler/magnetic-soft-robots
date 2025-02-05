@@ -1,0 +1,24 @@
+# Git info for Cosserat
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+f077ff85deaf78f0b6cbf1011bb193fd862846fb
+
+## Branches containing current commit
+## git branch -a --contains f077ff85deaf78f0b6cbf1011bb193fd862846fb 
+* (HEAD detached at f077ff8)
+  remotes/origin/tag/release-v24.06
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/Cosserat.git (fetch)
+origin	https://github.com/SofaDefrost/Cosserat.git (push)
+
+## More info
+## git log --pretty -n 1
+commit f077ff85deaf78f0b6cbf1011bb193fd862846fb
+Author: bakpaul <bakpaul@hotmail.fr>
+Date:   Thu Jun 6 16:43:27 2024 +0200
+
+    Update CI

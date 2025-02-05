@@ -1,0 +1,40 @@
+# Git info for SofaPython3
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+180913aa4691ce3f8ef9b1ae512609d1c3296d6a
+
+## Branches containing current commit
+## git branch -a --contains 180913aa4691ce3f8ef9b1ae512609d1c3296d6a 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/204/merge
+  remotes/origin/pr/275/merge
+  remotes/origin/pr/399/merge
+  remotes/origin/pr/409/merge
+  remotes/origin/pr/413/merge
+  remotes/origin/pr/414/head
+  remotes/origin/pr/414/merge
+  remotes/origin/pr/415/head
+  remotes/origin/pr/416/head
+  remotes/origin/pr/418/head
+  remotes/origin/v24.06
+  remotes/origin/v24.06_update_workflow
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/SofaPython3 (fetch)
+origin	https://github.com/sofa-framework/SofaPython3 (push)
+
+## More info
+## git log --pretty -n 1
+commit 180913aa4691ce3f8ef9b1ae512609d1c3296d6a
+Merge: 8d8f510 8aac31e
+Author: Paul Baksic <30337881+bakpaul@users.noreply.github.com>
+Date:   Wed May 8 07:21:35 2024 +0200
+
+    Merge pull request #411 from fredroy/use_importlib
+    
+    Replace deprecated imp by importlib

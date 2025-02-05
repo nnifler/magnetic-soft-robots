@@ -1,0 +1,7 @@
+prefix=/builds/workspace/sofa-custom/refs/heads/v24.06/ubuntu_gcc_release_full_python3.10/build/install/Tearing
+includedir=${prefix}/include
+
+Name: cxxopts
+Description: 
+Version: 3.1.1
+Cflags: -I${includedir}

@@ -1,0 +1,53 @@
+/******************************************************************************
+*                 SOFA, Simulation Open-Framework Architecture                *
+*                    (c) 2006 INRIA, USTL, UJF, CNRS, MGH                     *
+*                                                                             *
+* This program is free software; you can redistribute it and/or modify it     *
+* under the terms of the GNU Lesser General Public License as published by    *
+* the Free Software Foundation; either version 2.1 of the License, or (at     *
+* your option) any later version.                                             *
+*                                                                             *
+* This program is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       *
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License *
+* for more details.                                                           *
+*                                                                             *
+* You should have received a copy of the GNU Lesser General Public License    *
+* along with this program. If not, see <http://www.gnu.org/licenses/>.        *
+*******************************************************************************
+* Authors: The SOFA Team and external contributors (see Authors.txt)          *
+*                                                                             *
+* Contact information: contact@sofa-framework.org                             *
+******************************************************************************/
+#pragma once
+
+#include <sofa/config.h>
+#include <sofa/config/sharedlibrary_defines.h>
+
+#ifdef SOFA_BUILD_SOFA_COMPONENT_COLLISION_DETECTION_INTERSECTION
+#  define SOFA_TARGET Sofa.Component.Collision.Detection.Intersection
+#  define SOFA_COMPONENT_COLLISION_DETECTION_INTERSECTION_API SOFA_EXPORT_DYNAMIC_LIBRARY
+#else
+#  define SOFA_COMPONENT_COLLISION_DETECTION_INTERSECTION_API SOFA_IMPORT_DYNAMIC_LIBRARY
+#endif
+
+namespace sofa::component::collision::detection::intersection
+{
+	constexpr const char* MODULE_NAME = "Sofa.Component.Collision.Detection.Intersection";
+	constexpr const char* MODULE_VERSION = "24.06.00";
+} // namespace sofa::component::collision::geometry::intersection
+
+#ifdef SOFA_BUILD_SOFA_COMPONENT_COLLISION_DETECTION_INTERSECTION
+#define SOFA_ATTRIBUTE_DEPRECATED__COLLISION_DETECTION_INTERSECTION_AS_PARAMETER()
+#else
+#define SOFA_ATTRIBUTE_DEPRECATED__COLLISION_DETECTION_INTERSECTION_AS_PARAMETER() \
+    SOFA_ATTRIBUTE_DEPRECATED("v24.06", "v24.12", "Intersection detection methods now needs the Intersection method as a parameter.")
+#endif
+
+#ifdef SOFA_BUILD_SOFA_COMPONENT_COLLISION_DETECTION_INTERSECTION
+#define SOFA_ATTRIBUTE_DEPRECATED__RENAME_DATA_IN_COLLISION_DETECTION_INTERSECTION()
+#else
+#define SOFA_ATTRIBUTE_DEPRECATED__RENAME_DATA_IN_COLLISION_DETECTION_INTERSECTION() \
+    SOFA_ATTRIBUTE_DEPRECATED("v24.06", "v24.12", \
+    "Data renamed according to the guidelines")
+#endif

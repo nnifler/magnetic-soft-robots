@@ -1,0 +1,29 @@
+# Git info for Registration
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+ca186553cc41c06dcacf636d0f487fddb0cb18de
+
+## Branches containing current commit
+## git branch -a --contains ca186553cc41c06dcacf636d0f487fddb0cb18de 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/16/head
+  remotes/origin/pr/16/merge
+  remotes/origin/v24.06
+  remotes/origin/v24.06_update_workflow
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/Registration (fetch)
+origin	https://github.com/sofa-framework/Registration (push)
+
+## More info
+## git log --pretty -n 1
+commit ca186553cc41c06dcacf636d0f487fddb0cb18de
+Author: Alex Bilger <alxbilger@users.noreply.github.com>
+Date:   Thu May 23 13:13:05 2024 +0200
+
+    Fix target name (#15)

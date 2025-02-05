@@ -1,0 +1,31 @@
+# Git info for ModelOrderReduction
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+84c59f5dcacc1dd8c16a7195838c4eb65c8f9ae1
+
+## Branches containing current commit
+## git branch -a --contains 84c59f5dcacc1dd8c16a7195838c4eb65c8f9ae1 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/121/merge
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/ModelOrderReduction (fetch)
+origin	https://github.com/SofaDefrost/ModelOrderReduction (push)
+
+## More info
+## git log --pretty -n 1
+commit 84c59f5dcacc1dd8c16a7195838c4eb65c8f9ae1
+Author: erik pernod <erik.pernod@gmail.com>
+Date:   Fri May 31 13:56:22 2024 +0200
+
+    [ci] Update .scene-tests to add timout to non reduced scenes (#128)
+    
+    * Update .scene-tests
+    
+    * Update .scene-tests

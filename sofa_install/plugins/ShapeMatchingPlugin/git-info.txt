@@ -1,0 +1,32 @@
+# Git info for ShapeMatchingPlugin
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+c1fc23ca1608f080c0298bf2773d00ea2ec5436e
+
+## Branches containing current commit
+## git branch -a --contains c1fc23ca1608f080c0298bf2773d00ea2ec5436e 
+* (HEAD detached at origin/v24.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/3/head
+  remotes/origin/pr/3/merge
+  remotes/origin/v24.06
+  remotes/origin/v24.06_update_workflow
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/ShapeMatchingPlugin (fetch)
+origin	https://github.com/sofa-framework/ShapeMatchingPlugin (push)
+
+## More info
+## git log --pretty -n 1
+commit c1fc23ca1608f080c0298bf2773d00ea2ec5436e
+Merge: 54162cd ed6b3f2
+Author: Paul Baksic <30337881+bakpaul@users.noreply.github.com>
+Date:   Mon Mar 25 11:17:34 2024 +0100
+
+    Merge pull request #2 from sofa-framework/bakpaul-patch-1
+    
+    Update ci.yml

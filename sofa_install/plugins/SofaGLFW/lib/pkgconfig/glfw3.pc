@@ -1,0 +1,13 @@
+prefix=/builds/workspace/sofa-custom/refs/heads/v24.06/ubuntu_gcc_release_full_python3.10/build/install/Tearing
+exec_prefix=${prefix}
+includedir=/builds/workspace/sofa-custom/refs/heads/v24.06/ubuntu_gcc_release_full_python3.10/build/install/Tearing/include
+libdir=/builds/workspace/sofa-custom/refs/heads/v24.06/ubuntu_gcc_release_full_python3.10/build/install/Tearing/lib
+
+Name: GLFW
+Description: A multi-platform library for OpenGL, window and input
+Version: 3.3.4
+URL: https://www.glfw.org/
+Requires.private:  x11
+Libs: -L${libdir} -lglfw
+Libs.private:  -lrt -lm -ldl
+Cflags: -I${includedir}

@@ -1,0 +1,80 @@
+<?xml version="1.0" ?>
+<!-- See http://wiki.sofa-framework.org/wiki/TutorialCollisionUncoupledConstraints -->
+<Node name="root" dt="0.01" gravity="0 -9.81 0">
+    <RequiredPlugin name="Sofa.Component.AnimationLoop"/> <!-- Needed to use components [FreeMotionAnimationLoop] -->
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Algorithm"/> <!-- Needed to use components [BVHNarrowPhase BruteForceBroadPhase CollisionPipeline] -->
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/> <!-- Needed to use components [LocalMinDistance] -->
+    <RequiredPlugin name="Sofa.Component.Collision.Geometry"/> <!-- Needed to use components [LineCollisionModel PointCollisionModel TriangleCollisionModel] -->
+    <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/> <!-- Needed to use components [CollisionResponse] -->
+    <RequiredPlugin name="Sofa.Component.Constraint.Lagrangian.Correction"/> <!-- Needed to use components [UncoupledConstraintCorrection] -->
+    <RequiredPlugin name="Sofa.Component.Constraint.Lagrangian.Solver"/> <!-- Needed to use components [LCPConstraintSolver] -->
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/> <!-- Needed to use components [MeshOBJLoader] -->
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/> <!-- Needed to use components [CGLinearSolver] -->
+    <RequiredPlugin name="Sofa.Component.Mapping.NonLinear"/> <!-- Needed to use components [RigidMapping] -->
+    <RequiredPlugin name="Sofa.Component.Mass"/> <!-- Needed to use components [UniformMass] -->
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/> <!-- Needed to use components [EulerImplicitSolver] -->
+    <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/> <!-- Needed to use components [MeshTopology] -->
+    <RequiredPlugin name="Sofa.Component.Visual"/> <!-- Needed to use components [VisualStyle] -->
+    <RequiredPlugin name="Sofa.GL.Component.Rendering3D"/> <!-- Needed to use components [OglModel] -->
+
+    <!-- Basic Components to perform the collision detection -->
+    <VisualStyle displayFlags="showBehavior showCollisionModels" />
+    <FreeMotionAnimationLoop name="FreeMotionAnimationLoop" />
+    <CollisionPipeline name="CollisionPipeline" />
+    <BruteForceBroadPhase/>
+    <BVHNarrowPhase/>
+    <LocalMinDistance name="Proximity" alarmDistance="0.2" contactDistance="0.09" angleCone="0.0" />
+    <CollisionResponse name="Response" response="FrictionContactConstraint" />
+    <LCPConstraintSolver maxIt="1000" tolerance="0.001" maxIterations="1000"/>
+    <!-- Using a rigid cube using collision triangles, lines and points  -->
+    <Node name="Cube1">
+        <EulerImplicitSolver name="EulerImplicit"  rayleighStiffness="0.1" rayleighMass="0.1" />
+        <CGLinearSolver name="CG Solver" iterations="25" tolerance="1e-5" threshold="1e-5"/>
+        <MechanicalObject name="Cube1_RigidDOF" template="Rigid3" dy="2" />
+        <UniformMass name="UniformMass" totalMass="10.0" />
+        <UncoupledConstraintCorrection />
+        <Node name="Visual Model">
+            <MeshOBJLoader name="myLoader" filename="mesh/cube.obj"/>
+            <OglModel name="Visual_Cube" src="@myLoader" color="1 1 0 1.0" />
+            <RigidMapping name="RigidMapping Visual-RigidDOF" input="@../Cube1_RigidDOF" output="@Visual_Cube" />
+        </Node>
+        <Node name="Collision Model">
+            <MeshTopology name="Cube Mesh" filename="mesh/cube.obj" />
+            <MechanicalObject name="Collision_Cube" />
+            <!-- Collision Models -->
+            <TriangleCollisionModel name="Cube Triangle For Collision" />
+            <LineCollisionModel name="Cube Edge For Collision" />
+            <PointCollisionModel name="Cube Point For Collision" />
+            <RigidMapping name="RigidMapping Collision-RigidDOF" input="@../Cube1_RigidDOF" output="@Collision_Cube" />
+        </Node>
+    </Node>
+    <!-- Using a rigid cube using collision triangles, lines and points  -->
+    <Node name="Cube2">
+        <EulerImplicitSolver name="EulerImplicit" />
+        <CGLinearSolver name="CG Solver" iterations="25" tolerance="1e-5" threshold="1e-5"/>
+        <MechanicalObject name="Cube2_RigidDOF" template="Rigid3" dy="5" dx="1" />
+        <UniformMass name="UniformMass" totalMass="10.0" />
+        <UncoupledConstraintCorrection />
+        <Node name="Visual Model">
+            <MeshOBJLoader name="myLoader" filename="mesh/cube.obj"/>
+            <OglModel name="Visual_Cube" src="@myLoader" color="1 1 0 1.0" />
+            <RigidMapping name="RigidMapping Visual-RigidDOF" input="@../Cube2_RigidDOF" output="@Visual_Cube" />
+        </Node>
+        <Node name="Collision Model">
+            <MeshTopology name="Cube Mesh" filename="mesh/cube.obj" />
+            <MechanicalObject name="Collision_Cube" />
+            <!-- Collision Models -->
+            <TriangleCollisionModel name="Cube Triangle For Collision" />
+            <LineCollisionModel name="Cube Edge For Collision" />
+            <PointCollisionModel name="Cube Point For Collision" />
+            <RigidMapping name="RigidMapping Collision-RigidDOF" input="@../Cube2_RigidDOF" output="@Collision_Cube" />
+        </Node>
+    </Node>
+    <Node name="Floor">
+        <MeshTopology name="Topology Floor" filename="mesh/floor.obj" />
+        <MechanicalObject name="Floor Particles" />
+        <!-- Collision Models -->
+        <TriangleCollisionModel name="Floor Triangle For Collision" moving="0" simulated="0" />
+    </Node>
+</Node>

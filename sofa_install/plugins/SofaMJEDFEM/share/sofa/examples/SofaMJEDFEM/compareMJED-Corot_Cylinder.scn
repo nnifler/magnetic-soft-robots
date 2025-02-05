@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<Node name="root" gravity="0 -9.81 0" dt="0.1">
+	<RequiredPlugin pluginName="SofaMJEDFEM"/>
+
+	<VisualStyle displayFlags="showCollisionModels showForceFields showBehaviorModels"/>
+   	<Node name="cylinderCorot" activated="true">
+   		<EulerImplicitSolver />
+		<SparseLDLSolver/>
+
+		<MeshVTKLoader filename="data/cylinder1513.vtk" name="loader" />
+		<include href="Objects/TetrahedronSetTopology.xml" src="@loader"/>		
+		
+		<MechanicalObject name="BlockMO" src="@loader" />
+		
+		<UniformMass totalmass="0.126" />
+		<BoxConstraint box="-0.011 -0.011 -0.001  0.011 0.011 0.001"/>
+                        
+		<TetrahedronFEMForceField name="FEM" youngModulus="150000" poissonRatio="0.49" method="large" />
+
+		<Node name="visualize">
+			<MeshSTLLoader filename="data/cylinder5296.stl" name="loader" />
+            		<include href="Objects/TriangleSetTopology.xml" src="@loader" />            
+            		<OglModel color="1 0 0 1"/>
+            		<BarycentricMapping/>
+        	</Node>
+	</Node>	
+
+	<Node name="CylinderMJED" activated="true">	  
+		<EulerImplicitSolver />
+		<SparseLDLSolver/>
+		<!-- <CGLinearSolver iterations="500" tolerance="1e-8" threshold="1e-8"/> -->
+
+		<MeshVTKLoader filename="data/cylinder1513.vtk" name="loader" translation="0.06 0.0 0.0" />
+		<include href="Objects/TetrahedronSetTopology.xml" src="@loader"/>		
+		
+		<MechanicalObject name="BlockMO" src="@loader" />
+		
+		<UniformMass totalmass="0.126" />
+		<BoxConstraint box="-0.049 -0.011 -0.001  0.071 0.011 0.001"/>
+                        
+		<!-- the parameters for StVenant-Kirchhoff are mu=E/(2+2*nu) and lamba=(E*nu)/((1+nu)*(1-2*nu)) in this order-->
+		<MJEDTetrahedralForceField ParameterSet="5.0336e+04 2.4664e+06" materialName="StVenantKirchhoff"/>
+
+		<Node name="visualize">
+			<MeshSTLLoader filename="data/cylinder5296.stl" name="loader" translation="@../loader.translation" />
+            		<include href="Objects/TriangleSetTopology.xml" src="@loader" />            
+            		<OglModel color="0 1 0 1"/>
+            		<BarycentricMapping/>
+        	</Node>
+	</Node>
+
+	<Node name="CylinderMJED-CG" activated="true">
+                <EulerImplicitSolver />
+                <CGLinearSolver iterations="500" tolerance="1e-8" threshold="1e-8"/>
+
+                <MeshVTKLoader filename="data/cylinder1513.vtk" name="loader" translation="0.12 0.0 0.0" />
+                <include href="Objects/TetrahedronSetTopology.xml" src="@loader"/>
+
+                <MechanicalObject name="BlockMO" src="@loader" />
+
+                <UniformMass totalmass="0.126" />
+                <BoxConstraint box="-0.109 -0.011 -0.001  0.131 0.011 0.001"/>
+
+                <!-- the parameters for StVenant-Kirchhoff are mu=E/(2+2*nu) and lamba=(E*nu)/((1+nu)*(1-2*nu)) in this order-->
+                <MJEDTetrahedralForceField ParameterSet="5.0336e+04 2.4664e+06" materialName="StVenantKirchhoff"/>
+
+                <Node name="visualize">
+                        <MeshSTLLoader filename="data/cylinder5296.stl" name="loader" translation="@../loader.translation" />
+                        <include href="Objects/TriangleSetTopology.xml" src="@loader" />
+                        <OglModel color="0 1 1 1"/>
+                        <BarycentricMapping/>
+                </Node>
+        </Node>
+
+</Node>
+
+

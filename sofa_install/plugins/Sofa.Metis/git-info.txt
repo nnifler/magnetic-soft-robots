@@ -1,0 +1,23 @@
+# Git info for Sofa.Metis
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+ebb5b7a993eb176c3aeb8aa4dd827317fab7c3da
+
+## Branches containing current commit
+## git branch -a --contains ebb5b7a993eb176c3aeb8aa4dd827317fab7c3da 
+* (HEAD detached at origin/v24.06)
+  remotes/origin/v24.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/Sofa.Metis (fetch)
+origin	https://github.com/sofa-framework/Sofa.Metis (push)
+
+## More info
+## git log --pretty -n 1
+commit ebb5b7a993eb176c3aeb8aa4dd827317fab7c3da
+Author: bakpaul <paul.baksic@outlook.fr>
+Date:   Wed Jun 5 23:12:23 2024 +0200
+
+    [CI] Update workflow to match branch name
