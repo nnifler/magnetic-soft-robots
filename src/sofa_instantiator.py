@@ -8,7 +8,7 @@ from src import Config, SceneBuilder, ElasticObject, MagneticController, Materia
 from src.mesh_loader import Mode
 
 
-def main():
+def main() -> Sofa.Core.Node:
     """Main function that instantiates the Sofa simulation.
     """
     debug = False
@@ -48,20 +48,31 @@ def main():
                             'Sofa.Component.Topology.Mapping',
                             'Sofa.Component.MechanicalLoad',
                             'Sofa.Component.Engine.Select',
+                            'Sofa.GL.Component.Shader',
                             ])
 
     root = Sofa.Core.Node("root")
     createScene(root)
-    Sofa.Simulation.init(root)
+    print('not yet crashed')
+    return root
 
+
+def start_loop(root: Sofa.Core.Node) -> None:
+    """Starts the Sofa simulation loop.
+
+    Args:
+        root (Sofa.Core.Node): The Sofa root node.
+    """
+    Sofa.Simulation.init(root)
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
     Sofa.Gui.GUIManager.createGUI(root, __file__)
     Sofa.Gui.GUIManager.SetDimension(1080, 1080)
     Sofa.Gui.GUIManager.MainLoop(root)
     Sofa.Gui.GUIManager.closeGUI()
 
-
 # DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
+
+
 def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
     """Creates the scene for the Sofa simulation with the given argument as the root node.
 

@@ -15,7 +15,7 @@ from PySide6.QtGui import QRegularExpressionValidator
 from src.units import Tesla
 from src import Config, sofa_instantiator
 
-from gui import MSRHeaderWidget, MSRMaterialGroup
+from gui import MSRHeaderWidget, MSRMaterialGroup, SofaWidget
 
 
 class MainWindow(QMainWindow):
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(header_widget)
 
         # Hauptinhalt - Horizontal Layout
-        content_layout = QHBoxLayout()
+        self.content_layout = QHBoxLayout()
 
         # Linke Seitenleiste für Navigation und Parametersteuerung
         sidebar = QGroupBox("Simulation Settings Panel")
@@ -88,14 +88,15 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(apply_button)
 
         sidebar.setFixedWidth(400)
-        content_layout.addWidget(sidebar)
+        self.content_layout.addWidget(sidebar)
 
         # Hauptanzeige für Visualisierung
-        visualization_area = QWidget()
-        visualization_area.setStyleSheet("background-color: #f0f0f0;")
-        content_layout.addWidget(visualization_area)
+        self.visu_widget_placeholder = QWidget()
+        self.visu_widget_placeholder.setStyleSheet(
+            "background-color: #f0f0f0;")
+        self.content_layout.addWidget(self.visu_widget_placeholder)
 
-        main_layout.addLayout(content_layout)
+        main_layout.addLayout(self.content_layout)
 
         # Default values
         Config.set_model("beam", 0.02)
@@ -160,7 +161,13 @@ class MainWindow(QMainWindow):
                                        params["density"].value(),
                                        params["remanence"].value())
 
-        sofa_instantiator.main()
+        sofa_root_node: Sofa.Core.Node = sofa_instantiator.main()
+        sofa_visu_node = sofa_root_node.visuals
+        self.visu_widget_sofa = SofaWidget(sofa_visu_node)
+        self.content_layout.replaceWidget(
+            self.visu_widget_placeholder, self.visu_widget_sofa)
+        # self.visu_widget_placeholder.close()
+        # sofa_instantiator.start_loop(sofa_root_node)
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.

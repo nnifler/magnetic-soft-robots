@@ -103,6 +103,14 @@ class SceneBuilder():
         self.root.addObject('MinProximityIntersection', useLineLine=True, usePointPoint=True,
                             alarmDistance=0.003, contactDistance=0.0015, useLinePoint=True)
 
+        # place light and a camera
+        self.visuals = self.root.addChild('visuals')
+        self.root.addObject("LightManager")
+        self.root.addObject("DirectionalLight", direction=[0, 1, 0])
+        self.visuals.addObject("InteractiveCamera", name="camera", position=[0, 15, 0],
+                               lookAt=[0, 0, 0], distance=37,
+                               fieldOfView=45, zNear=0.63, zFar=55.69)
+
     def _render_force(self):
         """Adds the force visualization to the scene."""
         self.root.addObject(
