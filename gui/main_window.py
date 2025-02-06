@@ -7,7 +7,7 @@ import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog
+    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QTabWidget
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
@@ -45,12 +45,14 @@ class MainWindow(QMainWindow):
         content_layout = QHBoxLayout()
 
         # Linke Seitenleiste für Navigation und Parametersteuerung
-        sidebar = QGroupBox("Simulation Settings Panel")
-        sidebar_layout = QVBoxLayout(sidebar)
+        sidebar = QTabWidget()
+        simulation_settings = QWidget()
+        simulation_layout = QVBoxLayout(simulation_settings)
+        sidebar.addTab(simulation_settings, "Simulation Settings")
 
         # Materialeigenschaften
         self.material_group = MSRMaterialGroup()
-        sidebar_layout.addWidget(self.material_group)
+        simulation_layout.addWidget(self.material_group)
 
         # Magnetfeldsteuerung
         field_group = QGroupBox("Magnet Field Settings")
@@ -80,12 +82,20 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(field_direction_label)
         field_layout.addWidget(self.field_direction_input)
 
-        sidebar_layout.addWidget(field_group)
+        simulation_layout.addWidget(field_group)
 
         # Schaltfläche zum Anwenden der Parameter
         apply_button = QPushButton("Apply")
         apply_button.clicked.connect(self.apply_parameters)
-        sidebar_layout.addWidget(apply_button)
+        simulation_layout.addWidget(apply_button)
+
+        # Analysis Tab
+        analysis_settings = QWidget()
+        analysis_layout = QVBoxLayout(analysis_settings)
+        sidebar.addTab(analysis_settings, "Analysis Settings")
+
+        # Space to add to analysis tab
+        analysis_layout.addWidget(QLabel("Add analysis tools here!"))
 
         sidebar.setFixedWidth(400)
         content_layout.addWidget(sidebar)
