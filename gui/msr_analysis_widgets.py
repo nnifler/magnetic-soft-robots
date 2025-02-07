@@ -4,7 +4,7 @@ import re
 from enum import Enum
 
 from PySide6.QtWidgets import (
-    QGroupBox, QVBoxLayout, QCheckBox, QGridLayout, QTextEdit, QLabel, QLineEdit
+    QGroupBox, QVBoxLayout, QCheckBox, QGridLayout, QTextEdit, QLabel, QLineEdit, QRadioButton
 )
 from PySide6.QtCore import Qt
 
@@ -32,9 +32,9 @@ class MSRDeformationAnalysisWidget(QGroupBox):
 
         # Add checkboxes for the way the points are selected
         self.point_checkboxes = [
-            QCheckBox("Indices"),
-            QCheckBox("Coordinates"),
-            QCheckBox("All Points")
+            QRadioButton("Indices"),
+            QRadioButton("Coordinates"),
+            QRadioButton("All Points")
         ]
         point_selector_layout.addWidget(self.point_checkboxes[0], 0, 0)
         point_selector_layout.addWidget(self.point_checkboxes[1], 0, 1)
@@ -42,7 +42,7 @@ class MSRDeformationAnalysisWidget(QGroupBox):
 
         self.point_checkboxes[2].setChecked(True)
         for i, checkbox in enumerate(self.point_checkboxes):
-            checkbox.stateChanged.connect(
+            checkbox.toggled.connect(
                 lambda state, index=i: self._unselect_other_point_checkboxes(
                     state, index)
             )
@@ -97,9 +97,6 @@ class MSRDeformationAnalysisWidget(QGroupBox):
     def _unselect_other_point_checkboxes(self, state: bool, index: int) -> None:
         if not state:
             return
-        for i, checkbox in enumerate(self.point_checkboxes):
-            if i != index:
-                checkbox.setChecked(False)
         for i, input_field in enumerate(self.point_inputs):
             if i == index:
                 input_field.setReadOnly(False)
