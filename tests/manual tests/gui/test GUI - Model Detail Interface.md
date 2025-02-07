@@ -17,15 +17,15 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 1. Start of the application:
     1. Run the file ∼/magnetic-soft-robots/main.py
 2. Check the behaviour of the application
-    1. Check whether a sub widget with the name "Material Configuration" opens in the interface at start including a field with the name "Constraint Box Lower Corner:"
+    1. Check whether a sub widget with the name "Model Configuration" opens in the interface at start including a field with the name "Selected Model:"
 3. Select a mesh
     1. Upper Right Button "Models"
     2. Select "Open"
-    3. Select one of the default models
+    3. Select a random default model
 4. Window check
-    1. "Model Name: " displays the name of your selected model
-    2. "Model Nodes Count: " displays number of nodes.
-    3. "Model Tetrahedra Count: " displays the number of tetrahedra
+    1. "Selected Model" displays the name of the selected model
+    2. "Number of Nodes" displays the number of nodes.
+    3. "Number of Tetrahedra" displays the number of tetrahedra
     4. Bounding Boxes: --> see [LINK - SOFA Interface 3.9-10](test LINK - SOFA Interface.md)
 
 ## Expected Result
