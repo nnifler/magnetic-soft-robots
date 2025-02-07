@@ -1,12 +1,15 @@
 # Manual Test for the User Story 'LINK - SOFA Interface'
 
 ### Test Goal
+
 Check whether the user inputs via the GUI get processed correctly, are added to the config class and the Sofa simulation can be started from the GUI.
 
 ### User Story
+
 As any user, I’d like to see the changes I set in the GUI take effect on the simulation.
 
 ## Prerequisites
+
 Make sure that the project is installed according to [README.md]() and [Requirements.txt]().
 
 ## Test
@@ -26,7 +29,9 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     5. Choose a random option in the unit selector next to the number field `Density`
     6. Input a random valid value in the number field `Remanence`
     7. Put the slider `Magnetic Field Strength` on a random position
-    8. Input a random valid vector in the `Direction` field 
+    8. Input a random valid vector in the `Direction` field
+    9. Input a random valid vector in the `Constraint Box Lower Corner` field
+    10. Input a random valid vector in the `Constraint Box Upper Corner` field
 
 4. **Click Apply Button**
     1. Click the `Apply` button at the bottom of the GUI
@@ -44,11 +49,13 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 8. **Verify if the simulation starts**
 
 ## Expected Result
+
 1. `Young's modulus` is found in `Material parameters` and is displayed in the console in `Pa`
 2. `Poisson Ratio` is found in `Material parameters`
 3. `Density` is found in `Material parameters` and is displayed in the console in `kg/m^3`
 4. `Remanence` is found in `Material parameters`
 5. `Magnetic Field Strength` is found in `External forces` as `magnetic_force`
 6. `Direction` is found in `External forces` as an array
-7. The simulation starts after pressing the `Apply` button without debug mode
-8. No unexpected errors appear in the console
+7. `Constraint Box Lower Corner` and `Constraint Box Upper Corner` are found in `Model Constraints` as a tuple of arrays.
+8. The simulation starts after pressing the `Apply` button without debug mode
+9. No unexpected errors appear in the console
