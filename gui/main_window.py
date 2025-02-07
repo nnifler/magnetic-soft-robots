@@ -13,9 +13,13 @@ from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import Tesla
-from src import Config, sofa_instantiator
+from src import Config, sofa_instantiator, MeshLoader
+from src.mesh_loader import Mode as MeshMode
 
 from gui import MSRHeaderWidget, MSRMaterialGroup
+
+from pathlib import Path
+import Sofa.Core
 
 
 class MainWindow(QMainWindow):
@@ -57,6 +61,8 @@ class MainWindow(QMainWindow):
         model_layout = QVBoxLayout(model_group)
 
         self.model_name_label = QLabel("Model Name:")
+        self.model_nodes_label = QLabel("Model Node Count:")
+        self.model_tetrahedra_label = QLabel("Model Tetrahedra Count:")
 
         model_bounding_box_a_label = QLabel("Constraint Box Lower Corner:")
         self.model_bounding_box_a = QLineEdit()
@@ -69,6 +75,8 @@ class MainWindow(QMainWindow):
             "Enter as [x, y, z], leave empty for default model")
 
         model_layout.addWidget(self.model_name_label)
+        model_layout.addWidget(self.model_nodes_label)
+        model_layout.addWidget(self.model_tetrahedra_label)
         model_layout.addWidget(model_bounding_box_a_label)
         model_layout.addWidget(self.model_bounding_box_a)
         model_layout.addWidget(model_bounding_box_b_label)
@@ -128,7 +136,26 @@ class MainWindow(QMainWindow):
 
     def update_model(self) -> None:
         """Updates the model name in the GUI."""
+        # len(self.mech_obj.position.value)  # nodes
+        # len(self.topo.tetrahedra.value)  # tetrahedra
         self.model_name_label.setText(f'Model name: {Config.get_name()}')
+
+        root = Sofa.Core.Node("root")
+        root.addObject(
+            "RequiredPlugin", pluginName='Sofa.Component.IO.Mesh')
+
+        mesh_loader = MeshLoader()
+        # elastic_object = ElasticObject(
+        #     root, mesh_loader, 0.3, YoungsModulus(1e6), Density(1000))
+        mesh_loader.load_file(
+            Path(__file__).parents[1] / f'lib/models/{Config.get_name()}.msh', MeshMode.VOLUMETRIC)
+
+        # print(len(root.mech_obj.position.value))
+        model_obj = mesh_loader.load_mesh_into(root, MeshMode.VOLUMETRIC)
+        self.model_nodes_label.setText(
+            f'Model Node Count: {len(model_obj.position.value)}')
+        self.model_tetrahedra_label.setText(
+            f'Model Tetrahedra Count: {len(model_obj.tetrahedra.value)}')
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based
