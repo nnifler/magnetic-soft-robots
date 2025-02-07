@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout(central_widget)
 
         # Header-View
-        header_widget = MSRHeaderWidget()
+        header_widget = MSRHeaderWidget(self)
         main_layout.addWidget(header_widget)
 
         # Hauptinhalt - Horizontal Layout
@@ -56,20 +56,23 @@ class MainWindow(QMainWindow):
         model_group = QGroupBox("Model Settings")
         model_layout = QVBoxLayout(model_group)
 
-        bounding_box_coords_a = QLabel("Constraint Box Lower Corner:")
-        self.bounding_box_coords_a = QLineEdit()
-        self.bounding_box_coords_a.setPlaceholderText(
+        self.model_name_label = QLabel("Model Name:")
+
+        model_bounding_box_a_label = QLabel("Constraint Box Lower Corner:")
+        self.model_bounding_box_a = QLineEdit()
+        self.model_bounding_box_a.setPlaceholderText(
             "Enter as [x, y, z], leave empty for default model")
 
-        bounding_box_coords_b = QLabel("Constraint Box Upper Corner:")
-        self.bounding_box_coords_b = QLineEdit()
-        self.bounding_box_coords_b.setPlaceholderText(
+        model_bounding_box_b_label = QLabel("Constraint Box Upper Corner:")
+        self.model_bounding_box_b = QLineEdit()
+        self.model_bounding_box_b.setPlaceholderText(
             "Enter as [x, y, z], leave empty for default model")
 
-        model_layout.addWidget(bounding_box_coords_a)
-        model_layout.addWidget(self.bounding_box_coords_a)
-        model_layout.addWidget(bounding_box_coords_b)
-        model_layout.addWidget(self.bounding_box_coords_b)
+        model_layout.addWidget(self.model_name_label)
+        model_layout.addWidget(model_bounding_box_a_label)
+        model_layout.addWidget(self.model_bounding_box_a)
+        model_layout.addWidget(model_bounding_box_b_label)
+        model_layout.addWidget(self.model_bounding_box_b)
 
         sidebar_layout.addWidget(model_group)
 
@@ -95,8 +98,8 @@ class MainWindow(QMainWindow):
             r"^\s*\[\s*(-?\d+(\.\d+)?\s*,\s*){2}-?\d+(\.\d+)?\s*\]\s*$")
         validator = QRegularExpressionValidator(vector_regex)
         self.field_direction_input.setValidator(validator)
-        self.bounding_box_coords_a.setValidator(validator)
-        self.bounding_box_coords_b.setValidator(validator)
+        self.model_bounding_box_a.setValidator(validator)
+        self.model_bounding_box_b.setValidator(validator)
 
         field_layout.addWidget(self.field_strength_label)
         field_layout.addWidget(self.field_strength_slider)
@@ -123,8 +126,12 @@ class MainWindow(QMainWindow):
         # Default values
         Config.set_model("beam", 0.02)
 
+    def update_model(self) -> None:
+        """Updates the model name in the GUI."""
+        self.model_name_label.setText(f'Model name: {Config.get_name()}')
+
     def update_field_strength_label(self) -> None:
-        """Updates the field strength output based 
+        """Updates the field strength output based
         on the current position of the slider in tesla values.
         """
         strength_in_tesla = self.field_strength_slider.value() / 10
@@ -133,7 +140,7 @@ class MainWindow(QMainWindow):
             f"Magnetic Field Strength: {formatted_strength} T")
 
     def parse_direction_input(self, text: str) -> Optional[List[float]]:
-        """Parses the direction input from the user 
+        """Parses the direction input from the user
         and ensures that it is a valid vector with 3 components.
 
         Args:
@@ -184,9 +191,9 @@ class MainWindow(QMainWindow):
                                        params["remanence"].value())
 
         bounding_box_a = self.parse_direction_input(
-            self.bounding_box_coords_a.text())
+            self.model_bounding_box_a.text())
         bounding_box_b = self.parse_direction_input(
-            self.bounding_box_coords_b.text())
+            self.model_bounding_box_b.text())
 
         if bounding_box_a is None or bounding_box_b is None:
             Config.set_default_constraints()
