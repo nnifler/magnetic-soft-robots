@@ -10,8 +10,10 @@ import Sofa.Simulation
 
 class SofaWidget(QOpenGLWidget, QOpenGLFunctions):
     def __init__(self, sofa_visuals_node):
-        QOpenGLWidget.__init__(self)
-        self.initializeOpenGLFunctions()
+        super().__init__()
+        # QOpenGLFunctions.__init__(self)
+
+        # self.initializeOpenGLFunctions()
 
         self.visuals_node = sofa_visuals_node
         self.camera = sofa_visuals_node.camera
@@ -20,14 +22,22 @@ class SofaWidget(QOpenGLWidget, QOpenGLFunctions):
         self.z_near = sofa_visuals_node.camera.findData('zNear').value
 
     def initializeGL(self):
+        # print('not yet crashed')
+        QOpenGLFunctions.__init__(self)
+        self.initializeOpenGLFunctions()
+        # print('not yet crashed')
         self.glViewport(0, 0, self.width(), self.height())
         self.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.glEnable(GL_LIGHTING)
         self.glEnable(GL_DEPTH_TEST)
         self.glDepthFunc(GL_LESS)
+        print('not yet crashed2')
         Sofa.SofaGL.glewInit()
-        Sofa.Simulation.initVisual(self.visuals_node)
-        Sofa.Simulation.initTextures(self.visuals_node)
+        print('not yet crashed3')
+        # Sofa.Simulation.initVisual(self.visuals_node)
+        # print('not yet crashed4')
+        # Sofa.Simulation.initTextures(self.visuals_node)
+        # print('not yet crashed5')
 
         # # DEPRICATED!!!
         # self.glMatrixMode(GL_PROJECTION)
@@ -51,7 +61,8 @@ void main() {
 }""")
         self.shader_program = QOpenGLShaderProgram()
         self.shader_program.addShader(shader)
-        self.glUseProgram(self.shader_program)
+        # self.glUseProgram(self.shader_program.)
+        self.shader_program.link()
 
         modelview_matrix = np.array(
             self.camera.getOpenGLModelViewMatrix(), dtype=np.float32)
@@ -95,7 +106,7 @@ void main() {
         # cameraMVM = self.visuals_node.camera.getOpenGLModelViewMatrix()
         # self.glMultMatrixd(cameraMVM)
 
-        Sofa.SofaGL.draw(self.visuals_node)
+        # Sofa.SofaGL.draw(self.visuals_node)
 
     def get_depth_image(self):
         _, _, width, height = self.glGetIntegerv(GL_VIEWPORT)
