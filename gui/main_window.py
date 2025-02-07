@@ -7,7 +7,7 @@ import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog
+    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
@@ -56,33 +56,37 @@ class MainWindow(QMainWindow):
         self.material_group = MSRMaterialGroup()
         sidebar_layout.addWidget(self.material_group)
 
-        # Model information
-        model_group = QGroupBox("Model Settings")
-        model_layout = QVBoxLayout(model_group)
+        # Model configuration
+        model_group = QGroupBox("Model Configuration")
+        model_layout = QGridLayout(model_group)
 
-        self.model_name_label = QLabel("Model Name:")
-        self.model_nodes_label = QLabel("Model Node Count:")
-        self.model_tetrahedra_label = QLabel("Model Tetrahedra Count:")
+        model_name_label = QLabel("Selected Model:")
+        self._model_name = QLabel()
+        model_nodes_label = QLabel("Number of Nodes:")
+        self._model_nodes = QLabel()
+        model_tetrahedra_label = QLabel("Number of Tetrahedra:")
+        self._model_tetrahedra = QLabel()
 
         model_bounding_box_a_label = QLabel("Constraint Box Lower Corner:")
-        self.model_bounding_box_a = QLineEdit()
-        self.model_bounding_box_a.setPlaceholderText(
+        self._model_bounding_box_a = QLineEdit()
+        self._model_bounding_box_a.setPlaceholderText(
             "Enter as [x, y, z], leave empty for default model")
 
         model_bounding_box_b_label = QLabel("Constraint Box Upper Corner:")
-        self.model_bounding_box_b = QLineEdit()
-        self.model_bounding_box_b.setPlaceholderText(
+        self._model_bounding_box_b = QLineEdit()
+        self._model_bounding_box_b.setPlaceholderText(
             "Enter as [x, y, z], leave empty for default model")
 
-        model_layout.addWidget(self.model_name_label)
-        model_layout.addWidget(self.model_nodes_label)
-        model_layout.addWidget(self.model_tetrahedra_label)
-        model_layout.addWidget(model_bounding_box_a_label)
-        model_layout.addWidget(self.model_bounding_box_a)
-        model_layout.addWidget(model_bounding_box_b_label)
-        model_layout.addWidget(self.model_bounding_box_b)
-
-        sidebar_layout.addWidget(model_group)
+        model_layout.addWidget(model_name_label, 0, 0)
+        model_layout.addWidget(self._model_name, 0, 1)
+        model_layout.addWidget(model_nodes_label, 1, 0)
+        model_layout.addWidget(self._model_nodes, 1, 1)
+        model_layout.addWidget(model_tetrahedra_label, 2, 0)
+        model_layout.addWidget(self._model_tetrahedra, 2, 1)
+        model_layout.addWidget(model_bounding_box_a_label, 3, 0, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_a, 4, 0, 1, 2)
+        model_layout.addWidget(model_bounding_box_b_label, 5, 0, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_b, 6, 0, 1, 2)
 
         # Magnetfeldsteuerung
         field_group = QGroupBox("Magnet Field Settings")
@@ -106,8 +110,8 @@ class MainWindow(QMainWindow):
             r"^\s*\[\s*(-?\d+(\.\d+)?\s*,\s*){2}-?\d+(\.\d+)?\s*\]\s*$")
         validator = QRegularExpressionValidator(vector_regex)
         self.field_direction_input.setValidator(validator)
-        self.model_bounding_box_a.setValidator(validator)
-        self.model_bounding_box_b.setValidator(validator)
+        self._model_bounding_box_a.setValidator(validator)
+        self._model_bounding_box_b.setValidator(validator)
 
         field_layout.addWidget(self.field_strength_label)
         field_layout.addWidget(self.field_strength_slider)
@@ -115,6 +119,7 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(self.field_direction_input)
 
         sidebar_layout.addWidget(field_group)
+        sidebar_layout.addWidget(model_group)
 
         # Schaltfläche zum Anwenden der Parameter
         apply_button = QPushButton("Apply")
@@ -135,23 +140,26 @@ class MainWindow(QMainWindow):
         Config.set_model("beam", 0.02)
 
     def update_model(self) -> None:
-        """Updates the model labels in the GUI after setting the model."""
-        self.model_name_label.setText(f'Model name: {Config.get_name()}')
+        """Updates the model value fields in the GUI after setting the model."""
+        name = Config.get_name()
 
+        # SOFA to get nodes and tetrahedra
         root = Sofa.Core.Node("root")
         root.addObject(
             "RequiredPlugin", pluginName='Sofa.Component.IO.Mesh')
-
         mesh_loader = MeshLoader()
         # TODO: still hardcoded mesh file type (GUI - Import Meshes)
+        # TODO: hardcodced path --> change for packaging
         mesh_loader.load_file(
-            Path(__file__).parents[1] / f'lib/models/{Config.get_name()}.msh', MeshMode.VOLUMETRIC)
-
+            Path(__file__).parents[1] / f'lib/models/{name}.msh', MeshMode.VOLUMETRIC)
         model_obj = mesh_loader.load_mesh_into(root, MeshMode.VOLUMETRIC)
-        self.model_nodes_label.setText(
-            f'Model Node Count: {len(model_obj.position.value)}')
-        self.model_tetrahedra_label.setText(
-            f'Model Tetrahedra Count: {len(model_obj.tetrahedra.value)}')
+
+        # updating the values
+        node_count = len(model_obj.position.value)
+        tetrahedron_count = len(model_obj.tetrahedra.value)
+        self._model_name.setText(name)
+        self._model_nodes.setText(str(node_count))
+        self._model_tetrahedra.setText(str(tetrahedron_count))
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based
