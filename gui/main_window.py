@@ -15,7 +15,7 @@ from PySide6.QtGui import QRegularExpressionValidator
 from src.units import Tesla
 from src import Config, sofa_instantiator
 
-from gui import MSRHeaderWidget, MSRMaterialGroup
+from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
 
 
 class MainWindow(QMainWindow):
@@ -95,7 +95,8 @@ class MainWindow(QMainWindow):
         sidebar.addTab(analysis_settings, "Analysis Settings")
 
         # Space to add to analysis tab
-        analysis_layout.addWidget(QLabel("Add analysis tools here!"))
+        self.deformation_widget = MSRDeformationAnalysisWidget()
+        analysis_layout.addWidget(self.deformation_widget)
 
         sidebar.setFixedWidth(400)
         content_layout.addWidget(sidebar)
