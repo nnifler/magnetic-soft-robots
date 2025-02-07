@@ -135,9 +135,7 @@ class MainWindow(QMainWindow):
         Config.set_model("beam", 0.02)
 
     def update_model(self) -> None:
-        """Updates the model name in the GUI."""
-        # len(self.mech_obj.position.value)  # nodes
-        # len(self.topo.tetrahedra.value)  # tetrahedra
+        """Updates the model labels in the GUI after setting the model."""
         self.model_name_label.setText(f'Model name: {Config.get_name()}')
 
         root = Sofa.Core.Node("root")
@@ -145,12 +143,10 @@ class MainWindow(QMainWindow):
             "RequiredPlugin", pluginName='Sofa.Component.IO.Mesh')
 
         mesh_loader = MeshLoader()
-        # elastic_object = ElasticObject(
-        #     root, mesh_loader, 0.3, YoungsModulus(1e6), Density(1000))
+        # TODO: still hardcoded mesh file type (GUI - Import Meshes)
         mesh_loader.load_file(
             Path(__file__).parents[1] / f'lib/models/{Config.get_name()}.msh', MeshMode.VOLUMETRIC)
 
-        # print(len(root.mech_obj.position.value))
         model_obj = mesh_loader.load_mesh_into(root, MeshMode.VOLUMETRIC)
         self.model_nodes_label.setText(
             f'Model Node Count: {len(model_obj.position.value)}')
