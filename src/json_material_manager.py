@@ -1,10 +1,10 @@
-"""This module imports material data from a HTML file and saves it as a JSON file."""
+"""Module for managing materials in JSON format."""
 
 import json
+from pathlib import Path
 import re
 from bs4 import BeautifulSoup
 import numpy as np
-from pathlib import Path
 from src.units import Density, YoungsModulus, Tesla
 
 
@@ -40,10 +40,15 @@ class JsonMaterialManager:
         },
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initializes the JsonMaterialManager."""
         self.materials = []
 
-    def append_material(self, name: str, density: Density, youngs_modulus: YoungsModulus, poissons_ratio: float, remanence: Tesla) -> None:
+    def append_material(self, name: str,
+                        density: Density,
+                        youngs_modulus: YoungsModulus,
+                        poissons_ratio: float,
+                        remanence: Tesla) -> None:
         """Appends a material to the list of materials.
 
         Args:
@@ -62,14 +67,14 @@ class JsonMaterialManager:
         })
 
     @staticmethod
-    def save_default_materials():
-        """Saves the default materials as a JSON file."""
+    def save_default_materials() -> None:
+        """Rebuilds the default json material file."""
         material_manager = JsonMaterialManager()
         material_manager.load_default_materials()
         material_manager.save_to_json(
             Path(__file__).parents[1] / 'lib/materials/default.json')
 
-    def save_to_json(self, file_path: Path):
+    def save_to_json(self, file_path: Path) -> None:
         """Saves the loaded material data as a JSON file.
 
         Args:
@@ -99,11 +104,13 @@ class JsonMaterialManager:
             return numbers[0]
         raise ValueError(f'Invalid range string: {range_str}')
 
-    def load_matweb_table(self, file_path: Path = Path(__file__).parents[1] / 'lib/materials/matweb_export.html'):
+    def load_matweb_table(self, file_path: Path
+                          = Path(__file__).parents[1] / 'lib/materials/matweb_export.html') -> None:
         """Loads material data from a HTML file. Supported are tables from matweb.com.
 
         Args:
-            file_path (Path, optional): Path to the HTML file. Defaults to Path(__file__).parents[1]/'lib/matweb_export.html'.
+            file_path (Path, optional): Path to the HTML file.
+                Defaults to Path(__file__).parents[1]/'lib/matweb_export.html'.
         """
         with open(file_path, encoding='utf-8') as html_source:
             html_dom = BeautifulSoup(html_source, 'html.parser')
@@ -135,11 +142,12 @@ class JsonMaterialManager:
                     'remanence': 0.  # not available
                 })
 
-    def load_default_materials(self):
+    def load_default_materials(self) -> None:
         """Loads default materials."""
         self.materials = self.DEFAULT_MATERIALS
         self.load_matweb_table()
 
 
+# Run the script to save the default materials
 if __name__ == '__main__':
     JsonMaterialManager.save_default_materials()
