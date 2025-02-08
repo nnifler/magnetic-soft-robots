@@ -5,7 +5,6 @@ import re
 from bs4 import BeautifulSoup
 import numpy as np
 from pathlib import Path
-from typing import Optional
 from src.units import Density, YoungsModulus, Tesla
 
 
@@ -68,7 +67,7 @@ class JsonMaterialManager:
         material_manager = JsonMaterialManager()
         material_manager.load_default_materials()
         material_manager.save_to_json(
-            Path(__file__).parent / 'default.json')
+            Path(__file__).parents[1] / 'lib/materials/default.json')
 
     def save_to_json(self, file_path: Path):
         """Saves the loaded material data as a JSON file.
@@ -100,11 +99,11 @@ class JsonMaterialManager:
             return numbers[0]
         raise ValueError(f'Invalid range string: {range_str}')
 
-    def load_matweb_table(self, file_path: Path = Path(__file__).parent / 'matweb_export.html'):
+    def load_matweb_table(self, file_path: Path = Path(__file__).parents[1] / 'lib/materials/matweb_export.html'):
         """Loads material data from a HTML file. Supported are tables from matweb.com.
 
         Args:
-            file_path (Path, optional): Path to the HTML file. Defaults to Path(__file__).parent/'matweb_export.html'.
+            file_path (Path, optional): Path to the HTML file. Defaults to Path(__file__).parents[1]/'lib/matweb_export.html'.
         """
         with open(file_path, encoding='utf-8') as html_source:
             html_dom = BeautifulSoup(html_source, 'html.parser')

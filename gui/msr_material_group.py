@@ -3,12 +3,13 @@
 import json
 from pathlib import Path
 from PySide6.QtWidgets import (
-    QGroupBox, QLabel, QDoubleSpinBox, QComboBox, QGridLayout, QMessageBox
+    QGroupBox, QLabel, QDoubleSpinBox, QComboBox, QGridLayout, QMessageBox, QPushButton, QLineEdit
 )
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import BaseUnit, Density, YoungsModulus, Tesla
+from src import JsonMaterialManager
 
 
 class MSRMaterialParameter():
@@ -122,6 +123,11 @@ class MSRMaterialGroup(QGroupBox):
         self.material_data: list = []  # filled later with JSON-file
         self.load_materials_from_json()
 
+        self._custom_material_data = []
+        self.load_materials_from_json(custom=True)
+        self._custom_material_manager = JsonMaterialManager()
+        self._custom_material_manager.materials = self._custom_material_data.copy()
+
         behavior_label = QLabel("Material Behavior:")
         self.behavior_combo_box = QComboBox()
         self.behavior_combo_box.addItems(
@@ -167,40 +173,84 @@ class MSRMaterialGroup(QGroupBox):
             ),
         }
 
+        # export to lib
+        self._material_name_input = QLineEdit()
+        self._material_name_input.setPlaceholderText("Material Name")
+        material_save_button = QPushButton("Save")
+        material_save_button.clicked.connect(self._save_current_material)
+
         self._material_combo_box.currentIndexChanged.connect(
             self.update_material_parameters)
 
-        self._layout.addWidget(material_label, 0, 0)
-        self._layout.addWidget(self._material_combo_box, 0, 1)
+        row = 0
+        self._layout.addWidget(material_label, row, 0)
+        self._layout.addWidget(self._material_combo_box, row, 1)
 
-        self._layout.addWidget(behavior_label, 1, 0)
-        self._layout.addWidget(self.behavior_combo_box, 1, 1)
+        row += 1
+        self._layout.addWidget(behavior_label, row, 0)
+        self._layout.addWidget(self.behavior_combo_box, row, 1)
 
-        for i, param_name in enumerate(self.parameters.keys(), start=2):
-            param = self.parameters[param_name]
-            self._layout.addWidget(param.label, i, 0)
-            self._layout.addWidget(param.spinbox, i, 1)
-            self._layout.addWidget(param.unit_selector, i, 2)
+        for param in self.parameters.values():
+            row += 1
+            self._layout.addWidget(param.label, row, 0)
+            self._layout.addWidget(param.spinbox, row, 1)
+            self._layout.addWidget(param.unit_selector, row, 2)
 
-    def load_materials_from_json(self) -> None:
+        row += 1
+        self._layout.addWidget(self._material_name_input, row, 0, 1, 2)
+        self._layout.addWidget(material_save_button, row, 2)
+
+    def _save_current_material(self) -> None:
+        """Saves the current material to the custom JSON file."""
+        self._custom_material_manager.append_material(
+            self._material_name_input.text(),
+            self.parameters["density"].value(),
+            self.parameters["youngs_modulus"].value(),
+            self.parameters["poissons_ratio"].value(),
+            self.parameters["remanence"].value()
+        )
+
+        self._custom_material_manager.save_to_json(
+            Path(__file__).parents[1] / 'lib/materials/custom.json')
+        ok_box = QMessageBox()
+        ok_box.setText("Material saved successfully.")
+        ok_box.setStandardButtons(QMessageBox.Ok)
+        ok_box.exec()
+
+    def load_materials_from_json(self, custom=False) -> None:
         """Loads materials from a JSON file.
         """
         # Directory of the current file
-        current_dir = Path(__file__).parent
+        current_dir = Path(__file__).parents[1]
         # Path to the JSON file
         # by moving one directory up from the current directory to the selected folder
-        data_path = current_dir / "../lib/materials/magnetic_soft_robot_materials.json"
+        data_path = current_dir / "lib/materials" / \
+            ('custom.json' if custom else 'default.json')
+        if custom and not data_path.exists():
+            return
         json_file_path = data_path
         print(f"Looking for JSON file at: {json_file_path}")
 
+        if custom:
+            material_data = self._custom_material_data
+        else:
+            material_data = self.material_data
+
         try:
             with open(json_file_path, "r", encoding="utf-8") as file:
-                self.material_data = json.load(file)
+                material_data = json.load(file)
 
-            self._material_combo_box.clear()
-            for material in self.material_data:
+            # TODO: warum war das da drin? Hat das einen anderen Fehler berseitigt?
+            # self._material_combo_box.clear()
+            for material in material_data:
                 self._material_combo_box.addItem(
                     material.get("name", "Unknown Material"))
+
+            # resave the data to self
+            if custom:
+                self._custom_material_data = material_data
+            else:
+                self.material_data = material_data
 
         except FileNotFoundError:
             QMessageBox.warning(
@@ -213,34 +263,40 @@ class MSRMaterialGroup(QGroupBox):
         """Updates the material parameters with the data from the opened JSON file.
         """
         current_material_index = self._material_combo_box.currentIndex()
+        material = None
         if 0 <= current_material_index < len(self.material_data):
             material = self.material_data[current_material_index]
+        elif 0 <= current_material_index < len(self._custom_material_data) + len(self.material_data):
+            material = self._custom_material_data[
+                current_material_index - len(self.material_data)]
+        else:
+            return
 
-            # Dichte mit Umrechnung aktualisieren
-            density_param = self.parameters["density"]
-            density = Density.from_kgpm3(material.get("density", 0))
-            current_density_index = density_param.unit_selector.currentIndex()
-            vals = [density.kgpm3, density.gpcm3, density.Mgpm3, density.tpm3]
-            converted_density = vals[current_density_index]
-            density_param.spinbox.blockSignals(True)
-            density_param.spinbox.setValue(round(converted_density, 2))
-            density_param.spinbox.blockSignals(False)
+        # Dichte mit Umrechnung aktualisierenP
+        density_param = self.parameters["density"]
+        density = Density.from_kgpm3(material.get("density", 0))
+        current_density_index = density_param.unit_selector.currentIndex()
+        vals = [density.kgpm3, density.gpcm3, density.Mgpm3, density.tpm3]
+        converted_density = vals[current_density_index]
+        density_param.spinbox.blockSignals(True)
+        density_param.spinbox.setValue(round(converted_density, 2))
+        density_param.spinbox.blockSignals(False)
 
-            # Young's Modulus mit Umrechnung aktualisieren
+        # Young's Modulus mit Umrechnung aktualisieren
 
-            youngs_modulus_param = self.parameters["youngs_modulus"]
-            youngs_modulus = YoungsModulus.from_Pa(
-                material.get("youngs_modulus", 0))
-            current_modulus_index = youngs_modulus_param.unit_selector.currentIndex()
-            vals = [youngs_modulus.Pa, youngs_modulus.hPa,
-                    youngs_modulus.MPa, youngs_modulus.GPa]
-            converted_modulus = vals[current_modulus_index]
-            youngs_modulus_param.spinbox.blockSignals(True)
-            youngs_modulus_param.spinbox.setValue(round(converted_modulus, 4))
-            youngs_modulus_param.spinbox.blockSignals(False)
+        youngs_modulus_param = self.parameters["youngs_modulus"]
+        youngs_modulus = YoungsModulus.from_Pa(
+            material.get("youngs_modulus", 0))
+        current_modulus_index = youngs_modulus_param.unit_selector.currentIndex()
+        vals = [youngs_modulus.Pa, youngs_modulus.hPa,
+                youngs_modulus.MPa, youngs_modulus.GPa]
+        converted_modulus = vals[current_modulus_index]
+        youngs_modulus_param.spinbox.blockSignals(True)
+        youngs_modulus_param.spinbox.setValue(round(converted_modulus, 4))
+        youngs_modulus_param.spinbox.blockSignals(False)
 
-            # poisson's ratio and remanence set manually
-            self.parameters["poissons_ratio"].spinbox.setValue(
-                material.get("poissons_ratio", 0))
-            self.parameters["remanence"].spinbox.setValue(
-                material.get("remanence", 0))
+        # poisson's ratio and remanence set manually
+        self.parameters["poissons_ratio"].spinbox.setValue(
+            material.get("poissons_ratio", 0))
+        self.parameters["remanence"].spinbox.setValue(
+            material.get("remanence", 0))

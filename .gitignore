@@ -6,3 +6,4 @@ __pycache__
 *.env
 .idea
 .coverage
+lib/materials/custom.json
