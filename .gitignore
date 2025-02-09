@@ -6,4 +6,6 @@ __pycache__
 *.env
 .idea
 .coverage
+htmlcov
 lib/materials/custom.json
+tests/assets/json_material_manager_test/abc.json
