@@ -18,5 +18,5 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 	1. Ensure that no unexpected errors or warnings occur in the integrated terminal.
 
 ## Expected result
-1. After starting the mainWindow.py file, a separate window with the title ‘Soft Robotic Simulation’ appears.
+1. After starting the main.py file, a separate window with the title ‘Soft Robotic Simulation’ appears.
 2. No unexpected errors or console output.

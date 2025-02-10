@@ -11,7 +11,7 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 
 ## Test
 1. **Enable show force**
-    1. Locate the file [$ magnetic-soft-robots/gui/mainWindow.py](../../gui/mainWindow.py)
+    1. Locate the file [$ magnetic-soft-robots/gui/main_window.py](../../gui/main_window.py)
     2. Ensure that the function `Config.set_show_force()` is given `True` as a parameter in `apply_parameters()`
 
 2. **Start of the application**

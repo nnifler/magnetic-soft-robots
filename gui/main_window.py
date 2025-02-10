@@ -175,16 +175,16 @@ class MainWindow(QMainWindow):
                                        params["remanence"].value())
 
         # Check input for deformation analysis (temporary)
-        if self.deformation_widget.enabled():
-            if self.deformation_widget.point_checkboxes[0].isChecked():
-                indices = self.deformation_widget.point_inputs[0].toPlainText()
-                if not self.deformation_widget.indices_regex.match(indices):
-                    QMessageBox.warning(self, "Error", "Invalid indices!")
-                    return
-            if self.deformation_widget.point_checkboxes[1].isChecked():
-                coords = self.deformation_widget.point_inputs[1].toPlainText()
+        if self.deformation_widget.is_enabled():
+            if self.deformation_widget.point_radio_buttons[1].isChecked():
+                coords = self.deformation_widget.point_inputs[0].toPlainText()
                 if not self.deformation_widget.coord_regex.match(coords):
                     QMessageBox.warning(self, "Error", "Invalid coordinates!")
+                    return
+            if self.deformation_widget.point_radio_buttons[2].isChecked():
+                indices = self.deformation_widget.point_inputs[1].toPlainText()
+                if not self.deformation_widget.indices_regex.match(indices):
+                    QMessageBox.warning(self, "Error", "Invalid indices!")
                     return
 
         sofa_instantiator.main()

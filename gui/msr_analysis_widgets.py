@@ -34,17 +34,17 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         point_selector_layout = QGridLayout()
 
         # Add checkboxes for the way the points are selected
-        self.point_checkboxes = [
+        self.point_radio_buttons = [
             QRadioButton("All Points"),
             QRadioButton("Coordinates"),
             QRadioButton("Indices"),
         ]
-        point_selector_layout.addWidget(self.point_checkboxes[0], 0, 0)
-        point_selector_layout.addWidget(self.point_checkboxes[1], 1, 0)
-        point_selector_layout.addWidget(self.point_checkboxes[2], 1, 1)
+        point_selector_layout.addWidget(self.point_radio_buttons[0], 0, 0)
+        point_selector_layout.addWidget(self.point_radio_buttons[1], 1, 0)
+        point_selector_layout.addWidget(self.point_radio_buttons[2], 1, 1)
 
-        self.point_checkboxes[0].setChecked(True)
-        for i, checkbox in enumerate(self.point_checkboxes):
+        self.point_radio_buttons[0].setChecked(True)
+        for i, checkbox in enumerate(self.point_radio_buttons):
             checkbox.toggled.connect(
                 lambda state, index=i: self._enable_text_field(
                     state, index)
@@ -87,9 +87,9 @@ class MSRDeformationAnalysisWidget(QGroupBox):
             output.addWidget(label, 0, i)
 
         self.result = [QLineEdit(), QLineEdit(), QLineEdit()]
-        for i, line in enumerate(self.result):
-            line.setReadOnly(True)
-            output.addWidget(line, 1, i)
+        for i, line_edit in enumerate(self.result):
+            line_edit.setReadOnly(True)
+            output.addWidget(line_edit, 1, i)
 
         result_box.setLayout(output)
         layout.addWidget(result_box)
@@ -99,15 +99,17 @@ class MSRDeformationAnalysisWidget(QGroupBox):
 
     def _enable_text_field(self, state: bool, index: int) -> None:
         """Enables or disables the corresponding text field 
-        based on the state of the checkbox.
+        based on the state of the radio button.
 
         Args:
-            state (bool): The state of the checkbox
-            index (int): Index of the checkbox in the point_checkboxes list
+            state (bool): The state of the radio button
+            index (int): Index of the checkbox in the point_radio_buttons list
         """
-        if not state and index in [1, 2]:
+        if index == 0:  # Index 0 -> All Points radio button (no text field)
+            return
+        if not state:
             self.point_inputs[index-1].setReadOnly(True)
-        elif state and index in [1, 2]:
+        elif state:
             self.point_inputs[index-1].setReadOnly(False)
 
     def _enable_point_selection(self, state: bool) -> None:
@@ -116,14 +118,16 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         Args:
             state (bool): The state of the enable checkbox
         """
-        for i, checkbox in enumerate(self.point_checkboxes):
+        for i, checkbox in enumerate(self.point_radio_buttons):
             checkbox.setEnabled(state)
-            if state and checkbox.isChecked() and i in [1, 2]:
+            if i == 0:  # Index 0 -> All Points radio button (no text field)
+                continue
+            if state and checkbox.isChecked():
                 self.point_inputs[i-1].setReadOnly(False)
-            elif not state and i in [1, 2]:
+            elif not state:
                 self.point_inputs[i-1].setReadOnly(True)
 
-    def enabled(self) -> bool:
+    def is_enabled(self) -> bool:
         """Returns if the deformation analysis is enabled.
 
         Returns:

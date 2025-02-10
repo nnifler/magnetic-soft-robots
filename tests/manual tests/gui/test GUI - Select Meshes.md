@@ -15,8 +15,9 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
 2. **Click library button**
     1. Click the `Models` button at the top right corner.
-    2. Select a random model in the list.
-    3. Close the popup window.
+    2. Click the `Open` button that appeared after clicking the `Models` button.
+    3. Select a random model from the displayed lists.
+    4. Close the popup window.
 3. **Click Apply Button**
     1. Click the `Apply` button at the bottom of the GUI.
 
