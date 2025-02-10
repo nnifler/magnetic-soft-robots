@@ -6,3 +6,5 @@ __pycache__
 *.env
 .idea
 .coverage
+lib/imported_models/*
+!lib/imported_models/.gitkeep

@@ -51,7 +51,7 @@ class Config:
         return cls._show_force
 
     @classmethod
-    def set_model(cls, name: str, scale: float) -> None:
+    def set_model(cls, name: str, scale: float, custom_model=False) -> None:
         """Set the values important for the model.
 
         Args:
@@ -63,6 +63,10 @@ class Config:
         """
         if scale <= 0:
             raise ValueError("Scale must be positive.")
+
+        if custom_model:
+            name = "../imported_models/"+name
+
         cls._name = name
         cls._scale = scale
 

@@ -12,16 +12,14 @@ Classes:
 from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QMenu, QListWidget, QMessageBox
-)
+    QWidget, QVBoxLayout, QHBoxLayout,     QLabel, QPushButton, QMenu, QListWidget, QMessageBox,)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QShortcut
 from gui.shortcuts_utils import (setup_global_shortcuts,
                                  get_platform_specific_shortcuts, shortcuts_config)
-from gui.msr_model_import_popup import MSRModelImportPopup
+from gui import MSRModelImportPopup
 from src.config import Config
-from src.mesh_loader import MeshLoader as validate_mesh_file
+from src.mesh_loader import MeshLoader
 
 
 class MSRHeaderWidget(QWidget):
@@ -34,10 +32,11 @@ class MSRHeaderWidget(QWidget):
         self.popup_open: QWidget = None
         self.popup_import: QWidget = MSRModelImportPopup()
 
-        self.setFixedHeight(30)  # Maximal 1 cm Höhe
+        self.setFixedHeight(30)  # max 1cm height
+
         header_layout = QHBoxLayout(self)
         header_layout.setContentsMargins(5, 0, 5, 0)
-        header_layout.setSpacing(5)  # Minimaler Abstand zwischen Buttons
+        header_layout.setSpacing(5)  # min distance between buttons
 
         msr_label = QLabel("MSR")
         msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
@@ -54,6 +53,7 @@ class MSRHeaderWidget(QWidget):
         """Creates and displays the models context menu."""
 
         context_menu = QMenu(self)
+        context_menu.triggered.connect(context_menu.close)
 
         for action_name, config in shortcuts_config.items():
             shortcut_key = get_platform_specific_shortcuts(config["key"])
@@ -149,10 +149,12 @@ class MSRHeaderWidget(QWidget):
             for widget in other_widgets:
                 widget.clearSelection()
 
-        Config.set_model(model_name, scale)
+        # Config.set_model(model_name, scale)
+        # My idea how custom models could be implemented
+        Config.set_model(model_name, scale, custom_model)
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
-        """Loads the default models from the default folder into the list widget.
+        """Loads the models from the specified directory into the given list widget.
 
         Args:
             list_widget (QListWidget): The widget to display the list of models.
@@ -167,9 +169,19 @@ class MSRHeaderWidget(QWidget):
         for path in models_path.iterdir():
             if path.is_file():
                 try:
-                    validate_mesh_file(path)
-                    model_names.append(path.stem)
+                    name = path.stem
+                    mode = None
+                    if "_surface" in name:
+                        mode = MeshLoader.Mode.SURFACE
+                    elif "_volumetric" in name:
+                        mode = MeshLoader.Mode.VOLUMETRIC
+                    else:
+                        continue
+
+                    MeshLoader.validate_mesh_file(path, mode)
+                    model_names.append(name)
                 except ValueError:
                     continue
+
         for model_name in sorted(set(model_names)):
             list_widget.addItem(model_name)

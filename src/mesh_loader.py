@@ -16,6 +16,8 @@ from typing import List, Optional, Tuple, Dict
 from enum import Enum
 import Sofa.Core
 
+# TODO: remove Mode from here
+
 
 class Mode(Enum):
     """Enum representing mesh modes for surface and volumetric meshes."""
@@ -37,6 +39,10 @@ endings: List[Tuple[str, ...]] = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # S
 
 class MeshLoader():
     """Loads, validates, and references mesh files in a SOFA scene."""
+    class Mode(Enum):
+        """Enum representing mesh modes for surface and volumetric meshes."""
+        SURFACE = 0
+        VOLUMETRIC = 1
 
     def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.) -> None:
         """Initializes the MeshLoader.
@@ -84,10 +90,10 @@ class MeshLoader():
                 "Please call load_file before querying mesh_generation")
 
         filename = path.stem.lower()
-        if mode == Mode.SURFACE and "_surface" not in filename:
+        if mode == self.Mode.SURFACE and "_surface" not in filename:
             raise ValueError(
                 f"The file '{path.name}' was not saved as a surface mesh file")
-        elif mode == Mode.VOLUMETRIC and "_volumetric" not in filename:
+        elif mode == self.Mode.VOLUMETRIC and "_volumetric" not in filename:
             raise ValueError(
                 f"The file '{path.name}' was not saved as a volumetric mesh file")
 
@@ -110,7 +116,8 @@ class MeshLoader():
         """
         return "@"+self._name+"_"+mode.name.lower()
 
-    def validate_mesh_file(self, path: Path, mode: Mode) -> None:
+    @classmethod
+    def validate_mesh_file(cls, path: Path, mode: Mode) -> None:
         """Validates the mesh file for format, mode, and size.
 
         Args:
@@ -152,3 +159,7 @@ class MeshLoader():
 
         if getsize(path) == 0:
             raise ValueError(f"File {path} empty! Not a valid mesh")
+
+    def get_supported_meshes(self, mode: Mode) -> set:
+        """Returns supported mesh formats for the given mesh type."""
+        return set(endings[mode.value])
