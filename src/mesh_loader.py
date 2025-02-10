@@ -132,7 +132,7 @@ class MeshLoader():
             raise ValueError(
                 f"Path {path} refers to a file of format {path.suffix}, which is unkown."
                 f"Please provide a mesh file in one of the following formats: "
-                f"{", ".join(ending_to_loader.keys())}"
+                f"{','.join(ending_to_loader.keys())}"
             )
 
         if mode == Mode.SURFACE and path.suffix not in endings[Mode.SURFACE.value]:
@@ -140,14 +140,14 @@ class MeshLoader():
                 f"Path {path} refers to a file of format {path.suffix}, "
                 f"which is used only for volumetric meshes."
                 f"Please provide a surface mesh file in one of the following formats: "
-                f"{", ".join(endings[Mode.SURFACE.value])}"
+                f"{','.join(endings[Mode.SURFACE.value])}"
             )
         elif mode == Mode.VOLUMETRIC and path.suffix not in endings[Mode.VOLUMETRIC.value]:
             raise ValueError(
                 f"Path {path} refers to a file of format {path.suffix}, "
                 f"which is used only for surface meshes."
                 f"Please provide a volumetric mesh file in one of the following formats: "
-                f"{", ".join(endings[Mode.VOLUMETRIC.value])}"
+                f"{','.join(endings[Mode.VOLUMETRIC.value])}"
             )
 
         if getsize(path) == 0:
