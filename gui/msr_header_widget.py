@@ -10,7 +10,7 @@ Classes:
 """
 
 from pathlib import Path
-from typing import List
+from typing import List, Tuple, Set
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,     QLabel, QPushButton, QMenu, QListWidget, QMessageBox,)
 from PySide6.QtCore import Qt
@@ -19,7 +19,7 @@ from gui.shortcuts_utils import (setup_global_shortcuts,
                                  get_platform_specific_shortcuts, shortcuts_config)
 from gui import MSRModelImportPopup
 from src.config import Config
-from src.mesh_loader import MeshLoader
+from src.mesh_loader import MeshLoader, Mode
 
 
 class MSRHeaderWidget(QWidget):
@@ -165,23 +165,32 @@ class MSRHeaderWidget(QWidget):
                 self, "Error", f"Models folder not found at: {models_path}")
             return
 
-        model_names = []
+        cleaned_names_of_: Tuple[Set, Set] = (set(), set())
+
         for path in models_path.iterdir():
             if path.is_file():
                 try:
                     name = path.stem
                     mode = None
+                    clean_name = None
                     if "_surface" in name:
-                        mode = MeshLoader.Mode.SURFACE
+                        mode = Mode.SURFACE
+                        clean_name = name[:-8]
                     elif "_volumetric" in name:
-                        mode = MeshLoader.Mode.VOLUMETRIC
+                        mode = Mode.VOLUMETRIC
+                        clean_name = name[:-11]
                     else:
                         continue
 
                     MeshLoader.validate_mesh_file(path, mode)
-                    model_names.append(name)
+                    cleaned_names_of_[mode.value].add(clean_name)
                 except ValueError:
                     continue
 
-        for model_name in sorted(set(model_names)):
+        model_names = set.intersection(
+            cleaned_names_of_[Mode.VOLUMETRIC.value],
+            cleaned_names_of_[Mode.SURFACE.value]
+        )
+
+        for model_name in model_names:
             list_widget.addItem(model_name)

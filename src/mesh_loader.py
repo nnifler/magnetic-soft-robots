@@ -39,10 +39,6 @@ endings: List[Tuple[str, ...]] = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # S
 
 class MeshLoader():
     """Loads, validates, and references mesh files in a SOFA scene."""
-    class Mode(Enum):
-        """Enum representing mesh modes for surface and volumetric meshes."""
-        SURFACE = 0
-        VOLUMETRIC = 1
 
     def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.) -> None:
         """Initializes the MeshLoader.
