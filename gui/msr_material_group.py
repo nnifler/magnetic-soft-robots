@@ -120,11 +120,15 @@ class MSRMaterialGroup(QGroupBox):
         material_label = QLabel("Select Material:")
         self._material_combo_box = QComboBox()
 
-        self.material_data: list = []  # filled later with JSON-file
+        self.material_data: list = []
+        # fills self.material_data
         self.load_materials_from_json()
 
         self._custom_material_data = []
+        # fills self._custom_material_data
         self.load_materials_from_json(custom=True)
+
+        # init json material manager
         self._custom_material_manager = JsonMaterialManager()
         self._custom_material_manager.materials = self._custom_material_data.copy()
 
@@ -146,7 +150,7 @@ class MSRMaterialGroup(QGroupBox):
                 step=10,
             ),
             "poissons_ratio": MSRMaterialParameter(
-                name="(ν) Poisson's Ratio:",
+                name="(\u03BD) Poisson's Ratio:",
                 value_range=(0, 0.4999),
                 units=[],
                 setter=[],
@@ -154,7 +158,7 @@ class MSRMaterialGroup(QGroupBox):
                 step=0.1
             ),
             "density": MSRMaterialParameter(
-                name="(ρ) Density:",
+                name="(\u03C1) Density:",
                 value_range=(0, 30000),
                 units=["kg/m³", "g/cm³", "Mg/m³", "t/m³"],
                 getter=[Density.kgpm3, Density.gpcm3,
@@ -211,8 +215,10 @@ class MSRMaterialGroup(QGroupBox):
         self._material_combo_box.clear()
         self.load_materials_from_json(False)
         self.load_materials_from_json(True)
-        self._material_combo_box
-        ok_box = QMessageBox("Material saved")
+        self._material_combo_box.setCurrentIndex(
+            self._material_combo_box.count() - 1)
+        ok_box = QMessageBox()
+        ok_box.setWindowTitle("Material saved")
         ok_box.setText("Material saved successfully.")
         ok_box.setStandardButtons(QMessageBox.Ok)
         ok_box.exec()
@@ -233,11 +239,6 @@ class MSRMaterialGroup(QGroupBox):
             return
         json_file_path = data_path
         print(f"Looking for JSON file at: {json_file_path}")
-
-        if custom:
-            material_data = self._custom_material_data
-        else:
-            material_data = self.material_data
 
         try:
             with open(json_file_path, "r", encoding="utf-8") as file:

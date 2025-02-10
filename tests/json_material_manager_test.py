@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 from random import randint, uniform
-from shutil import copyfile
 import unittest
 
 from src import JsonMaterialManager
