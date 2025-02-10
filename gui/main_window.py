@@ -222,9 +222,9 @@ class MainWindow(QMainWindow):
                                        params["remanence"].value())
 
         bounding_box_a = self.parse_direction_input(
-            self.model_bounding_box_a.text())
+            self._model_bounding_box_a.text())
         bounding_box_b = self.parse_direction_input(
-            self.model_bounding_box_b.text())
+            self._model_bounding_box_b.text())
 
         if bounding_box_a is None or bounding_box_b is None:
             Config.set_default_constraints()
