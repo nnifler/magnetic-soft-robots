@@ -1,1 +1,2 @@
-python .\test_main.py > $null 
+coverage run --source . .\test_main.py > $null 
+coverage html
