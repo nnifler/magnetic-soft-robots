@@ -11,21 +11,22 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 
 ## Test
 1. **Enable show force**
-    1. Locate the file [$ magnetic-soft-robots/gui/mainWindow.py](../../gui/mainWindow.py)
+    1. Locate the file [$ magnetic-soft-robots/gui/main_window.py](../../gui/main_window.py)
     2. Ensure that the function `Config.set_show_force()` is given `True` as a parameter in `apply_parameters()`
 
 2. **Start of the application**
     1. Run the file [$ magnetic-soft-robots/main.py](../../main.py)
 
 3. **Set parameters**
-    1. Input a random valid value in the number field `Young's Modulus`
-    2. Choose a random option in the unit selector next to the number field `Young's Modulus`
-    3. Input a random valid value in the number field `Poisson Ratio`
-    4. Input a random valid value in the number field `Density`
-    5. Choose a random option in the unit selector next to the number field `Density`
-    6. Input a random valid value in the number field `Remanence`
-    7. Put the slider `Magnetic Field Strength` on a random position
-    8. Input a random valid vector in the `Direction` field 
+    1. Ensure that the simulation tab is selected
+    2. Input a random valid value in the number field `Young's Modulus`
+    3. Choose a random option in the unit selector next to the number field `Young's Modulus`
+    4. Input a random valid value in the number field `Poisson Ratio`
+    5. Input a random valid value in the number field `Density`
+    6. Choose a random option in the unit selector next to the number field `Density`
+    7. Input a random valid value in the number field `Remanence`
+    8. Put the slider `Magnetic Field Strength` on a random position
+    9. Input a random valid vector in the `Direction` field 
 
 4. **Click Apply Button**
     1. Click the `Apply` button at the bottom of the GUI
