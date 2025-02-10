@@ -61,7 +61,7 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         self.indices_regex = re.compile(r"^\s*\d+\s*(,\s*\d+\s*)*$")
 
         self.point_inputs[0].setPlaceholderText(
-            "Enter coordinates as [x1, y1, z1],\n[x2, y2, z2],\n...")
+            "Enter coordinates as\n[x1, y1, z1],\n[x2, y2, z2],\n...")
         self.point_inputs[0].setReadOnly(True)
         point_selector_layout.addWidget(self.point_inputs[1], 2, 1)
         self.coord_regex = re.compile(
