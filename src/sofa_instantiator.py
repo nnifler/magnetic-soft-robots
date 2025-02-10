@@ -25,6 +25,7 @@ def main():
         print(f"Young's modulus: {Config.get_youngs_modulus()}")
         print(f"Density: {Config.get_density()}")
         print(f"Remanence: {Config.get_remanence()}")
+        print(f"Model Constraints: {Config.get_constraints()}")
         return
 
     Config.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QMenu, QListWidget, QMessageBox
+    QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
@@ -15,10 +15,11 @@ from src import Config
 class MSRHeaderWidget(QWidget):
     """Implements the header of the GUI as a QWidget."""
 
-    def __init__(self) -> None:
+    def __init__(self, main_window: QMainWindow) -> None:
         """Initializes the header widget."""
         super().__init__()
 
+        self.main_window = main_window
         self.setFixedHeight(30)  # Maximal 1 cm Höhe
         header_layout = QHBoxLayout(self)
         header_layout.setContentsMargins(5, 0, 5, 0)
@@ -124,6 +125,7 @@ class MSRHeaderWidget(QWidget):
                 widget.clearSelection()
 
         Config.set_model(model_name, scale)
+        self.main_window.update_model()
         # Config.set_model(model_name, scaling, custom_model)  # My idea how custom models could be implemented
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
