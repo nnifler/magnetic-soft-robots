@@ -7,7 +7,7 @@ import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout
+    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout, QTabWidget
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
@@ -16,7 +16,7 @@ from src.units import Tesla
 from src import Config, sofa_instantiator, MeshLoader
 from src.mesh_loader import Mode as MeshMode
 
-from gui import MSRHeaderWidget, MSRMaterialGroup
+from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
 
 from pathlib import Path
 import Sofa.Core
@@ -49,12 +49,15 @@ class MainWindow(QMainWindow):
         content_layout = QHBoxLayout()
 
         # Linke Seitenleiste für Navigation und Parametersteuerung
-        sidebar = QGroupBox("Simulation Settings Panel")
-        sidebar_layout = QVBoxLayout(sidebar)
+        sidebar = QVBoxLayout()
+        sidebar_tabs = QTabWidget()
+        simulation_settings = QWidget()
+        simulation_layout = QVBoxLayout(simulation_settings)
+        sidebar_tabs.addTab(simulation_settings, "Simulation Settings")
 
         # Materialeigenschaften
         self.material_group = MSRMaterialGroup()
-        sidebar_layout.addWidget(self.material_group)
+        simulation_layout.addWidget(self.material_group)
 
         # Model configuration
         model_group = QGroupBox("Model Configuration")
@@ -118,16 +121,27 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(field_direction_label)
         field_layout.addWidget(self.field_direction_input)
 
-        sidebar_layout.addWidget(field_group)
-        sidebar_layout.addWidget(model_group)
+        simulation_layout.addWidget(field_group)
+        simulation_layout.addWidget(model_group)
+
+        sidebar.addWidget(sidebar_tabs)
+
+        # Analysis Tab
+        analysis_settings = QWidget()
+        analysis_layout = QVBoxLayout(analysis_settings)
+        sidebar_tabs.addTab(analysis_settings, "Analysis Settings")
+
+        # Space to add to analysis tab
+        self.deformation_widget = MSRDeformationAnalysisWidget()
+        analysis_layout.addWidget(self.deformation_widget)
 
         # Schaltfläche zum Anwenden der Parameter
         apply_button = QPushButton("Apply")
         apply_button.clicked.connect(self.apply_parameters)
-        sidebar_layout.addWidget(apply_button)
+        sidebar.addWidget(apply_button)
 
-        sidebar.setFixedWidth(400)
-        content_layout.addWidget(sidebar)
+        sidebar_tabs.setFixedWidth(400)
+        content_layout.addLayout(sidebar)
 
         # Hauptanzeige für Visualisierung
         visualization_area = QWidget()
@@ -202,7 +216,7 @@ class MainWindow(QMainWindow):
         direction = self.parse_direction_input(
             self.field_direction_input.text())
         if direction is None:
-            QMessageBox.warning(self, "Error", "Invalid direction.")
+            QMessageBox.warning(self, "Error", "Invalid direction!")
             return
 
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
@@ -231,6 +245,19 @@ class MainWindow(QMainWindow):
         else:
             Config.set_constraints(
                 np.array(bounding_box_a), np.array(bounding_box_b))
+
+        # Check input for deformation analysis (temporary)
+        if self.deformation_widget.is_enabled():
+            if self.deformation_widget.point_radio_buttons[1].isChecked():
+                coords = self.deformation_widget.point_inputs[0].toPlainText()
+                if not self.deformation_widget.coord_regex.match(coords):
+                    QMessageBox.warning(self, "Error", "Invalid coordinates!")
+                    return
+            if self.deformation_widget.point_radio_buttons[2].isChecked():
+                indices = self.deformation_widget.point_inputs[1].toPlainText()
+                if not self.deformation_widget.indices_regex.match(indices):
+                    QMessageBox.warning(self, "Error", "Invalid indices!")
+                    return
 
         sofa_instantiator.main()
 
