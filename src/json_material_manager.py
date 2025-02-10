@@ -132,7 +132,7 @@ class JsonMaterialManager:
 
                 self.materials.append({
                     'name': name,
-                    'url': url,
+                    'url': url,  # not supported in self.append_material
                     'youngs_modulus': youngs_modulus.Pa,
                     'density': density.kgpm3,
                     'poissons_ratio': poissons_ratio,
