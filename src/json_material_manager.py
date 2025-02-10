@@ -116,7 +116,7 @@ class JsonMaterialManager:
             html_dom = BeautifulSoup(html_source, 'html.parser')
 
             # Find all rows
-            rows = html_dom.find_all('tr', class_=['altrow', ''])
+            rows = html_dom.find_all('tr')
             for row in rows:
                 columns = row.find_all('td')
                 if not columns:
