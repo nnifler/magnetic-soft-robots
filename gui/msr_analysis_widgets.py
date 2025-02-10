@@ -2,6 +2,7 @@
 
 import re
 from enum import Enum
+from typing import List
 
 from PySide6.QtWidgets import (
     QGroupBox, QVBoxLayout, QCheckBox, QGridLayout, QTextEdit, QLabel, QLineEdit, QRadioButton
@@ -75,7 +76,7 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         # Add widgets for the output
         result_box = QGroupBox("Result")
 
-        output = QGridLayout()
+        self._output = QGridLayout()
 
         dimension_labels = [
             QLabel("X Axis"),
@@ -84,14 +85,16 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         ]
         for i, label in enumerate(dimension_labels):
             label.setAlignment(Qt.AlignCenter)
-            output.addWidget(label, 0, i)
+            self._output.addWidget(label, 0, i)
 
         self.result = [QLineEdit(), QLineEdit(), QLineEdit()]
         for i, line_edit in enumerate(self.result):
             line_edit.setReadOnly(True)
-            output.addWidget(line_edit, 1, i)
+            self._output.addWidget(line_edit, 1, i)
 
-        result_box.setLayout(output)
+        self.result_indices = None
+
+        result_box.setLayout(self._output)
         layout.addWidget(result_box)
 
         # Enable point selection when deformation analysis is enabled
@@ -134,3 +137,33 @@ class MSRDeformationAnalysisWidget(QGroupBox):
             bool: True if the deformation analysis is enabled, False otherwise
         """
         return self.enable_checkbox.isChecked()
+
+    def update_results(self, results: List[float], indices: List[int]) -> None:
+        for i, result in enumerate(results):
+            self.result[i].setText(str(result))
+
+        if self.result_indices is None:
+            self.result_indices = [QLabel(), QLabel(), QLabel()]
+            for i, label in enumerate(self.result_indices):
+                label.setAlignment(Qt.AlignCenter)
+                self._output.addWidget(label, 2, i)
+        for i, index in enumerate(indices):
+            self.result_indices[i].setText(f"Index: {index}")
+
+    def display_input_error(self, message: str) -> None:
+        error_message = QLabel(message)
+        error_message.setAlignment(Qt.AlignCenter)
+        error_message.setStyleSheet("color: crimson")
+        self._output.addWidget(error_message, 3, 0, 1, 3)
+
+    def get_mode(self) -> SelectionMode:
+        """Returns the mode of the point selection.
+
+        Returns:
+            SelectionMode: The mode of the point selection
+        """
+        if self.point_radio_buttons[0].isChecked():
+            return self.SelectionMode.ALL
+        if self.point_radio_buttons[1].isChecked():
+            return self.SelectionMode.COORDINATES
+        return self.SelectionMode.INDICES

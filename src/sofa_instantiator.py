@@ -2,15 +2,14 @@
 
 from pathlib import Path
 
-import numpy as np
 import Sofa.Gui
 
 from src import Config, SceneBuilder, ElasticObject, MagneticController, MaterialLoader, MeshLoader
 from src.mesh_loader import Mode
-from src.simulation_analyser import SimulationAnalyser
+from src.simulation_analyser import SimulationAnalysisController
 
 
-def main():
+def main(analysis_parameter: dict = None):
     """Main function that instantiates the Sofa simulation.
     """
     debug = False
@@ -53,8 +52,7 @@ def main():
                             ])
 
     root = Sofa.Core.Node("root")
-    createScene(root)
-    analyser = SimulationAnalyser(root)
+    createScene(root, analysis_parameter)
     Sofa.Simulation.init(root)
 
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
@@ -65,7 +63,7 @@ def main():
 
 
 # DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
-def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
+def createScene(root: Sofa.Core.Node, analysis_parameter: dict) -> Sofa.Core.Node:
     """Creates the scene for the Sofa simulation with the given argument as the root node.
 
     Args:
@@ -100,6 +98,10 @@ def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
 
     controller = MagneticController(elastic_object, mat_loader)
     root.addObject(controller)
+    if analysis_parameter is not None:
+        analysis_controller = SimulationAnalysisController(
+            root, analysis_parameter)
+        root.addObject(analysis_controller)
 
     return root
 

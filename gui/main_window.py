@@ -1,8 +1,9 @@
 """This module contains the main window of the application."""
 
 import os
+import re
 from builtins import ValueError
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import numpy as np
 
 from PySide6.QtWidgets import (
@@ -112,7 +113,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("beam", 0.02)
+        Config.set_model("beam", 1)
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
@@ -174,20 +175,43 @@ class MainWindow(QMainWindow):
                                        params["density"].value(),
                                        params["remanence"].value())
 
-        # Check input for deformation analysis (temporary)
+        deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
+
+        sofa_instantiator.main(analysis_parameter={
+            "max_deformation_analysis": deformation_widget_enabled,
+            "max_deformation_input": deformation_input_list,
+            "max_deformation_widget": self.deformation_widget,
+        })
+
+    def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
+        input_list = []
+        deformation_widget_enabled = False
         if self.deformation_widget.is_enabled():
+            deformation_widget_enabled = True
+            # Check coordinates
             if self.deformation_widget.point_radio_buttons[1].isChecked():
                 coords = self.deformation_widget.point_inputs[0].toPlainText()
+                # Match with regex
                 if not self.deformation_widget.coord_regex.match(coords):
                     QMessageBox.warning(self, "Error", "Invalid coordinates!")
                     return
+                # Extract information
+                coord_nums = list(
+                    map(float, re.findall(r"-?\d+(?:\.\d+)?", coords)))
+                # Save coordinates in numpy arrays
+                for i in range(0, len(coord_nums), 3):
+                    input_list.append(np.array(coord_nums[i:i+3]))
+
+            # Check indices
             if self.deformation_widget.point_radio_buttons[2].isChecked():
                 indices = self.deformation_widget.point_inputs[1].toPlainText()
+                # Match with regex
                 if not self.deformation_widget.indices_regex.match(indices):
                     QMessageBox.warning(self, "Error", "Invalid indices!")
                     return
-
-        sofa_instantiator.main()
+                # Extract information
+                input_list = list(map(int, re.findall(r"\d+", indices)))
+        return deformation_widget_enabled, input_list
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.

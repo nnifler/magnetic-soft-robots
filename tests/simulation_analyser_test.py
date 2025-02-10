@@ -54,12 +54,11 @@ class TestAnalyserUtils(unittest.TestCase):
 
 
 class TestDeformation(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         Config.set_test_env()
 
-        cls.root = Sofa.Core.Node("root")
-        cls.root.addObject(
+        self.root = Sofa.Core.Node("root")
+        self.root.addObject(
             "RequiredPlugin", pluginName=Config.get_plugin_list())
 
         mesh_loader = MeshLoader()
@@ -68,12 +67,12 @@ class TestDeformation(unittest.TestCase):
         mesh_loader.load_file(
             Path("tests/assets/simulation_analyser_test/beam.stl"), Mode.SURFACE)
 
-        cls.eo = ElasticObject(
-            cls.root, mesh_loader, 0.3, YoungsModulus.from_Pa(0), Density.from_kgpm3(0))
+        self.eo = ElasticObject(
+            self.root, mesh_loader, 0.3, YoungsModulus.from_Pa(0), Density.from_kgpm3(0))
 
-        cls.initial_positions = cls.eo.mech_obj.position.value.copy()
+        self.initial_positions = self.eo.mech_obj.position.value.copy()
 
-        cls.analyser = SimulationAnalyser(cls.root)
+        self.analyser = SimulationAnalyser(self.root)
 
     def test_deformation_full(self):
         positions = self.eo.mech_obj.position.value
@@ -83,10 +82,11 @@ class TestDeformation(unittest.TestCase):
         minima = random_deformation.min(axis=0)
         max_min = np.stack((maxima, minima))
 
-        points = list(range(len(positions)))
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
+        self.analyser.update_deformation()
+        values, indices = self.analyser.calculate_deformation()
         np.testing.assert_allclose(
-            self.analyser.calculate_deformation(points), max_min)
+            values, max_min)
 
     def test_deformation_selective(self):
         positions = self.eo.mech_obj.position.value
@@ -101,8 +101,10 @@ class TestDeformation(unittest.TestCase):
         max_min = np.stack((maxima, minima))
 
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
+        self.analyser.update_deformation()
+        values, indices = self.analyser.calculate_deformation(random_points)
         np.testing.assert_allclose(
-            self.analyser.calculate_deformation(random_points), max_min)
+            values, max_min)
 
     def test_max_deformation_full(self):
         positions = self.eo.mech_obj.position.value
@@ -110,10 +112,11 @@ class TestDeformation(unittest.TestCase):
 
         maxima = random_deformation.max(axis=0)
 
-        points = list(range(len(positions)))
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
+        self.analyser.update_deformation()
+        values, indices = self.analyser.calculate_maximum_deformation()
         np.testing.assert_allclose(
-            self.analyser.calculate_maximum_deformation(points), maxima)
+            values, maxima)
 
     def test_max_deformation_selective(self):
         positions = self.eo.mech_obj.position.value
@@ -126,8 +129,11 @@ class TestDeformation(unittest.TestCase):
         maxima = deformation_to_analyse.max(axis=0)
 
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
+        self.analyser.update_deformation()
+        values, indices = self.analyser.calculate_maximum_deformation(
+            random_points)
         np.testing.assert_allclose(
-            self.analyser.calculate_maximum_deformation(random_points), maxima)
+            values, maxima)
 
     def test_min_deformation_full(self):
         positions = self.eo.mech_obj.position.value
@@ -135,10 +141,11 @@ class TestDeformation(unittest.TestCase):
 
         minima = random_deformation.min(axis=0)
 
-        points = list(range(len(positions)))
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
+        self.analyser.update_deformation()
+        values, indices = self.analyser.calculate_minimum_deformation()
         np.testing.assert_allclose(
-            self.analyser.calculate_minimum_deformation(points), minima)
+            values, minima)
 
     def test_min_deformation_selective(self):
         positions = self.eo.mech_obj.position.value
@@ -151,11 +158,14 @@ class TestDeformation(unittest.TestCase):
         minima = deformation_to_analyse.min(axis=0)
 
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
+        self.analyser.update_deformation()
+        values, indices = self.analyser.calculate_minimum_deformation(
+            random_points)
         np.testing.assert_allclose(
-            self.analyser.calculate_minimum_deformation(random_points), minima)
+            values, minima)
 
-    def tearDown(self):
-        self.eo.mech_obj.position = self.initial_positions
+    # def tearDown(self):
+    #    self.eo.mech_obj.position = self.initial_positions
 
     @classmethod
     def tearDownClass(cls):
