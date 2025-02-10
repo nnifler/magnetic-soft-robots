@@ -1,18 +1,29 @@
-"""This module provides a class to load meshes into the Sofa Scene."""
+"""
+This module provides functionality for loading mesh files into a SOFA simulation scene.
+
+It defines the MeshLoader class to handle the loading, validation, and referencing of
+both surface and volumetric mesh models. Supported mesh formats are defined and mapped
+to appropriate SOFA mesh loaders.
+
+Classes:
+    Mode: Enum class defining surface and volumetric mesh modes.
+    MeshLoader: Class to load, validate, and reference mesh files in a SOFA scene.
+"""
 
 from pathlib import Path
 from os.path import getsize
-from typing import Optional
+from typing import List, Optional, Tuple, Dict
 from enum import Enum
 import Sofa.Core
 
 
 class Mode(Enum):
+    """Enum representing mesh modes for surface and volumetric meshes."""
     SURFACE = 0
     VOLUMETRIC = 1
 
 
-ending_to_loader = {
+ending_to_loader: Dict[str, str] = {
     ".msh":      'MeshGmshLoader',
     ".off":      'MeshOffLoader',
     ".vtk":      'MeshVTKLoader',
@@ -20,18 +31,18 @@ ending_to_loader = {
     ".stl":      'MeshSTLLoader',
 }
 
-endings = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # SURFACE
-           ('.msh', '.off', '.vtk')]  # VOLUMETRIC
+endings: List[Tuple[str, ...]] = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # SURFACE
+                                  ('.msh', '.off', '.vtk')]  # VOLUMETRIC
 
 
 class MeshLoader():
-    """Loads meshes into the Sofa Scene."""
+    """Loads, validates, and references mesh files in a SOFA scene."""
 
     def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.) -> None:
         """Initializes the MeshLoader.
 
         Args:
-            name (str, optional): The name of the sofa loader. Defaults to "meshLoader".
+            name (str, optional): The name of the SOFA loader. Defaults to "meshLoader".
             scaling_factor (float, optional): The scaling factor of the model. Defaults to 1..
         """
         self._path: list = [None, None]
@@ -39,64 +50,31 @@ class MeshLoader():
         self._scaling = scaling_factor
 
     def load_file(self, path: Path, mode: Mode) -> None:
-        """Loads a filepath into loader
+        """Loads a mesh file into the loader.
 
         Args:
             path (Path): The path to the mesh file.
-            mode (Mode): The type of the mesh.
+            mode (Mode): The mode specifying the type of mesh (surface or volumetric).
 
-        Raises:
-            FileNotFoundError: If given path is no file.
-            ValueError: If file suffix is unknown.
-            ValueError: If surface mode is selected but the file is a volumetric mesh.
-            ValueError: If volumetric mesh is selected but the file is a surface mesh.
-            ValueError: If the file is empty.
         """
         # TODO: integrity check for file?
 
-        if not path.is_file():
-            raise FileNotFoundError(
-                f"Path {path} does not refer to a valid file")
-
-        if path.suffix not in ending_to_loader.keys():
-            raise ValueError(f"""Path {path} refers to a file of format {path.suffix}, which is unkown.
-                             Please provide a mesh file in one of the following formats:
-                             {", ".join(ending_to_loader.keys())}"""
-                             )
-
-        # currently all supported formats are supported with surface mesh types
-        if mode == Mode.SURFACE and path.suffix not in endings[Mode.SURFACE.value]:
-            raise ValueError(f"""Path {path} refers to a file of format {path.suffix}, which is used only for volumetric meshes.
-                             Please provide a surface mesh file in one of the following formats:
-                             {", ".join(endings[Mode.SURFACE.value])}"""
-                             )
-
-        if mode == Mode.VOLUMETRIC and path.suffix not in endings[Mode.VOLUMETRIC.value]:
-            raise ValueError(f"""Path {path} refers to a file of format {path.suffix}, which is used only for surface meshes.
-                             Please provide a volumetric mesh file in one of the following formats:
-                             {", ".join(endings[Mode.VOLUMETRIC.value])}"""
-                             )
-
-        with open(path, mode="r+b") as f:
-            f.readline()
-
-        if getsize(path) == 0:
-            raise ValueError(f"File {path} empty! Not a valid mesh")
-
+        self.validate_mesh_file(path, mode)
         self._path[mode.value] = path
 
     def load_mesh_into(self, node: Sofa.Core.Node, mode: Mode) -> Sofa.Core.Object:
-        """Loads mesh into node.
+        """Loads the mesh into the given SOFA node.
 
         Args:
             node (Sofa.Core.Node): The node the mesh loads into.
-            mode (Mode): The type of the mesh.
+            mode (Mode): The mode specifying the type of mesh (surface or volumetric).
 
         Raises:
             FileNotFoundError: If path is not set.
+            ValueError: If the mesh file name does not match the expected type.
 
         Returns:
-            Sofa.Core.Object: The loaded mesh SOFA object.
+            Sofa.Core.Object: The loaded mesh object.
         """
 
         path: Optional[Path] = self._path[mode.value]
@@ -104,6 +82,14 @@ class MeshLoader():
         if path is None:
             raise FileNotFoundError(
                 "Please call load_file before querying mesh_generation")
+
+        filename = path.stem.lower()
+        if mode == Mode.SURFACE and "_surface" not in filename:
+            raise ValueError(
+                f"The file '{path.name}' was not saved as a surface mesh file")
+        elif mode == Mode.VOLUMETRIC and "_volumetric" not in filename:
+            raise ValueError(
+                f"The file '{path.name}' was not saved as a volumetric mesh file")
 
         mesh = node.addObject(
             ending_to_loader[path.suffix],
@@ -114,12 +100,55 @@ class MeshLoader():
         return mesh
 
     def reference(self, mode: Mode) -> str:
-        """References the loader in other SOFA objects.
+        """Generates a reference string for the mesh loader.
 
         Args:
-            mode (Mode): The type of the mesh.
+            mode (Mode): The mode specifying the type of mesh.
 
         Returns:
-            str: The reference string.
+            str: The reference string for the mesh loader.
         """
         return "@"+self._name+"_"+mode.name.lower()
+
+    def validate_mesh_file(self, path: Path, mode: Mode) -> None:
+        """Validates the mesh file for format, mode, and size.
+
+        Args:
+            path (Path): The path to the mesh file.
+            mode (Mode): The mode specifying the type of mesh.
+
+        Raises:
+            FileNotFoundError:  If the path does not refer to a valid file.
+            ValueError: If the file format is unsupported.
+            ValueError: If the file is empty.
+            ValueError: If the file type does not match the specified mesh mode.
+        """
+
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"Path {path} does not refer to a valid file")
+
+        if path.suffix not in ending_to_loader:
+            raise ValueError(
+                f"Path {path} refers to a file of format {path.suffix}, which is unkown."
+                f"Please provide a mesh file in one of the following formats: "
+                f"{", ".join(ending_to_loader.keys())}"
+            )
+
+        if mode == Mode.SURFACE and path.suffix not in endings[Mode.SURFACE.value]:
+            raise ValueError(
+                f"Path {path} refers to a file of format {path.suffix}, "
+                f"which is used only for volumetric meshes."
+                f"Please provide a surface mesh file in one of the following formats: "
+                f"{", ".join(endings[Mode.SURFACE.value])}"
+            )
+        elif mode == Mode.VOLUMETRIC and path.suffix not in endings[Mode.VOLUMETRIC.value]:
+            raise ValueError(
+                f"Path {path} refers to a file of format {path.suffix}, "
+                f"which is used only for surface meshes."
+                f"Please provide a volumetric mesh file in one of the following formats: "
+                f"{", ".join(endings[Mode.VOLUMETRIC.value])}"
+            )
+
+        if getsize(path) == 0:
+            raise ValueError(f"File {path} empty! Not a valid mesh")

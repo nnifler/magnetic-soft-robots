@@ -14,8 +14,9 @@ from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import Tesla
 from src import Config, sofa_instantiator
-
-from gui import MSRHeaderWidget, MSRMaterialGroup
+from gui.shortcuts_utils import setup_global_shortcuts
+from gui.msr_header_widget import MSRHeaderWidget
+from gui.msr_material_group import MSRMaterialGroup
 
 
 class MainWindow(QMainWindow):
@@ -97,8 +98,10 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(content_layout)
 
+        setup_global_shortcuts(self)
+
         # Default values
-        Config.set_model("beam", 0.02)
+        Config.set_model("butterfly", 0.02)
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
