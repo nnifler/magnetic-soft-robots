@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import re
 from bs4 import BeautifulSoup
-import numpy as np
+from scipy.constants import mu_0  # in T·m/A
 from src.units import Density, YoungsModulus, Tesla
 
 
@@ -12,9 +12,6 @@ class JsonMaterialManager:
     """Class for managing json materials."""
 
     # define class constants
-    # physical constant: vacuum permeability (μ₀) in T·m/A
-    # TODO?: replace with scipy.constants.value('vacuum mag. permeability')
-    MU_0 = 4 * np.pi * 1e-7
     # list of default testing materials
     DEFAULT_MATERIALS = [
         {
@@ -22,21 +19,21 @@ class JsonMaterialManager:
             'density': 1100,  # in kg/m³
             'youngs_modulus': 1e6,  # in Pa
             'poissons_ratio': 0.49,  # dimensionless
-            'remanence': 0 * MU_0,  # in T
+            'remanence': 0 * mu_0,  # in T
         },
         {
             'name': 'Neodymium Powder',
             'density': 7500,  # in kg/m³
             'youngs_modulus': 1.6e10,  # in Pa
             'poissons_ratio': 0.3,  # dimensionless
-            'remanence': 1.2e6 * MU_0,  # in T
+            'remanence': 1.2e6 * mu_0,  # in T
         },
         {
             'name': 'Magnetic Silicone Composite',
             'density': 1800,  # in kg/m³
             'youngs_modulus': 5e6,  # in Pa
             'poissons_ratio': 0.45,  # dimensionless
-            'remanence': 2.5e4 * MU_0,  # in T
+            'remanence': 2.5e4 * mu_0,  # in T
         },
     ]
 
@@ -126,19 +123,19 @@ class JsonMaterialManager:
                 # get the local href to the material and complete it to global url
                 url = 'https://www.matweb.com' + \
                     columns[2].find('a')['href']
-                youngs_modulus = self._calculate_mean(
-                    columns[3].get_text(strip=True))*1e9  # GPa -> Pa
-                density = self._calculate_mean(
-                    columns[5].get_text(strip=True))*1e3  # g/cm³ -> kg/m³
-                poissions_ratio = self._calculate_mean(
+                youngs_modulus = YoungsModulus.from_GPa(self._calculate_mean(
+                    columns[3].get_text(strip=True)))
+                density = Density.from_gpcm3(self._calculate_mean(
+                    columns[5].get_text(strip=True)))
+                poissons_ratio = self._calculate_mean(
                     columns[7].get_text(strip=True))
 
                 self.materials.append({
                     'name': name,
                     'url': url,
-                    'youngs_modulus': youngs_modulus,
-                    'density': density,
-                    'poissons_ratio': poissions_ratio,
+                    'youngs_modulus': youngs_modulus.Pa,
+                    'density': density.kgpm3,
+                    'poissons_ratio': poissons_ratio,
                     'remanence': 0.  # not available
                 })
 

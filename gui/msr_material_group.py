@@ -182,23 +182,19 @@ class MSRMaterialGroup(QGroupBox):
         self._material_combo_box.currentIndexChanged.connect(
             self.update_material_parameters)
 
-        row = 0
-        self._layout.addWidget(material_label, row, 0)
-        self._layout.addWidget(self._material_combo_box, row, 1)
+        self._layout.addWidget(material_label, 0, 0)
+        self._layout.addWidget(self._material_combo_box, 0, 1)
 
-        row += 1
-        self._layout.addWidget(behavior_label, row, 0)
-        self._layout.addWidget(self.behavior_combo_box, row, 1)
+        self._layout.addWidget(behavior_label, 1, 0)
+        self._layout.addWidget(self.behavior_combo_box, 1, 1)
 
-        for param in self.parameters.values():
-            row += 1
+        for row, param in enumerate(self.parameters.values(), start=2):
             self._layout.addWidget(param.label, row, 0)
             self._layout.addWidget(param.spinbox, row, 1)
             self._layout.addWidget(param.unit_selector, row, 2)
 
-        row += 1
-        self._layout.addWidget(self._material_name_input, row, 0, 1, 2)
-        self._layout.addWidget(material_save_button, row, 2)
+        self._layout.addWidget(self._material_name_input, row+1, 0, 1, 2)
+        self._layout.addWidget(material_save_button, row+1, 2)
 
     def _save_current_material(self) -> None:
         """Saves the current material to the custom JSON file."""
@@ -212,15 +208,22 @@ class MSRMaterialGroup(QGroupBox):
 
         self._custom_material_manager.save_to_json(
             Path(__file__).parents[1] / 'lib/materials/custom.json')
-        ok_box = QMessageBox()
+        self._material_combo_box.clear()
+        self.load_materials_from_json(False)
+        self.load_materials_from_json(True)
+        self._material_combo_box
+        ok_box = QMessageBox("Material saved")
         ok_box.setText("Material saved successfully.")
         ok_box.setStandardButtons(QMessageBox.Ok)
         ok_box.exec()
 
     def load_materials_from_json(self, custom=False) -> None:
-        """Loads materials from a JSON file.
+        """Loads the materials from the JSON file.
+
+        Args:
+            custom (bool, optional): If True, loads the custom JSON file. Defaults to False.
         """
-        # Directory of the current file
+        # root directory of the project
         current_dir = Path(__file__).parents[1]
         # Path to the JSON file
         # by moving one directory up from the current directory to the selected folder
@@ -240,8 +243,6 @@ class MSRMaterialGroup(QGroupBox):
             with open(json_file_path, "r", encoding="utf-8") as file:
                 material_data = json.load(file)
 
-            # TODO: warum war das da drin? Hat das einen anderen Fehler berseitigt?
-            # self._material_combo_box.clear()
             for material in material_data:
                 self._material_combo_box.addItem(
                     material.get("name", "Unknown Material"))
@@ -272,7 +273,7 @@ class MSRMaterialGroup(QGroupBox):
         else:
             return
 
-        # Dichte mit Umrechnung aktualisierenP
+        # Dichte mit Umrechnung aktualisieren
         density_param = self.parameters["density"]
         density = Density.from_kgpm3(material.get("density", 0))
         current_density_index = density_param.unit_selector.currentIndex()
