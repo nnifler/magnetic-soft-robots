@@ -34,7 +34,7 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 2. 4.1: The model name equals the model name you selected in 3.3
 3. 4.2-3: The model nodes count equals the following values for default models:
     1. `beam`: 306 Nodes, 807 Tetrahedra
-    2. `butterfly`: 427 Nodes, 1159 Tetrahedra
+    2. `butterfly`: 423 Nodes, 1094 Tetrahedra
     3. `gripper_3_arm`: 466 Nodes, 1131 Tetrahedra
     4. `gripper_4_arm`: 1679 Nodes, 4912 Tetrahedra
-    5. `simple_butterly`: 225 Nodes, 527 Tetrahedra
+    5. `simple_butterly`: 260 Nodes, 624 Tetrahedra
