@@ -1,5 +1,6 @@
 """This module provides a toolkit for material parameter definition."""
 
+import math
 import json
 from pathlib import Path
 from PySide6.QtWidgets import (
@@ -130,7 +131,7 @@ class MSRMaterialGroup(QGroupBox):
         self.parameters = {
             "youngs_modulus": MSRMaterialParameter(
                 name="(E) Young's Modulus:",
-                value_range=(0, 1e12),
+                value_range=(0, math.inf),
                 units=["Pa", "hPa", "MPa", "GPa"],
                 getter=[YoungsModulus.Pa, YoungsModulus.hPa,
                         YoungsModulus.MPa, YoungsModulus.GPa],

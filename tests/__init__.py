@@ -6,4 +6,4 @@ from .material_loader_test import suite as material_loader_test_suite
 from .mesh_loader_test import suite as mesh_loader_test_suite
 from .scene_builder_test import suite as scene_builder_test_suite
 
-from .define_materials_automated import suite as automated_gui_demo_suite
+from .define_materials_test import suite as automated_gui_demo_suite
