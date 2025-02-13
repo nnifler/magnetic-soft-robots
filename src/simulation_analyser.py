@@ -1,12 +1,9 @@
-"""This module contains the SimulationAnalyser class, 
-which is used to analyse the simulation results."""
+"""This module contains all classes needed for the analysis of the simulation."""
 
-from typing import List
+from typing import List, Tuple
 import numpy as np
 
 import Sofa
-
-from gui.msr_analysis_widgets import MSRDeformationAnalysisWidget
 
 
 class SimulationAnalyser:
@@ -58,24 +55,29 @@ class SimulationAnalyser:
         self.minimum_deformation_array = np.minimum(
             self.minimum_deformation_array, current_positions - self.initial_positions)
 
-    def calculate_deformation(self, points: List[int] = None) -> np.ndarray:
-        # TODO: Update Docstring
+    def calculate_deformation(self, points: List[int] = None) -> Tuple[np.ndarray, np.ndarray]:
         """Calculates the maximum and minimum deformation of the model
         compared to the state of the model when the Analyser was initialized.
         Only the given points are considered when calculating the maximum and minimum.
         This method uses the state from when last update_deformation was called.
 
         Args:
-            points (List[int]): The points to calculate the deformation for.
+            points (List[int], optional): The points to calculate the deformation for. 
+             If points is None, considers all points of the model. Defaults to None.
 
         Raises:
             ValueError: If a given point is not part of the model.
 
         Returns:
-            np.ndarray: The maximum and minimum deformation. The array has the following shape:
+            Tuple[np.ndarray, np.ndarray]: The maximum and minimum deformation 
+            and the corresponding indices. The arrays have the following shape:
             ```
             [[max_x, max_y, max_z],
              [min_x, min_y, min_z]]
+            ```
+            ```
+            [[max_index_x, max_index_y, max_index_z],
+             [min_index_x, min_index_y, min_index_z]]
             ```
         """
         max_deformations = self.maximum_deformation_array
@@ -99,49 +101,86 @@ class SimulationAnalyser:
 
         return np.stack((maxima, minima)), np.stack((maxima_index, minima_index))
 
-    def calculate_maximum_deformation(self, points: List[int] = None) -> np.ndarray:
+    def calculate_maximum_deformation(self, points: List[int] = None) -> Tuple[np.ndarray, np.ndarray]:
         """Calculates the maximum deformation of the model
         compared to the state of the model when the Analyser was initialized.
         Only the given points are considered when calculating the maximum.
         This method uses the state from when last update_deformation was called.
 
         Args:
-            points (List[int]): The points to calculate the deformation for.
+            points (List[int], optional): The points to calculate the deformation for. 
+             If points is None, considers all points of the model. Defaults to None.
 
         Raises:
             ValueError: If a given point is not part of the model.
 
         Returns:
-            np.ndarray: The maximum deformation. The array has the following shape:
+            Tuple[np.ndarray, np.ndarray]: The maximum deformation 
+            and the corresponding indices. The arrays have the following shape:
             ```
             [max_x, max_y, max_z]
+            ```
+            ```
+            [max_index_x, max_index_y, max_index_z]
             ```
         """
         return self.calculate_deformation(points)[0][0], self.calculate_deformation(points)[1][0]
 
-    def calculate_minimum_deformation(self, points: List[int] = None) -> np.ndarray:
+    def calculate_minimum_deformation(self, points: List[int] = None) -> Tuple[np.ndarray, np.ndarray]:
         """Calculates the minimum deformation of the model
         compared to the state of the model when the Analyser was initialized.
         Only the given points are considered when calculating the minimum.
         This method uses the state from when last update_deformation was called.
 
         Args:
-            points (List[int]): The points to calculate the deformation for.
+            points (List[int], optional): The points to calculate the deformation for. 
+             If points is None, considers all points of the model. Defaults to None.
 
         Raises:
             ValueError: If a given point is not part of the model.
 
         Returns:
-            np.ndarray: The minimum deformation. The array has the following shape:
+            Tuple[np.ndarray, np.ndarray]: The minimum deformation 
+            and the corresponding indices. The arrays have the following shape:
             ```
             [min_x, min_y, min_z]
+            ```
+            ```
+            [min_index_x, min_index_y, min_index_z]
             ```
         """
         return self.calculate_deformation(points)[0][1], self.calculate_deformation(points)[1][1]
 
 
 class SimulationAnalysisController(Sofa.Core.Controller):
+    """This class is used to perform analysis during the simulation"""
+
     def __init__(self, root: Sofa.Core.Node, analysis_parameters: dict) -> None:
+        """Initializes the SimulationAnalysisController 
+        with the given root node and analysis parameters.
+
+        Args:
+            root (Sofa.Core.Node): The root node of the simulation.
+            analysis_parameters (dict): A dictionary containing the analysis parameters. 
+             It can contain the following keys:
+             ```
+             {
+                "max_deformation_analysis": bool,
+                "max_deformation_input": List[np.ndarray] | List[int],
+                "max_deformation_widget": MSRDeformationAnalysisWidget,
+             }
+             ```
+             All keys are optional, but if a *_analysis key is set to `True`, 
+             all keys with the same prefix have to be present.
+
+        Raises:
+            ValueError: If max_deformation_analysis is True and 
+             max_deformation_input is not a list or not present.
+            ValueError: If max_deformation_analysis is True and 
+             max_deformation_input is not a list of np.ndarray or int.
+            ValueError: If max_deformation_analysis is True and 
+             max_deformation_widget is None or not present.
+        """
         super().__init__(root)
         self.root = root
         self.analyser = SimulationAnalyser(root)
@@ -150,23 +189,41 @@ class SimulationAnalysisController(Sofa.Core.Controller):
         self.max_deformation_analysis = analysis_parameters.get(
             "max_deformation_analysis", False)
         self.max_deformation_input = analysis_parameters.get(
-            "max_deformation_input", [])
-        self.max_deformation_widget: MSRDeformationAnalysisWidget = analysis_parameters.get(
+            "max_deformation_input", None)
+        self.max_deformation_widget = analysis_parameters.get(
             "max_deformation_widget", None)
         self.max_deformation_mode = self.max_deformation_widget.get_mode(
         ) if self.max_deformation_widget is not None else None
-        if self.max_deformation_mode == MSRDeformationAnalysisWidget.SelectionMode.COORDINATES:
+        # Convert input to indices if necessary
+        if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES:
             self.max_deformation_input = list(
                 map(self.analyser.calculate_nearest_node, self.max_deformation_input))
 
+        # Validate max deformation parameters
+        if self.max_deformation_analysis:
+            if not isinstance(self.max_deformation_input, list):
+                raise ValueError(
+                    "max_deformation_input must be a list of np.ndarray or int.")
+            if not all(isinstance(elem, (np.ndarray, int)) for elem in self.max_deformation_input):
+                raise ValueError(
+                    "max_deformation_input must be a list of np.ndarray or int.")
+            if self.max_deformation_widget is None:
+                raise ValueError(
+                    "max_deformation_widget must be set if max_deformation_analysis is True.")
+
     def onAnimateBeginEvent(self, _):
+        """Function that is automatically called at the beginning of the Sofa animation step.
+        """
+        # Perform max deformation analysis
         if self.max_deformation_analysis:
             self.analyser.update_deformation()
             try:
                 deformation, deformation_indices = None, None
-                if self.max_deformation_mode == MSRDeformationAnalysisWidget.SelectionMode.ALL:
+                if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.ALL:
                     deformation, deformation_indices = self.analyser.calculate_deformation()
                 else:
+                    # This might raise a ValueError
+                    # if e.g. a point in the input is not part of the model
                     deformation, deformation_indices = self.analyser.calculate_deformation(
                         self.max_deformation_input)
                 maximum_indices = np.abs(deformation).argmax(axis=0)

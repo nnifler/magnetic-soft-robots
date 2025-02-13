@@ -4,9 +4,9 @@ from pathlib import Path
 
 import Sofa.Gui
 
-from src import Config, SceneBuilder, ElasticObject, MagneticController, MaterialLoader, MeshLoader
+from src import (Config, SceneBuilder, ElasticObject, MagneticController,
+                 MaterialLoader, MeshLoader, SimulationAnalysisController)
 from src.mesh_loader import Mode
-from src.simulation_analyser import SimulationAnalysisController
 
 
 def main(analysis_parameter: dict = None):
