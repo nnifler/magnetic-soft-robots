@@ -197,6 +197,7 @@ class MSRMaterialGroup(QGroupBox):
             self._layout.addWidget(param.spinbox, row, 1)
             self._layout.addWidget(param.unit_selector, row, 2)
 
+        row = len(self.parameters) + 2
         self._layout.addWidget(self._material_name_input, row+1, 0, 1, 2)
         self._layout.addWidget(material_save_button, row+1, 2)
 
@@ -213,8 +214,10 @@ class MSRMaterialGroup(QGroupBox):
         self._custom_material_manager.save_to_json(
             Path(__file__).parents[1] / 'lib/materials/custom.json')
         self._material_combo_box.clear()
-        self.load_materials_from_json(False)
-        self.load_materials_from_json(True)
+        # load self.material_data
+        self.load_materials_from_json(custom=False)
+        # load self._custom_material_data
+        self.load_materials_from_json(custom=True)
         self._material_combo_box.setCurrentIndex(
             self._material_combo_box.count() - 1)
         ok_box = QMessageBox()
