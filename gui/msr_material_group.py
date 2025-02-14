@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
+from string import punctuation, whitespace
 
 from src.units import BaseUnit, Density, YoungsModulus, Tesla
 from src import JsonMaterialManager
@@ -203,8 +204,22 @@ class MSRMaterialGroup(QGroupBox):
 
     def _save_current_material(self) -> None:
         """Saves the current material to the custom JSON file."""
+        mat_name = self._material_name_input.text()
+
+        if mat_name.strip(punctuation+whitespace) == "":
+            QMessageBox.warning(self, "Error", "Please enter a material name.")
+            return
+        if mat_name in [m.get("name", "") for m in self.material_data]:
+            QMessageBox.warning(
+                self, "Error", "Material name already exists in default materials.")
+            return
+        if mat_name in [m.get("name", "") for m in self._custom_material_data]:
+            QMessageBox.warning(
+                self, "Error", "Material name already exists in custom materials.")
+            return
+
         self._custom_material_manager.append_material(
-            self._material_name_input.text(),
+            mat_name,
             self.parameters["density"].value(),
             self.parameters["youngs_modulus"].value(),
             self.parameters["poissons_ratio"].value(),
@@ -220,11 +235,8 @@ class MSRMaterialGroup(QGroupBox):
         self.load_materials_from_json(custom=True)
         self._material_combo_box.setCurrentIndex(
             self._material_combo_box.count() - 1)
-        ok_box = QMessageBox()
-        ok_box.setWindowTitle("Material saved")
-        ok_box.setText("Material saved successfully.")
-        ok_box.setStandardButtons(QMessageBox.Ok)
-        ok_box.exec()
+        QMessageBox.information(self, "Material saved",
+                                "Material saved successfully.")
 
     def load_materials_from_json(self, custom=False) -> None:
         """Loads the materials from the JSON file.
