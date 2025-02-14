@@ -2,12 +2,13 @@
 
 import json
 from pathlib import Path
+from string import punctuation, whitespace
 from PySide6.QtWidgets import (
     QGroupBox, QLabel, QDoubleSpinBox, QComboBox, QGridLayout, QMessageBox, QPushButton, QLineEdit
 )
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
-from string import punctuation, whitespace
+
 
 from src.units import BaseUnit, Density, YoungsModulus, Tesla
 from src import JsonMaterialManager
