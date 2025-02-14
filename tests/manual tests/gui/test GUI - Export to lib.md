@@ -20,34 +20,44 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     1. Click the save button without specifing a name in the Material Name field.
     2. Input random text only from whitespace and punctuation characters in the Material Name field.
     3. Click the save button.
-    4. Close the dialog box.
-    5. Select a random on your keyboard typable material from the Select Material field.
-    6. Copy the name to the Material Name field.
-    7. Click the save button.
-    8. Close the dialog box.
+    4. Select a random on your keyboard typable material from the Select Material field.
+    5. Copy the name to the Material Name field.
+    6. Click the save button.
 5. Test Material Name functionality
-    1. Input random accepted values in each text except the name field in the material configuration widget.
-    2. Click the save button.
-    3. Close the dialog box.
+    1. Input random accepted values in each text field except the name field in the material configuration widget.
+    2. Input a unique valid text in the Material Name text field.
+    3. Click the save button.
 6. Select Material
-    1. Open Select Material Dropdown
-    2. Select the material with the name you specified
-    3. Look at the values
-    4. Copy the name to the Material Name field.
-    5. Click the save button.
-    6. Close the dialog box.
-7. Restart Behavior
+    1. Look at the Select Material dropdown
+    2. Look at the values
+7. Test further exceptional behavior
+    1. Copy the name to the Material Name field.
+    2. Input random accepted values in each text field except the name field in the material configuration widget.
+    3. Click the Save button.
+    4. In the error box click the Abort button.
+    5. In the Select Material Dropdown select a random material.
+    6. In the Select Material Dropdown select the material with the name you specified.
+    7. Look at the values.
+    8. Input random accepted values in each text field except the name field in the material configuration widget.
+    9. Click the Save button.
+    10. In the error box click the Save button.
+    11. In the Select Material Dropdown select a random material.
+    12. In the Select Material Dropdown select the material with the name you specified.
+    13. Look at the values.
+8. Restart Behavior
     1. Close the Soft Robotics Simulation window.
     2. Redo 1-2
-    3. Redo 6.1-6.3
+    3. Redo 6
 
 ## Expected Result
 
 1. 3 There is an empty field with the placeholder text "Material Name".
 2. 3 There is a button with the text "Save".
 3. 4.1, 4.3 An error box appears with the text 'Please enter a metrial name'.
-4. 4.7 An error box appears with the text 'Material name already exists in default materials.'
-5. 5.2 An information box titled 'Material saved' appears with the text 'Material saved sucessfully.'
-6. 6.1 The item with the specified name appears in the dropdown.
-7. 6.3 The values you specified are equal to the values that are now shown.
-8. 6.5 An error box appears with the text 'Material name already exists in custom materials.'
+4. 4.6 An error box appears with the text 'Material name already exists in default materials.'
+5. 5.3 An information box titled 'Material saved' appears with the text 'Material saved sucessfully.'
+6. 6.1 The item with the name you speicfied is selected in the dropdown.
+7. 6.2 The values you specified are equal to the values that are now shown.
+8. 7.3 An error box titled 'Replace Material?' with the text 'Material name already exists in custom materials.' and two buttons 'Save' and 'Abort' appears.
+9. 7.7 The values you specified in 5.1 are equal to the values that are now shown.
+10. 7.13 The values you specified in 7.2 are equal to the values that are now shown.
