@@ -205,26 +205,35 @@ class MSRMaterialGroup(QGroupBox):
     def _save_current_material(self) -> None:
         """Saves the current material to the custom JSON file."""
         mat_name = self._material_name_input.text()
+        # index - name mapping
         custom_material_names = [m.get("name", "")
                                  for m in self._custom_material_data]
 
+        # prevent empty material names
         if mat_name.strip(punctuation+whitespace) == "":
             QMessageBox.warning(self, "Error", "Please enter a material name.")
             return
+
+        # prevent overwriting default materials
         if mat_name in [m.get("name", "") for m in self.material_data]:
             QMessageBox.warning(
                 self, "Error", "Material name already exists in default materials.")
             return
+
+        # ask for overwrite for existing custom materials
         if mat_name in custom_material_names:
             action = QMessageBox.warning(
                 self, "Replace Material?", "Material name already exists in custom materials. " +
                 "Click save to replace.", QMessageBox.Save, QMessageBox.Abort)
-            if action == QMessageBox.Abort:
+            if action == QMessageBox.Abort:  # do not overwrite
                 return
 
-            mat_idx = custom_material_names.index(mat_name)
-            self._custom_material_manager.materials.pop(mat_idx)
-            self._custom_material_data.pop(mat_idx)
+            # overwrite
+            # remove old material
+            mat_index = custom_material_names.index(mat_name)
+            self._custom_material_manager.materials.pop(mat_index)
+            self._custom_material_data.pop(mat_index)
+            # continue with saving
 
         self._custom_material_manager.append_material(
             mat_name,
