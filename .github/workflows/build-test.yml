@@ -28,7 +28,7 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        sudo apt install pybind11-dev libegl1 libopengl0
+        sudo apt install pybind11-dev libegl1 libopengl0 libxcb
         python3.10 -m pip install --upgrade pip
         python3.10 -m pip install coverage pybind11==2.9.1
         python3.10 -m pip install -r requirements.txt
@@ -37,6 +37,8 @@ jobs:
       run: |
         export SOFA_ROOT=$PWD/sofa_install
         export PYTHONPATH=$PWD/sofa_install/plugins/SofaPython3/lib/python3/site-packages:$PYTHONPATH
+        export QT_QPA_PLATFORM=xcb
+        export QT_DEBUG_PLUGINS=1
         echo $SOFA_ROOT
         echo $PYTHONPATH
         python3.10 test_main.py
