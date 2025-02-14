@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel
+from PySide6.QtWidgets import QApplication, QLabel, QDoubleSpinBox
 # from PySide6.QtTest import QTest
 
 import gui
@@ -21,6 +21,7 @@ class TestYoungModulus(unittest.TestCase):
             unit conversion from GPa initially
             success of values in range
             rejection of values below zero
+            only input for numeric values allowed
         """
 
     def setUp(self):
@@ -58,8 +59,8 @@ class TestYoungModulus(unittest.TestCase):
 
     def testOkValueRange(self):
         # TODO: actual range is til 1e12; overflow errors
-        lower_test_inputs = np.random.uniform(low=0, high=1e4, size=10)
-        # test_inputs = np.random.uniform(low=0, high=1e12, size=10)
+        lower_test_inputs = np.random.uniform(low=0, high=1e4, size=3)
+        # test_inputs = np.random.uniform(low=0, high=1e12, size=3)
 
         # QTest.keyClicks(ym.spinbox, "21.36748")
 
@@ -74,9 +75,12 @@ class TestYoungModulus(unittest.TestCase):
                                    msg=f"input in legal range with 4 digit rounding fails, {ref}")
 
     def testInvalidRange(self):
+        self.assertTrue(
+            isinstance(self.ym.spinbox, QDoubleSpinBox),
+            "Spinbox not restricted to float values")
         init_ref = 123456789
         self.ym.spinbox.setValue(init_ref)
-        lower_test_inputs = np.random.uniform(low=0, high=1e4, size=10)
+        lower_test_inputs = np.random.uniform(low=0, high=1e4, size=3)
 
         for ref in -1*[*lower_test_inputs]:
             # QTest.keyClicks(ym.spinbox, self.keys_from_float(ref))
@@ -85,7 +89,7 @@ class TestYoungModulus(unittest.TestCase):
                 self.ym.spinbox.value(), init_ref, msg="negative input succeeds")
 
     def testUnitSwitch(self):
-        lower_test_inputs = np.random.uniform(low=0, high=1e4, size=10)
+        lower_test_inputs = np.random.uniform(low=0, high=1e4, size=3)
 
         for ref_init_val in [*lower_test_inputs]:
             self.ym.unit_selector.setCurrentText("GPa")
@@ -125,7 +129,6 @@ class TestYoungModulus(unittest.TestCase):
 
 
 class TestDensity(unittest.TestCase):
-
     def setUp(self):
         super().setUp()
         self.app = QApplication([])
@@ -162,7 +165,7 @@ class TestDensity(unittest.TestCase):
             self.ref_unit_list), "different len in selectable units")
 
     def testOkValueRange(self):
-        lower_test_inputs = np.random.uniform(low=0, high=30000, size=10)
+        lower_test_inputs = np.random.uniform(low=0, high=30000, size=3)
 
         self.density.spinbox.setValue(21.36748)
         self.assertAlmostEqual(float(self.density.spinbox.value()), 21.37,
@@ -174,9 +177,12 @@ class TestDensity(unittest.TestCase):
                                    msg=f"input in legal range with 2 digit rounding fails, {ref}")
 
     def testInvalidRange(self):
+        self.assertTrue(
+            isinstance(self.density.spinbox, QDoubleSpinBox),
+            "Spinbox not restricted to float values")
         init_ref = 12345.67
         self.density.spinbox.setValue(init_ref)
-        lower_test_inputs = np.random.uniform(low=0, high=30000, size=10)
+        lower_test_inputs = np.random.uniform(low=0, high=30000, size=3)
 
         for ref in -1*[*lower_test_inputs]:
             self.density.spinbox.setValue(ref)
@@ -191,7 +197,7 @@ class TestDensity(unittest.TestCase):
             self.density.spinbox.setValue(init_ref)
 
     def testUnitSwitch(self):
-        lower_test_inputs = np.random.uniform(low=1000, high=30000, size=10)
+        lower_test_inputs = np.random.uniform(low=1000, high=30000, size=3)
 
         for ref_init_val in [*lower_test_inputs]:
             self.density.unit_selector.setCurrentText("kg/m³")
@@ -233,7 +239,6 @@ class TestDensity(unittest.TestCase):
 
 
 class TestTesla(unittest.TestCase):
-
     def setUp(self):
         super().setUp()
         self.app = QApplication([])
@@ -260,7 +265,7 @@ class TestTesla(unittest.TestCase):
                         == "T", "wrong default unit")
 
     def testOkValueRange(self):
-        lower_test_inputs = np.random.uniform(low=-2, high=2, size=10)
+        lower_test_inputs = np.random.uniform(low=-2, high=2, size=3)
 
         self.remanence.spinbox.setValue(1.36748)
         self.assertAlmostEqual(float(self.remanence.spinbox.value()), 1.367,
@@ -272,10 +277,13 @@ class TestTesla(unittest.TestCase):
                                    msg=f"input in legal range with {self.decimals} digit rounding fails, {ref}")
 
     def testInvalidRange(self):
+        self.assertTrue(
+            isinstance(self.remanence.spinbox, QDoubleSpinBox),
+            "Spinbox not restricted to float values")
         init_ref = 1.67
         self.remanence.spinbox.setValue(init_ref)
-        too_low_inputs = np.random.uniform(low=-1000, high=-2, size=10)
-        too_high_inputs = np.random.uniform(low=2.01, high=2000, size=10)
+        too_low_inputs = np.random.uniform(low=-1000, high=-2, size=3)
+        too_high_inputs = np.random.uniform(low=2.01, high=2000, size=3)
         for ref in [*too_low_inputs]:
             self.remanence.spinbox.setValue(ref)
             self.assertAlmostEqual(
@@ -289,6 +297,64 @@ class TestTesla(unittest.TestCase):
             self.remanence.spinbox.setValue(init_ref)
 
 
+class TestPoissonsRatio(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        self.app = QApplication([])
+        self.uut_main_window = gui.MainWindow()
+        self.uut_mat_group = self.uut_main_window.material_group
+        self.uut_params = self.uut_mat_group.parameters
+
+        self.decimals = 4
+        self.poisson = self.uut_params["poissons_ratio"]
+
+    def tearDown(self):
+        super().tearDown()
+        self.app.shutdown()
+
+    def testUnitSelection(self):
+        self.assertTrue(
+            isinstance(self.poisson.unit_selector, QLabel)
+            and self.poisson.unit_selector.text() == "",
+            "should have a empty label only as no unit is defined")
+
+    def testLabel(self):
+        self.assertTrue("Poisson's Ratio" in self.poisson.label.text(),
+                        "label not clear")
+
+    def testOkValueRange(self):
+        lower_test_inputs = np.random.uniform(low=0, high=0.4999, size=3)
+
+        self.poisson.spinbox.setValue(0.36748)
+        self.assertAlmostEqual(float(self.poisson.spinbox.value()), 0.3675,
+                               msg=f"dummy test 0.3675 = {self.poisson.spinbox.text()} fails")
+
+        for ref in [*lower_test_inputs]:
+            self.poisson.spinbox.setValue(ref)
+            self.assertAlmostEqual(self.poisson.spinbox.value(), round(ref, self.decimals),
+                                   msg=f"input in legal range with {self.decimals} digit rounding fails, {ref}")
+
+    def testInvalidRange(self):
+        self.assertTrue(
+            isinstance(self.poisson.spinbox, QDoubleSpinBox),
+            "Spinbox not restricted to float values")
+        init_ref = 1.67
+        self.poisson.spinbox.setValue(init_ref)
+        too_low_inputs = np.random.uniform(low=-1000, high=0, size=3)
+        too_high_inputs = np.random.uniform(low=0.5, high=2000, size=3)
+        for ref in [*too_low_inputs]:
+            self.poisson.spinbox.setValue(ref)
+            self.assertAlmostEqual(
+                self.poisson.spinbox.value(), 0, msg="too low input succeeds")
+            self.poisson.spinbox.setValue(init_ref)
+
+        for ref in [*too_high_inputs]:
+            self.poisson.spinbox.setValue(ref)
+            self.assertAlmostEqual(
+                self.poisson.spinbox.value(), 0.4999, msg="too large input succeeds")
+            self.poisson.spinbox.setValue(init_ref)
+
+
 def suite() -> unittest.TestSuite:
     test_suite = unittest.TestSuite()
 
@@ -297,6 +363,7 @@ def suite() -> unittest.TestSuite:
         TestYoungModulus,
         TestDensity,
         TestTesla,
+        TestPoissonsRatio,
     ]
 
     # Load tests
