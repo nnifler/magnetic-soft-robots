@@ -59,13 +59,13 @@ class MSRHeaderWidget(QWidget):
         export_action.setShortcut(QKeySequence("Ctrl+E"))
         export_action.triggered.connect(
             lambda _: self.export_library())
-        context_menu.addAction(export_action)
+        # context_menu.addAction(export_action)
 
         context_menu.exec(self._models_button.mapToGlobal(
             self._models_button.rect().bottomLeft()))
 
     def _open_models_popup(self) -> None:
-        """Opens the Models popup menu."""
+        """Opens the model selection popup menu."""
 
         self._popup_open = QWidget()
         self._popup_open.setWindowTitle("Models")
@@ -121,8 +121,6 @@ class MSRHeaderWidget(QWidget):
             for widget in other_widgets:
                 widget.clearSelection()
 
-        # Config.set_model(model_name, scale)
-        # My idea how custom models could be implemented
         Config.set_model(model_name, scale, custom_model)
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
@@ -136,14 +134,6 @@ class MSRHeaderWidget(QWidget):
             QMessageBox.warning(
                 self, "Error", f"Models folder not found at: {models_path}")
             return
-
-        # previous implementation: problem with both surface and volumetric mesh endings
-        # self._default_list_filenames = []
-        # for filepath in models_path.iterdir():
-        #     if filepath.suffix not in mesh_endings[MeshMode.SURFACE.value]:
-        #         return
-        #     self._default_list.addItem(filepath.stem)
-        #     self._default_list_filenames.append(filepath.stem)
 
         model_names = list(
             {path.stem for path in models_path.iterdir()} - {".gitkeep"})

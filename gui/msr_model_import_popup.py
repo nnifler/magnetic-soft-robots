@@ -3,6 +3,7 @@ This module bundles functionality around the import popup window.
 It provides a GUI to iport surface and volumetric mesh models, witj options to define names and paths. The module also includes methodes to handle file import and format validation.
 """
 
+from typing import Set
 from shutil import copy2
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QFileDialog, QGridLayout, QGroupBox,
@@ -25,7 +26,7 @@ class MSRModelImportPopup(QWidget):
         self.setWindowTitle("Import Models")
         self.resize(600, 200)
 
-        self.mesh_loader = MeshLoader()
+        self._mesh_loader = MeshLoader()
 
         self.surface_formats = {".stl"}
         # self.mesh_loader.get_supported_meshes(Mode.SURFACE)
@@ -35,13 +36,13 @@ class MSRModelImportPopup(QWidget):
         self.name_label = QLabel("Model Name:")
         self.name_definition = QLineEdit()
 
-        self.surf_button = QPushButton(f"Fetch {'Surface'} Mesh")
+        self.surf_button = QPushButton("Fetch Surface Mesh")
         self.surf_path_label = QLabel("[path not set]")
         self.surf_button.clicked.connect(
             lambda _: self.fetch_path(
                 self.surface_formats, self.surf_path_label)
         )
-        self.vol_button = QPushButton(f"Fetch {'Volumetric'} Mesh")
+        self.vol_button = QPushButton(f"Fetch Volumetric Mesh")
         self.vol_path_label = QLabel("[path not set]")
         self.vol_button.clicked.connect(
             lambda _: self.fetch_path(
@@ -67,15 +68,15 @@ class MSRModelImportPopup(QWidget):
         layout.addWidget(def_widget)
         layout.addWidget(import_button)
 
-    def fetch_path(self, allowed_suffix: set, label: QLabel) -> None:
+    def fetch_path(self, allowed_suffix: Set[str], label: QLabel) -> None:
         """Opens a QFileDialog to find files to import. Writes resulting path in label
+
+        For input errors, it opens: 
+            QMessageBox: If no file is selected.
 
         Args:
             allowed_suffix (set): Defines which files are accepted.
             label (QLabel): The label to write file path in.
-
-        Raises: 
-            QMessageBox: If no file is selected.
         """
         extensions = " ".join(
             [f"*{extension}" for extension in allowed_suffix])
@@ -94,7 +95,7 @@ class MSRModelImportPopup(QWidget):
     def _import(self) -> None:
         """Copies entries into import mesh folder.
 
-        Raises:
+        For input errors, it opens: 
             QMessageBox: If no name is provided.
             QMessageBox: If no mesh is selected.
             QMessageBox: If import fails.
@@ -106,8 +107,8 @@ class MSRModelImportPopup(QWidget):
                 self, "Warning", "Please provide a name for the model.")
             return
 
-        existing_files = os.listdir("lib/imported_models")
-        existing_names = {os.path.splitext(file)[0] for file in existing_files}
+        existing_files = os.listdir(os.getcwd()+"/lib/imported_models")
+        existing_names = [os.path.splitext(file)[0] for file in existing_files]
         if name in existing_names:
             QMessageBox.warning(
                 self, "Warning", "Model with this name already exists.")
@@ -126,8 +127,8 @@ class MSRModelImportPopup(QWidget):
             return
 
         try:
-            self.mesh_loader.load_file(Path(surf_path_str), Mode.SURFACE)
-            self.mesh_loader.load_file(Path(vol_path_str), Mode.VOLUMETRIC)
+            self._mesh_loader.load_file(Path(surf_path_str), Mode.SURFACE)
+            self._mesh_loader.load_file(Path(vol_path_str), Mode.VOLUMETRIC)
 
             dst = f"lib/imported_models/{name}"
             os.makedirs("lib/imported_models", exist_ok=True)
