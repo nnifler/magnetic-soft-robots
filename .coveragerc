@@ -1,0 +1,5 @@
+[run]
+source = .
+omit = 
+    ./shibokensupport/*
+    ./signature_bootstrap.py

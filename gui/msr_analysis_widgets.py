@@ -139,6 +139,13 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         return self.enable_checkbox.isChecked()
 
     def update_results(self, results: List[float], indices: List[int]) -> None:
+        """Updates the content of the results area with the given list of analysis results
+        and the corresponding indices.
+
+        Args:
+            results (List[float]): The list of deformation analysis results
+            indices (List[int]): The lit of indices
+        """
         for i, result in enumerate(results):
             self.result[i].setText(str(result))
 
@@ -151,6 +158,11 @@ class MSRDeformationAnalysisWidget(QGroupBox):
             self.result_indices[i].setText(f"Index: {index}")
 
     def display_input_error(self, message: str) -> None:
+        """Displays the given message as an error in the results section.
+
+        Args:
+            message (str): The message to display
+        """
         error_message = QLabel(message)
         error_message.setAlignment(Qt.AlignCenter)
         error_message.setStyleSheet("color: crimson")

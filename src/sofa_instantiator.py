@@ -64,10 +64,30 @@ def main(analysis_parameter: dict = None):
 
 # DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
 def createScene(root: Sofa.Core.Node, analysis_parameter: dict) -> Sofa.Core.Node:
-    """Creates the scene for the Sofa simulation with the given argument as the root node.
+    """Creates the scene for the Sofa simulation with the given argument as the root node
+    and initializes analyser according to the given analysis_parameters.
 
     Args:
         root (Sofa.Core.Node): The root node.
+        analysis_parameters (dict): A dictionary containing the analysis parameters. 
+         It can contain the following keys:
+         ```
+         {
+         "max_deformation_analysis": bool,
+         "max_deformation_input": List[np.ndarray] | List[int],
+         "max_deformation_widget": MSRDeformationAnalysisWidget,
+         }
+         ```
+         All keys are optional, but if a *_analysis key is set to `True`, 
+         all keys with the same prefix have to be present.
+
+    Raises:
+        ValueError: If max_deformation_analysis is True and 
+         max_deformation_input is not a list or not present.
+        ValueError: If max_deformation_analysis is True and 
+         max_deformation_input is not a list of np.ndarray or int.
+        ValueError: If max_deformation_analysis is True and 
+         max_deformation_widget is None or not present.
 
     Returns:
         Sofa.Core.Node: The root node.
@@ -96,8 +116,8 @@ def createScene(root: Sofa.Core.Node, analysis_parameter: dict) -> Sofa.Core.Nod
     mat_loader.set_poissons_ratio(Config.get_poisson_ratio())
     mat_loader.set_remanence(Config.get_remanence())
 
-    controller = MagneticController(elastic_object, mat_loader)
-    root.addObject(controller)
+    magnetic_controller = MagneticController(elastic_object, mat_loader)
+    root.addObject(magnetic_controller)
     if analysis_parameter is not None:
         analysis_controller = SimulationAnalysisController(
             root, analysis_parameter)

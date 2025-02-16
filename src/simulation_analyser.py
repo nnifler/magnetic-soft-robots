@@ -67,6 +67,7 @@ class SimulationAnalyser:
 
         Raises:
             ValueError: If a given point is not part of the model.
+            ValueError: If points is an empty list.
 
         Returns:
             Tuple[np.ndarray, np.ndarray]: The maximum and minimum deformation 
@@ -83,6 +84,8 @@ class SimulationAnalyser:
         max_deformations = self.maximum_deformation_array
         min_deformations = self.minimum_deformation_array
         if points is not None:
+            if points == []:
+                raise ValueError("List of points must not be empty.")
             for point in points:
                 if point >= len(self.initial_positions):
                     raise ValueError(
@@ -174,14 +177,16 @@ class SimulationAnalysisController(Sofa.Core.Controller):
              all keys with the same prefix have to be present.
 
         Raises:
-            ValueError: If max_deformation_analysis is True and 
+            ValueError: If max_deformation_analysis is True, Selection Mode is not ALL and 
              max_deformation_input is not a list or not present.
-            ValueError: If max_deformation_analysis is True and 
+            ValueError: If max_deformation_analysis is True, Selection Mode is not ALL and 
              max_deformation_input is not a list of np.ndarray or int.
             ValueError: If max_deformation_analysis is True and 
              max_deformation_widget is None or not present.
         """
-        super().__init__(root)
+        # If the arguments for the analysis_parameters are updated,
+        # also remember to update them in the sofa_instantiator!
+        super().__init__(root, name="AnalysisController")
         self.root = root
         self.analyser = SimulationAnalyser(root)
 
@@ -194,22 +199,29 @@ class SimulationAnalysisController(Sofa.Core.Controller):
             "max_deformation_widget", None)
         self.max_deformation_mode = self.max_deformation_widget.get_mode(
         ) if self.max_deformation_widget is not None else None
+
+        # Validate max deformation parameters
+        if self.max_deformation_analysis:
+            if self.max_deformation_widget is None:
+                raise ValueError(
+                    "max_deformation_widget must be set if max_deformation_analysis is True.")
+            if not self.max_deformation_mode == self.max_deformation_widget.SelectionMode.ALL:
+                if not isinstance(self.max_deformation_input, list):
+                    raise ValueError(
+                        "max_deformation_input must be a list of np.ndarray or int.")
+                if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES \
+                        and not all(isinstance(elem, np.ndarray) for elem in self.max_deformation_input):
+                    raise ValueError(
+                        "max_deformation_input must be a list of np.ndarray or int.")
+                if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.INDICES \
+                        and not all(isinstance(elem, int) for elem in self.max_deformation_input):
+                    raise ValueError(
+                        "max_deformation_input must be a list of np.ndarray or int.")
+
         # Convert input to indices if necessary
         if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES:
             self.max_deformation_input = list(
                 map(self.analyser.calculate_nearest_node, self.max_deformation_input))
-
-        # Validate max deformation parameters
-        if self.max_deformation_analysis:
-            if not isinstance(self.max_deformation_input, list):
-                raise ValueError(
-                    "max_deformation_input must be a list of np.ndarray or int.")
-            if not all(isinstance(elem, (np.ndarray, int)) for elem in self.max_deformation_input):
-                raise ValueError(
-                    "max_deformation_input must be a list of np.ndarray or int.")
-            if self.max_deformation_widget is None:
-                raise ValueError(
-                    "max_deformation_widget must be set if max_deformation_analysis is True.")
 
     def onAnimateBeginEvent(self, _):
         """Function that is automatically called at the beginning of the Sofa animation step.

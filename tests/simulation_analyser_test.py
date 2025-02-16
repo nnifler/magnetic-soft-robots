@@ -1,14 +1,16 @@
 import unittest
+import unittest.mock
 
 from pathlib import Path
 import numpy as np
 import Sofa
 
-from src import SimulationAnalyser, MeshLoader, ElasticObject, Config
+from src import SimulationAnalyser, MeshLoader, ElasticObject, Config, SimulationAnalysisController
+from src import sofa_instantiator
 from src.mesh_loader import Mode
 from src.units import YoungsModulus, Density
 
-# largest disatance: 0.125
+from gui import MSRDeformationAnalysisWidget
 
 
 class TestAnalyserUtils(unittest.TestCase):
@@ -48,6 +50,18 @@ class TestAnalyserUtils(unittest.TestCase):
         self.assertEqual(random_index,
                          self.analyser.calculate_nearest_node(random_point))
 
+    def test_nearest_node_exceptional(self):
+        positions = [
+            np.random.rand(1),
+            np.random.rand(2),
+            np.random.rand(6),
+            np.random.rand(3, 2)
+        ]
+
+        for pos in positions:
+            with self.assertRaises(ValueError):
+                self.analyser.calculate_nearest_node(pos)
+
     @classmethod
     def tearDownClass(cls):
         Config.reset()
@@ -82,11 +96,15 @@ class TestDeformation(unittest.TestCase):
         minima = random_deformation.min(axis=0)
         max_min = np.stack((maxima, minima))
 
+        maxima_ind = random_deformation.argmax(axis=0)
+        minima_ind = random_deformation.argmin(axis=0)
+        max_min_ind = np.stack((maxima_ind, minima_ind))
+
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
         self.analyser.update_deformation()
         values, indices = self.analyser.calculate_deformation()
-        np.testing.assert_allclose(
-            values, max_min)
+        np.testing.assert_allclose(values, max_min)
+        np.testing.assert_allclose(indices, max_min_ind)
 
     def test_deformation_selective(self):
         positions = self.eo.mech_obj.position.value
@@ -100,11 +118,17 @@ class TestDeformation(unittest.TestCase):
         minima = deformation_to_analyse.min(axis=0)
         max_min = np.stack((maxima, minima))
 
+        points_arr = np.array(random_points)
+        maxima_ind = points_arr[deformation_to_analyse.argmax(axis=0)]
+        minima_ind = points_arr[deformation_to_analyse.argmin(axis=0)]
+        max_min_ind = np.stack((maxima_ind, minima_ind))
+
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
         self.analyser.update_deformation()
-        values, indices = self.analyser.calculate_deformation(random_points)
-        np.testing.assert_allclose(
-            values, max_min)
+        values, indices = self.analyser.calculate_deformation(
+            random_points.tolist())
+        np.testing.assert_allclose(values, max_min)
+        np.testing.assert_allclose(indices, max_min_ind)
 
     def test_max_deformation_full(self):
         positions = self.eo.mech_obj.position.value
@@ -112,11 +136,13 @@ class TestDeformation(unittest.TestCase):
 
         maxima = random_deformation.max(axis=0)
 
+        maxima_ind = random_deformation.argmax(axis=0)
+
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
         self.analyser.update_deformation()
         values, indices = self.analyser.calculate_maximum_deformation()
-        np.testing.assert_allclose(
-            values, maxima)
+        np.testing.assert_allclose(values, maxima)
+        np.testing.assert_allclose(indices, maxima_ind)
 
     def test_max_deformation_selective(self):
         positions = self.eo.mech_obj.position.value
@@ -128,12 +154,15 @@ class TestDeformation(unittest.TestCase):
 
         maxima = deformation_to_analyse.max(axis=0)
 
+        points_arr = np.array(random_points)
+        maxima_ind = points_arr[deformation_to_analyse.argmax(axis=0)]
+
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
         self.analyser.update_deformation()
         values, indices = self.analyser.calculate_maximum_deformation(
-            random_points)
-        np.testing.assert_allclose(
-            values, maxima)
+            random_points.tolist())
+        np.testing.assert_allclose(values, maxima)
+        np.testing.assert_allclose(indices, maxima_ind)
 
     def test_min_deformation_full(self):
         positions = self.eo.mech_obj.position.value
@@ -141,11 +170,13 @@ class TestDeformation(unittest.TestCase):
 
         minima = random_deformation.min(axis=0)
 
+        minima_ind = random_deformation.argmin(axis=0)
+
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
         self.analyser.update_deformation()
         values, indices = self.analyser.calculate_minimum_deformation()
-        np.testing.assert_allclose(
-            values, minima)
+        np.testing.assert_allclose(values, minima)
+        np.testing.assert_allclose(indices, minima_ind)
 
     def test_min_deformation_selective(self):
         positions = self.eo.mech_obj.position.value
@@ -157,19 +188,257 @@ class TestDeformation(unittest.TestCase):
 
         minima = deformation_to_analyse.min(axis=0)
 
+        points_arr = np.array(random_points)
+        minima_ind = points_arr[deformation_to_analyse.argmin(axis=0)]
+
         self.eo.mech_obj.position = (positions + random_deformation).tolist()
         self.analyser.update_deformation()
         values, indices = self.analyser.calculate_minimum_deformation(
-            random_points)
-        np.testing.assert_allclose(
-            values, minima)
+            random_points.tolist())
+        np.testing.assert_allclose(values, minima)
+        np.testing.assert_allclose(indices, minima_ind)
 
-    # def tearDown(self):
-    #    self.eo.mech_obj.position = self.initial_positions
+    def test_deformation_multiple_changes(self):
+        positions = self.eo.mech_obj.position.value
+        random_deformations = (np.random.rand(4, len(positions), 3) - 0.5) * 10
+
+        deformation_steps = np.array([
+            random_deformations[0],
+            random_deformations[0:2].sum(axis=0),
+            random_deformations[0:3].sum(axis=0),
+            random_deformations.sum(axis=0)
+        ])
+        max_deformations = deformation_steps.max(axis=0)
+        min_deformations = deformation_steps.min(axis=0)
+
+        maxima = max_deformations.max(axis=0)
+        minima = min_deformations.min(axis=0)
+        max_min = np.stack((maxima, minima))
+
+        maxima_ind = max_deformations.argmax(axis=0)
+        minima_ind = min_deformations.argmin(axis=0)
+        max_min_ind = np.stack((maxima_ind, minima_ind))
+
+        for random_deformation in random_deformations:
+            self.eo.mech_obj.position = (
+                positions + random_deformation).tolist()
+            positions = self.eo.mech_obj.position.value
+            self.analyser.update_deformation()
+
+        values, indices = self.analyser.calculate_deformation()
+        np.testing.assert_allclose(values, max_min)
+        np.testing.assert_allclose(indices, max_min_ind)
+
+    def test_deformation_exceptional(self):
+        positions = self.eo.mech_obj.position.value
+
+        points = list(range(len(positions)))
+        random_points = np.random.choice(points, 10, replace=False)
+        wrong_point = np.random.randint(len(positions), len(positions) * 2)
+        random_points = np.append(random_points, wrong_point)
+        np.random.shuffle(random_points)
+
+        # Test empty list
+        with self.assertRaises(ValueError):
+            self.analyser.calculate_deformation([])
+
+        # Test point not in model
+        with self.assertRaises(ValueError):
+            self.analyser.calculate_deformation(random_points.tolist())
 
     @classmethod
     def tearDownClass(cls):
         Config.reset()
+
+
+class TestAnalysisController(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        Config.set_test_env()
+        Config.set_model('beam', 1)
+
+    def test_init_deform_indices(self):
+        selection_mode = MSRDeformationAnalysisWidget.SelectionMode.INDICES
+        widget_args = {
+            'get_mode.return_value': selection_mode,
+            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+        }
+        widget = unittest.mock.Mock(**widget_args)
+
+        deform_input = np.random.randint(100, size=(25,)).tolist()
+
+        parameters = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": deform_input,
+            "max_deformation_widget": widget
+        }
+
+        root = Sofa.Core.Node("root")
+        sofa_instantiator.createScene(root, parameters)
+
+        controller: SimulationAnalysisController = root.getObject(
+            'AnalysisController')
+
+        self.assertTrue(controller.max_deformation_analysis)
+        self.assertListEqual(controller.max_deformation_input, deform_input)
+        self.assertEqual(controller.max_deformation_widget, widget)
+        self.assertEqual(controller.max_deformation_mode, selection_mode)
+
+    def test_init_deform_coords(self):
+        selection_mode = MSRDeformationAnalysisWidget.SelectionMode.COORDINATES
+        widget_args = {
+            'get_mode.return_value': selection_mode,
+            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+        }
+        widget = unittest.mock.Mock(**widget_args)
+
+        deform_input = [np.random.randint(10, size=(3,)) for _ in range(25)]
+
+        parameters = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": deform_input,
+            "max_deformation_widget": widget
+        }
+
+        root = Sofa.Core.Node("root")
+        sofa_instantiator.createScene(root, parameters)
+        analyser = SimulationAnalyser(root)
+
+        controller: SimulationAnalysisController = root.getObject(
+            'AnalysisController')
+
+        self.assertTrue(controller.max_deformation_analysis)
+        self.assertEqual(controller.max_deformation_widget, widget)
+        self.assertEqual(controller.max_deformation_mode, selection_mode)
+
+        ref_indices = [analyser.calculate_nearest_node(
+            coord) for coord in deform_input]
+
+        self.assertListEqual(controller.max_deformation_input, ref_indices)
+
+    def test_init_exceptional(self):
+        widget_args = {
+            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+        }
+        widget = unittest.mock.Mock(**widget_args)
+
+        wrong_input = [np.array([1, 2, 3]), 3, np.zeros((5, 4))]
+        correct_input = [np.array([1, 2, 3])]
+
+        wrong_parameters_1 = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": None,
+            "max_deformation_widget": widget
+        }
+
+        wrong_parameters_2 = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": wrong_input,
+            "max_deformation_widget": widget
+        }
+
+        wrong_parameters_3 = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": correct_input,
+            "max_deformation_widget": None
+        }
+
+        with self.assertRaises(ValueError):
+            root = Sofa.Core.Node("root")
+            sofa_instantiator.createScene(root, wrong_parameters_1)
+
+        with self.assertRaises(ValueError):
+            root = Sofa.Core.Node("root")
+            sofa_instantiator.createScene(root, wrong_parameters_2)
+
+        with self.assertRaises(ValueError):
+            root = Sofa.Core.Node("root")
+            sofa_instantiator.createScene(root, wrong_parameters_3)
+
+    def test_simulation_behaviour(self):
+        widget_args = {
+            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+        }
+        widget = unittest.mock.Mock(**widget_args)
+
+        deform_input = np.random.randint(100, size=(25,)).tolist()
+
+        parameters = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": deform_input,
+            "max_deformation_widget": widget
+        }
+
+        root = Sofa.Core.Node("root")
+        sofa_instantiator.createScene(root, parameters)
+        analyser = SimulationAnalyser(root)
+
+        Sofa.Simulation.init(root)
+        Sofa.Simulation.animate(root, root.dt.value)
+        analyser.update_deformation()
+        for _ in range(10):
+            Sofa.Simulation.animate(root, root.dt.value)
+            ref_values, ref_indices = analyser.calculate_deformation(
+                deform_input)
+            args = widget.update_results.call_args
+            values = np.array(args[0][0])
+            indices = np.array(args[0][1])
+
+            ref_maxima = np.absolute(ref_values).argmax(axis=0)
+            ref_values = np.array([
+                ref_values[ref_maxima[0], 0],
+                ref_values[ref_maxima[1], 1],
+                ref_values[ref_maxima[2], 2],
+            ])
+            ref_indices = np.array([
+                ref_indices[ref_maxima[0], 0],
+                ref_indices[ref_maxima[1], 1],
+                ref_indices[ref_maxima[2], 2],
+            ])
+
+            np.testing.assert_allclose(values, ref_values, atol=1e-6)
+            np.testing.assert_allclose(indices, ref_indices)
+
+            # Update after comparing controller output, because the controller
+            # is apparently called before the actual simulation step
+            analyser.update_deformation()
+
+    def test_simulation_error(self):
+        widget_args = {
+            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+        }
+        widget = unittest.mock.Mock(**widget_args)
+
+        deform_input = [int(1e10)]
+
+        parameters = {
+            "max_deformation_analysis": True,
+            "max_deformation_input": deform_input,
+            "max_deformation_widget": widget
+        }
+
+        root = Sofa.Core.Node("root")
+        sofa_instantiator.createScene(root, parameters)
+
+        Sofa.Simulation.init(root)
+        Sofa.Simulation.animate(root, root.dt.value)
+
+        widget.display_input_error.assert_called_once()
+        widget.update_results.assert_not_called()
 
 
 def suite() -> unittest.TestSuite:
@@ -179,6 +448,7 @@ def suite() -> unittest.TestSuite:
     tests = [
         TestAnalyserUtils,
         TestDeformation,
+        TestAnalysisController,
     ]
 
     # Load tests
