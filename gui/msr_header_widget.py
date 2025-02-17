@@ -3,12 +3,11 @@
 from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout,     QLabel, QPushButton, QMenu, QListWidget, QMessageBox,)
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QMenu, QListWidget, QMessageBox,)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
 from src import Config
 from gui import MSRModelImportPopup
-# from src.mesh_loader import Mode as MeshMode, endings as mesh_endings # used for commented code
 
 
 class MSRHeaderWidget(QWidget):
@@ -55,12 +54,6 @@ class MSRHeaderWidget(QWidget):
             self._popup_import.show)
         context_menu.addAction(import_action)
 
-        export_action = QAction("Export", self)
-        export_action.setShortcut(QKeySequence("Ctrl+E"))
-        export_action.triggered.connect(
-            lambda _: self.export_library())
-        # context_menu.addAction(export_action)
-
         context_menu.exec(self._models_button.mapToGlobal(
             self._models_button.rect().bottomLeft()))
 
@@ -86,7 +79,6 @@ class MSRHeaderWidget(QWidget):
             lambda item:
             self.update_loaded_model(item.text(), False, [custom_list]))
 
-        # TODONE: change to custom model path
         self.load_models(custom_list, lib_path / "imported_models")
         custom_list.itemClicked.connect(
             lambda item:
@@ -94,8 +86,6 @@ class MSRHeaderWidget(QWidget):
 
         close_button = QPushButton("Close")
         close_button.clicked.connect(self._popup_open.close)
-        # TODO Implement import_custom_model or use super? (GUI refactoring issue)
-        # import_button.clicked.connect(self.import_custom_model)
 
         layout.addWidget(default_label)
         layout.addWidget(default_list)

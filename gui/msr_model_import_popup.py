@@ -107,14 +107,16 @@ class MSRModelImportPopup(QWidget):
                 self, "Warning", "Please provide a name for the model.")
             return
 
-        existing_files = os.listdir(os.getcwd()+"/lib/imported_models")
+        name = '_'.join(name.strip().split(sep=" "))
+
+        existing_files = os.listdir(os.path.dirname(
+            __file__)+"/../lib/imported_models")
         existing_names = [os.path.splitext(file)[0] for file in existing_files]
         if name in existing_names:
             QMessageBox.warning(
                 self, "Warning", "Model with this name already exists.")
             return
 
-        name = '_'.join(name.strip().split(sep=" "))
         vol_path_str = self.vol_path_label.text()
         surf_path_str = self.surf_path_label.text()
 
@@ -127,17 +129,19 @@ class MSRModelImportPopup(QWidget):
             return
 
         try:
+            # use mesh loader for file integrity checks
             self._mesh_loader.load_file(Path(surf_path_str), Mode.SURFACE)
             self._mesh_loader.load_file(Path(vol_path_str), Mode.VOLUMETRIC)
 
-            dst = f"lib/imported_models/{name}"
-            os.makedirs("lib/imported_models", exist_ok=True)
-            copy2(vol_path_str, dst+'.msh')  # +'_v'+vol_path.suffix)
-            copy2(surf_path_str, dst+'.stl')  # +'_s'+surf_path.suffix)
+            dst_dir = os.path.dirname(__file__)+"/../lib/imported_models/"
+            os.makedirs(dst_dir, exist_ok=True)
+
+            copy2(vol_path_str, str(dst_dir)+f'{name}.msh')
+            copy2(surf_path_str, str(dst_dir)+f'{name}.stl')
 
             QMessageBox.information(
                 self, "Success", "Model imported successfully.")
             self.close()
 
-        except Exception as e:
+        except (FileNotFoundError, ValueError) as e:
             QMessageBox.warning(self, "Error", f"Failed to import model {e}")

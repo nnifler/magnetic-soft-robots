@@ -124,7 +124,7 @@ class MeshLoader():
         """
         return "@"+self._name+"_"+mode.name.lower()
 
-    @classmethod
-    def get_supported_meshes(cls, mode: Mode) -> set:
+    @staticmethod
+    def get_supported_meshes(mode: Mode) -> set:
         """Returns supported mesh formats for the given mesh type."""
         return set(endings[mode.value])
