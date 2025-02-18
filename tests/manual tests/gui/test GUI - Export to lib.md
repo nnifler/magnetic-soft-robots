@@ -21,17 +21,17 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     2. Input random text only from whitespace and punctuation characters in the Material Name field.
     3. Click the save button.
     4. Select a random on your keyboard typable material from the Select Material field.
-    5. Copy the name to the Material Name field.
+    5. Copy the text of your selection to the Material Name field.
     6. Click the save button.
 5. Test Material Name functionality
     1. Input random accepted values in each text field except the name field in the material configuration widget.
-    2. Input a unique valid text in the Material Name text field.
+    2. Input a unique text, that is not part of the Select Materials field yet, in the Material Name text field.
     3. Click the save button.
 6. Select Material
     1. Look at the Select Material dropdown
     2. Look at the values
 7. Test further exceptional behavior
-    1. Copy the name to the Material Name field.
+    1. Copy the text out of the dropdown selection to the Material Name field.
     2. Input random accepted values in each text field except the name field in the material configuration widget.
     3. Click the Save button.
     4. In the error box click the Abort button.
@@ -47,17 +47,20 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 8. Restart Behavior
     1. Close the Soft Robotics Simulation window.
     2. Redo 1-2
-    3. Redo 6
+    3. Select the material you defined in 5.2 in the Select Material selection.
+    4. Look at the values.
 
 ## Expected Result
 
 1. 3 There is an empty field with the placeholder text "Material Name".
 2. 3 There is a button with the text "Save".
-3. 4.1, 4.3 An error box appears with the text 'Please enter a metrial name'.
+3. 4.1, 4.3 An error box appears with the text 'Please enter a material name'.
 4. 4.6 An error box appears with the text 'Material name already exists in default materials.'
 5. 5.3 An information box titled 'Material saved' appears with the text 'Material saved sucessfully.'
-6. 6.1 The item with the name you speicfied is selected in the dropdown.
-7. 6.2 The values you specified are equal to the values that are now shown.
+6. 6.1 The item with the name you specified is selected in the dropdown.
+7. 6.2 The values you specified in 5.1 are equal to the values that are now shown.
 8. 7.3 An error box titled 'Replace Material?' with the text 'Material name already exists in custom materials.' and two buttons 'Save' and 'Abort' appears.
 9. 7.7 The values you specified in 5.1 are equal to the values that are now shown.
 10. 7.13 The values you specified in 7.2 are equal to the values that are now shown.
+11. 8.3 There is a material with the name you specified in step 5.2 in the Select Material dropdown.
+12. 8.4 The values you specified in 7.8 are equal to the values that are now shown.
