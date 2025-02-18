@@ -5,6 +5,8 @@ import numpy as np
 
 import Sofa
 
+from src import AnalysisParameters
+
 
 class SimulationAnalyser:
     """This class is used to analyse the simulation results."""
@@ -29,7 +31,7 @@ class SimulationAnalyser:
 
     def calculate_nearest_node(self, point: np.ndarray) -> int:
         """Calculates the nearest node in the model to the given point.
-        This function uses the state of the model when the Analyser was initialized.
+        This function uses the state of the model when the analyser was initialized.
 
         Args:
             point (np.ndarray): The point to calculate the nearest node for.
@@ -158,71 +160,34 @@ class SimulationAnalyser:
 class SimulationAnalysisController(Sofa.Core.Controller):
     """This class is used to perform analysis during the simulation"""
 
-    def __init__(self, root: Sofa.Core.Node, analysis_parameters: dict) -> None:
+    def __init__(self, root: Sofa.Core.Node, analysis_parameters: AnalysisParameters) -> None:
         """Initializes the SimulationAnalysisController 
         with the given root node and analysis parameters.
 
         Args:
             root (Sofa.Core.Node): The root node of the simulation.
-            analysis_parameters (dict): A dictionary containing the analysis parameters. 
-             It can contain the following keys:
-             ```
-             {
-                "max_deformation_analysis": bool,
-                "max_deformation_input": List[np.ndarray] | List[int],
-                "max_deformation_widget": MSRDeformationAnalysisWidget,
-             }
-             ```
-             All keys are optional, but if a *_analysis key is set to `True`, 
-             all keys with the same prefix have to be present.
-
-        Raises:
-            ValueError: If max_deformation_analysis is True, Selection Mode is not ALL and 
-             max_deformation_input is not a list or not present.
-            ValueError: If max_deformation_analysis is True, Selection Mode is not ALL and 
-             max_deformation_input is not a list of np.ndarray or int.
-            ValueError: If max_deformation_analysis is True and 
-             max_deformation_widget is None or not present.
+            analysis_parameters (AnalysisParameters): The analysis parameters.
         """
-        # If the arguments for the analysis_parameters are updated,
-        # also remember to update them in the sofa_instantiator!
         super().__init__(root, name="AnalysisController")
         self.root = root
         self.analyser = SimulationAnalyser(root)
 
         # Max deformation
-        self.max_deformation_analysis = analysis_parameters.get(
-            "max_deformation_analysis", False)
-        self.max_deformation_input = analysis_parameters.get(
-            "max_deformation_input", None)
-        self.max_deformation_widget = analysis_parameters.get(
-            "max_deformation_widget", None)
-        self.max_deformation_mode = self.max_deformation_widget.get_mode(
-        ) if self.max_deformation_widget is not None else None
+        self.max_deformation_analysis = analysis_parameters.max_deformation_analysis
+        self.max_deformation_input = analysis_parameters.max_deformation_input
+        self.max_deformation_widget = analysis_parameters.max_deformation_widget
+        if self.max_deformation_widget is not None:
+            self.max_deformation_mode = self.max_deformation_widget.get_mode()
+            # Convert input to indices if necessary
+            if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES:
+                self.max_deformation_input = list(
+                    map(self.analyser.calculate_nearest_node, self.max_deformation_input))
+        else:
+            # Not tested right now, should be tested as soon as
+            # the controller has to handle multiple analysis types
+            self.max_deformation_mode = None
 
-        # Validate max deformation parameters
-        if self.max_deformation_analysis:
-            if self.max_deformation_widget is None:
-                raise ValueError(
-                    "max_deformation_widget must be set if max_deformation_analysis is True.")
-            if not self.max_deformation_mode == self.max_deformation_widget.SelectionMode.ALL:
-                if not isinstance(self.max_deformation_input, list):
-                    raise ValueError(
-                        "max_deformation_input must be a list of np.ndarray or int.")
-                if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES \
-                        and not all(isinstance(elem, np.ndarray) for elem in self.max_deformation_input):
-                    raise ValueError(
-                        "max_deformation_input must be a list of np.ndarray or int.")
-                if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.INDICES \
-                        and not all(isinstance(elem, int) for elem in self.max_deformation_input):
-                    raise ValueError(
-                        "max_deformation_input must be a list of np.ndarray or int.")
-
-        # Convert input to indices if necessary
-        if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES:
-            self.max_deformation_input = list(
-                map(self.analyser.calculate_nearest_node, self.max_deformation_input))
-
+    # Inbuilt function, therfore not in snake case
     def onAnimateBeginEvent(self, _):
         """Function that is automatically called at the beginning of the Sofa animation step.
         """

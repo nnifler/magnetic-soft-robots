@@ -75,7 +75,7 @@ class ElasticObject():
         model_name = Config.get_name()
         if model_name == "beam":
             eo_node.addObject('BoxROI', name='constraint_roi',
-                              box='-0.25 0 0 0.25 2.5 2.5',
+                              box='-0.005 0 0 0.005 0.05 0.05',
                               drawBoxes=1 if visualize_constraints else 0)
         elif model_name == "gripper_3_arm" or model_name == "gripper_4_arm":
             eo_node.addObject('BoxROI', name='constraint_roi',

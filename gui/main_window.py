@@ -14,7 +14,8 @@ from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import Tesla
-from src import Config, sofa_instantiator
+from src import Config, AnalysisParameters
+from src import sofa_instantiator
 
 from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
 
@@ -113,7 +114,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("beam", 1)
+        Config.set_model("beam", 0.02)
 
     def update_field_strength_label(self) -> None:
         """Updates the field strength output based 
@@ -162,7 +163,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(False)
+        Config.set_show_force(True)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
@@ -177,13 +178,22 @@ class MainWindow(QMainWindow):
 
         deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
 
-        sofa_instantiator.main(analysis_parameter={
-            "max_deformation_analysis": deformation_widget_enabled,
-            "max_deformation_input": deformation_input_list,
-            "max_deformation_widget": self.deformation_widget,
-        })
+        analysis_parameters = AnalysisParameters()
+        if deformation_widget_enabled:
+            analysis_parameters.set_max_deformation_parameters(
+                self.deformation_widget, deformation_input_list)
+
+        sofa_instantiator.main(analysis_parameters)
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
+        """Parses the information from the deformation widget 
+        and returns whether it is enabled and the input list.
+
+        Returns:
+            Tuple[bool, List[int | np.ndarray]]: A tuple containing
+            - A boolean indicating whether the deformation widget is enabled.
+            - A list containing the indices or coordinates, depending on the selection mode.
+        """
         input_list = []
         deformation_widget_enabled = False
         if self.deformation_widget.is_enabled():

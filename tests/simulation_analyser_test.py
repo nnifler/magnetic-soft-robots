@@ -5,7 +5,8 @@ from pathlib import Path
 import numpy as np
 import Sofa
 
-from src import SimulationAnalyser, MeshLoader, ElasticObject, Config, SimulationAnalysisController
+from src import (SimulationAnalyser, MeshLoader, ElasticObject,
+                 Config, SimulationAnalysisController, AnalysisParameters)
 from src import sofa_instantiator
 from src.mesh_loader import Mode
 from src.units import YoungsModulus, Density
@@ -270,11 +271,8 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
-        parameters = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": deform_input,
-            "max_deformation_widget": widget
-        }
+        parameters = AnalysisParameters()
+        parameters.set_max_deformation_parameters(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -299,11 +297,8 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = [np.random.randint(10, size=(3,)) for _ in range(25)]
 
-        parameters = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": deform_input,
-            "max_deformation_widget": widget
-        }
+        parameters = AnalysisParameters()
+        parameters.set_max_deformation_parameters(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -321,49 +316,7 @@ class TestAnalysisController(unittest.TestCase):
 
         self.assertListEqual(controller.max_deformation_input, ref_indices)
 
-    def test_init_exceptional(self):
-        widget_args = {
-            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-        }
-        widget = unittest.mock.Mock(**widget_args)
-
-        wrong_input = [np.array([1, 2, 3]), 3, np.zeros((5, 4))]
-        correct_input = [np.array([1, 2, 3])]
-
-        wrong_parameters_1 = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": None,
-            "max_deformation_widget": widget
-        }
-
-        wrong_parameters_2 = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": wrong_input,
-            "max_deformation_widget": widget
-        }
-
-        wrong_parameters_3 = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": correct_input,
-            "max_deformation_widget": None
-        }
-
-        with self.assertRaises(ValueError):
-            root = Sofa.Core.Node("root")
-            sofa_instantiator.createScene(root, wrong_parameters_1)
-
-        with self.assertRaises(ValueError):
-            root = Sofa.Core.Node("root")
-            sofa_instantiator.createScene(root, wrong_parameters_2)
-
-        with self.assertRaises(ValueError):
-            root = Sofa.Core.Node("root")
-            sofa_instantiator.createScene(root, wrong_parameters_3)
-
-    def test_simulation_behaviour(self):
+    def test_simulation_behaviour_indices(self):
         widget_args = {
             'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
             'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
@@ -374,11 +327,8 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
-        parameters = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": deform_input,
-            "max_deformation_widget": widget
-        }
+        parameters = AnalysisParameters()
+        parameters.set_max_deformation_parameters(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -414,6 +364,51 @@ class TestAnalysisController(unittest.TestCase):
             # is apparently called before the actual simulation step
             analyser.update_deformation()
 
+    def test_simulation_behaviour_all(self):
+        widget_args = {
+            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
+            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
+            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
+        }
+        widget = unittest.mock.Mock(**widget_args)
+
+        parameters = AnalysisParameters()
+        parameters.set_max_deformation_parameters(widget, None)
+
+        root = Sofa.Core.Node("root")
+        sofa_instantiator.createScene(root, parameters)
+        analyser = SimulationAnalyser(root)
+
+        Sofa.Simulation.init(root)
+        Sofa.Simulation.animate(root, root.dt.value)
+        analyser.update_deformation()
+        for _ in range(10):
+            Sofa.Simulation.animate(root, root.dt.value)
+            ref_values, ref_indices = analyser.calculate_deformation()
+            args = widget.update_results.call_args
+            values = np.array(args[0][0])
+            indices = np.array(args[0][1])
+
+            ref_maxima = np.absolute(ref_values).argmax(axis=0)
+            ref_values = np.array([
+                ref_values[ref_maxima[0], 0],
+                ref_values[ref_maxima[1], 1],
+                ref_values[ref_maxima[2], 2],
+            ])
+            ref_indices = np.array([
+                ref_indices[ref_maxima[0], 0],
+                ref_indices[ref_maxima[1], 1],
+                ref_indices[ref_maxima[2], 2],
+            ])
+
+            np.testing.assert_allclose(values, ref_values, atol=1e-6)
+            np.testing.assert_allclose(indices, ref_indices)
+
+            # Update after comparing controller output, because the controller
+            # is apparently called before the actual simulation step
+            analyser.update_deformation()
+
     def test_simulation_error(self):
         widget_args = {
             'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
@@ -425,11 +420,8 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = [int(1e10)]
 
-        parameters = {
-            "max_deformation_analysis": True,
-            "max_deformation_input": deform_input,
-            "max_deformation_widget": widget
-        }
+        parameters = AnalysisParameters()
+        parameters.set_max_deformation_parameters(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)

@@ -20,6 +20,7 @@ suite.addTests([
     simple_butterfly_test_suite(),
     butterfly_test_suite(),
     simulation_analyser_test_suite(),
+    analysis_parameters_test_suite(),
 ])
 
 runner = unittest.TextTestRunner()

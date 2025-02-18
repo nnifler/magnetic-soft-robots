@@ -5,12 +5,18 @@ from pathlib import Path
 import Sofa.Gui
 
 from src import (Config, SceneBuilder, ElasticObject, MagneticController,
-                 MaterialLoader, MeshLoader, SimulationAnalysisController)
+                 MaterialLoader, MeshLoader, SimulationAnalysisController, AnalysisParameters)
 from src.mesh_loader import Mode
 
 
-def main(analysis_parameter: dict = None):
-    """Main function that instantiates the Sofa simulation.
+def main(analysis_parameter: AnalysisParameters = AnalysisParameters()) -> None:
+    """Main function that instantiates the Sofa simulation with the given analysis parameters.
+    If no analysis parameters are given (i.e `analysis_parameters == None`), 
+    the simulation will run without any analysis.
+
+    Args:
+        analysis_parameter (AnalysisParameters, optional): The analysis parameters. 
+            Defaults to a AnalysisParameters object with every analysis disabled.
     """
     debug = False
     if debug:
@@ -63,34 +69,16 @@ def main(analysis_parameter: dict = None):
 
 
 # DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
-def createScene(root: Sofa.Core.Node, analysis_parameter: dict) -> Sofa.Core.Node:
+def createScene(root: Sofa.Core.Node, analysis_parameter: AnalysisParameters) -> Sofa.Core.Node:
     """Creates the scene for the Sofa simulation with the given argument as the root node
     and initializes analyser according to the given analysis_parameters.
 
     Args:
-        root (Sofa.Core.Node): The root node.
-        analysis_parameters (dict): A dictionary containing the analysis parameters. 
-         It can contain the following keys:
-         ```
-         {
-         "max_deformation_analysis": bool,
-         "max_deformation_input": List[np.ndarray] | List[int],
-         "max_deformation_widget": MSRDeformationAnalysisWidget,
-         }
-         ```
-         All keys are optional, but if a *_analysis key is set to `True`, 
-         all keys with the same prefix have to be present.
-
-    Raises:
-        ValueError: If max_deformation_analysis is True and 
-         max_deformation_input is not a list or not present.
-        ValueError: If max_deformation_analysis is True and 
-         max_deformation_input is not a list of np.ndarray or int.
-        ValueError: If max_deformation_analysis is True and 
-         max_deformation_widget is None or not present.
+        root (Sofa.Core.Node): The root node of the simulation.
+        analysis_parameter (AnalysisParameters): The analysis parameters.
 
     Returns:
-        Sofa.Core.Node: The root node.
+        Sofa.Core.Node: The root node of the simulation.
     """
     SceneBuilder(root)
 
