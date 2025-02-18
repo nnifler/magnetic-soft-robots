@@ -222,6 +222,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
+        Config.set_stress_kwargs(True)
         Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
