@@ -60,7 +60,7 @@ class MSRHeaderWidget(QWidget):
     def _open_models_popup(self) -> None:
         """Opens the model selection popup menu."""
 
-        self._popup_open = QWidget()
+        self._popup_open = QWidget()  # garbage collected without self
         self._popup_open.setWindowTitle("Models")
         self._popup_open.resize(600, 400)
 
