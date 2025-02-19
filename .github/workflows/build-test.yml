@@ -37,11 +37,11 @@ jobs:
         python3.10 -m pip install coverage pybind11==2.9.1
         python3.10 -m pip install -r requirements.txt
     
-    - name: Test with coverage and analyze coverage
+    - name: Test with coverage and analyze coverage (cut -> export QT_QPA_PLATFORM=xcb)
       run: |
         export SOFA_ROOT=$PWD/sofa_install
         export PYTHONPATH=$PWD/sofa_install/plugins/SofaPython3/lib/python3/site-packages:$PYTHONPATH
-        export QT_QPA_PLATFORM=xcb
+        
         export QT_DEBUG_PLUGINS=1
         echo $SOFA_ROOT
         echo $PYTHONPATH
