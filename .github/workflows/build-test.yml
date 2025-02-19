@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
@@ -38,10 +39,6 @@ jobs:
         python3.10 -m pip install coverage pybind11==2.9.1
         python3.10 -m pip install -r requirements.txt
     
-
-    - name: Only now checkout because it said reinstall...
-      uses: actions/checkout@v4
-
     - name: Test with coverage and analyze coverage
       run: |
         export SOFA_ROOT=$PWD/sofa_install
