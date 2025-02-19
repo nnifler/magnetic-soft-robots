@@ -122,6 +122,9 @@ class MSRMaterialGroup(QGroupBox):
         material_label = QLabel("Select Material:")
         self._material_combo_box = QComboBox()
 
+        self._material_custom_label = QLabel("Default")
+        self._material_custom_label.setDisabled(True)  # color change
+
         self.material_data: list = []
         # fills self.material_data
         self.load_materials_from_json()
@@ -190,6 +193,7 @@ class MSRMaterialGroup(QGroupBox):
 
         self._layout.addWidget(material_label, 0, 0)
         self._layout.addWidget(self._material_combo_box, 0, 1)
+        self._layout.addWidget(self._material_custom_label, 0, 2)
 
         self._layout.addWidget(behavior_label, 1, 0)
         self._layout.addWidget(self.behavior_combo_box, 1, 1)
@@ -294,18 +298,45 @@ class MSRMaterialGroup(QGroupBox):
             QMessageBox.warning(
                 self, "Error", f"Error decoding JSON file:\n{e}")
 
+    def _is_material_selection_custom(self) -> bool:
+        """Checks if the selected material is a custom material.
+
+        Returns:
+            Optional[bool]: True if the selected material is a custom material,
+                            False if it is a default material.
+
+        Raises:
+            ValueError: If the material index is out of bounds.
+        """
+        selection_index = self._material_combo_box.currentIndex()
+        max_default_index = len(self.material_data) - 1
+        max_custom_index = len(self._custom_material_data) + max_default_index
+
+        if 0 <= selection_index <= max_default_index:
+            return False
+        if 0 <= selection_index <= max_custom_index:
+            return True
+        raise ValueError("Material index out of bounds.")
+
     def update_material_parameters(self) -> None:
         """Updates the material parameters with the data from the opened JSON file.
         """
         current_material_index = self._material_combo_box.currentIndex()
         material = None
-        if 0 <= current_material_index < len(self.material_data):
+        if self._material_combo_box.count() == 0:
+            return  # box cleared right now
+        try:
+            custom = self._is_material_selection_custom()
+        except ValueError:
+            QMessageBox.warning(self, "Error", "Invalid material selection.")
+            return
+        if not custom:
             material = self.material_data[current_material_index]
-        elif 0 <= current_material_index < len(self._custom_material_data) + len(self.material_data):
+            self._material_custom_label.setText("Default")
+        else:
             material = self._custom_material_data[
                 current_material_index - len(self.material_data)]
-        else:
-            return
+            self._material_custom_label.setText("Custom")
 
         # Dichte mit Umrechnung aktualisieren
         density_param = self.parameters["density"]
