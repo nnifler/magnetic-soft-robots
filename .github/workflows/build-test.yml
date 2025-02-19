@@ -28,8 +28,7 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        sudo apt install pybind11-dev libegl1 libopengl0 
-        sudo apt install libxcb-xinerama0 libxcb-cursor0 libxcb-xkb libxcb-image libxcb-keysyms libxcb-render_util libxkbcommon-X11 libxcb-icccm4
+        sudo apt install pybind11-dev libegl1 libopengl0 libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0 libxcb-icccm4
         python3.10 -m pip install --upgrade pip
         python3.10 -m pip install coverage pybind11==2.9.1
         python3.10 -m pip install -r requirements.txt
