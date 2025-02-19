@@ -29,6 +29,8 @@ jobs:
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v4
+      with:
+        version: "6.8.2"
 
     - name: Install dependencies (not libegl1 libopengl0 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0)
       run: |
