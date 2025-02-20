@@ -6,3 +6,4 @@ from .scene_builder import SceneBuilder
 from .elastic_object import ElasticObject
 from .material_loader import MaterialLoader
 from .magnetic_controller import MagneticController
+from .json_material_manager import JsonMaterialManager

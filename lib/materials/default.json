@@ -11,14 +11,14 @@
         "density": 7500,
         "youngs_modulus": 16000000000.0,
         "poissons_ratio": 0.3,
-        "remanence": 1.5079644737231008
+        "remanence": 1.507964473524
     },
     {
         "name": "Magnetic Silicone Composite",
         "density": 1800,
         "youngs_modulus": 5000000.0,
         "poissons_ratio": 0.45,
-        "remanence": 0.031415926535897934
+        "remanence": 0.03141592653175
     },
     {
         "name": "3D Systems Accura\u00ae HPC A high-speed, high-rigidity engineered nanocomposite",
@@ -47,7 +47,7 @@
     {
         "name": "CRP Technology Windform\u00ae FR2 Glass Filled Flame Retardant Composite Polyamide for Additive Manufacturing",
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=ea21177924cb47da91c5e58252bb3598",
-        "youngs_modulus": 4020000000.0000005,
+        "youngs_modulus": 4020000000.0,
         "density": 1350.0,
         "poissons_ratio": 0.335,
         "remanence": 0.0
@@ -87,7 +87,7 @@
     {
         "name": "DSM Somos\u00ae PerFORM Reflect Stereolithography Polymer, UV Postcure",
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=a314a2907bed4bb892e3d53230111d61",
-        "youngs_modulus": 9184999999.999998,
+        "youngs_modulus": 9184999999.0,
         "density": 1610.0,
         "poissons_ratio": 0.318,
         "remanence": 0.0
@@ -111,7 +111,7 @@
     {
         "name": "DSM Somos\u00ae Taurus Stereolithography (SLA) Polymer, UV Postcure",
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=1dd9929f3b664fc9a24dcc28faa90bd8",
-        "youngs_modulus": 2179999999.9999995,
+        "youngs_modulus": 2179999999.0,
         "density": 1130.0,
         "poissons_ratio": 0.45,
         "remanence": 0.0
@@ -119,7 +119,7 @@
     {
         "name": "DSM Somos\u00ae Taurus Stereolithography (SLA) Polymer, UV + Thermal Postcure",
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=8170a5219320412d99bf6de6dc63baf0",
-        "youngs_modulus": 1964999999.9999998,
+        "youngs_modulus": 1964999999.0,
         "density": 1130.0,
         "poissons_ratio": 0.44,
         "remanence": 0.0
@@ -207,7 +207,7 @@
     {
         "name": "DSM Somos\u00ae 9420 Epoxy Resin for Stereolithography",
         "url": "https://www.matweb.com/search/DataSheet.aspx?MatGUID=827f4826b8aa44b496ab8e830d8046f0",
-        "youngs_modulus": 766999999.9999999,
+        "youngs_modulus": 766999999.0,
         "density": 1130.0,
         "poissons_ratio": 0.43,
         "remanence": 0.0
