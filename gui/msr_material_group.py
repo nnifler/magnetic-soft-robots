@@ -302,7 +302,7 @@ class MSRMaterialGroup(QGroupBox):
         """Checks if the selected material is a custom material.
 
         Returns:
-            Optional[bool]: True if the selected material is a custom material,
+            bool: True if the selected material is a custom material,
                             False if it is a default material.
 
         Raises:
