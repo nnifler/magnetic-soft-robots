@@ -67,7 +67,7 @@ outputs:
 
 # Action code
 runs:
-  using: "composite"
+  # using: "composite"
   steps:
     - name: Clear tool cache and PATH
       shell: bash
