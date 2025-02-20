@@ -1,6 +1,0 @@
-#ifndef BUILD_OPTION_BBOX_H
-#define BUILD_OPTION_BBOX_H
-
-#define SOFA_NO_UPDATE_BBOX 0
-
-#endif // BUILD_OPTION_BBOX_H

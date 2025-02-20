@@ -8,6 +8,7 @@ on:
     branches: 
       - main
       - automated_tests
+      - windows
   pull_request:
     branches: 
       - main
@@ -18,34 +19,25 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Setup SOFA and environment
+      uses: sofa-framework/sofa-setup-action@v3.0
       with:
-        python-version: "3.10"
+        sofa_root: '/opt/sofa'
+        sofa_version: 'v24.06'
+        python_version: '3.10'
+        workspace_auto_setup: 'false'
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v4
-      with:
-        version: "6.8.2"
-
-    - name: Install dependencies (not libegl1 libopengl0 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0)
+    - name: Install our dependencies
       run: |
-        sudo apt install pybind11-dev libxcb-cursor0
         python3.10 -m pip install --upgrade pip
         python3.10 -m pip install coverage pybind11==2.9.1
         python3.10 -m pip install -r requirements.txt
     
     - name: Test with coverage and analyze coverage
       run: |
-        export SOFA_ROOT=$PWD/sofa_install
-        export PYTHONPATH=$PWD/sofa_install/plugins/SofaPython3/lib/python3/site-packages:$PYTHONPATH
-        export QT_QPA_PLATFORM=xcb
-        export QT_DEBUG_PLUGINS=1
-        echo $SOFA_ROOT
-        echo $PYTHONPATH
         coverage run test_main.py
         coverage report -m
