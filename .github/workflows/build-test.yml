@@ -24,9 +24,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup SOFA and environment
-      uses: sofa-framework/sofa-setup-action@v3.0
+      uses: ./.github/workflows/adapted-sofa-install.yml
       with:
-        sofa_root: '/opt/sofa'
+        sofa_root: ${{ github.workspace }}/sofa
         sofa_version: 'v24.06'
         python_version: '3.10'
         workspace_auto_setup: 'false'
