@@ -188,8 +188,8 @@ class SimulationAnalysisController(Sofa.Core.Controller):
             self.max_deformation_mode = None
 
     # Inbuilt function, therfore not in snake case
-    def onAnimateBeginEvent(self, _):
-        """Function that is automatically called at the beginning of the Sofa animation step.
+    def onAnimateBeginEvent(self, _) -> None:
+        """Method that is automatically called at the beginning of the Sofa animation step.
         """
         # Perform max deformation analysis
         if self.max_deformation_analysis:

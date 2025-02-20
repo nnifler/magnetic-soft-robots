@@ -14,16 +14,18 @@ class AnalysisParameters:
         self.max_deformation_input = None
         self.max_deformation_widget = None
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         """Returns a string representation of the class.
 
         Returns:
             str: The string representation of the class.
         """
-        return f"""Max Deformation Analysis:
-    Enabled: {self.max_deformation_analysis}
-    Input: {self.max_deformation_input}
-    Widget: {self.max_deformation_widget}"""
+        return f"""AnalysisParameters (
+    Max Deformation Analysis:
+        Enabled: {self.max_deformation_analysis}
+        Input: {self.max_deformation_input}
+        Widget: {self.max_deformation_widget}
+)"""
 
     # The parameter widget has no type hint,
     # as classes from gui cannot be imported in src (circular import).
