@@ -28,27 +28,27 @@ class TestButterfly(unittest.TestCase):
 
     def test_volume_mesh(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 427
+        ref_amount_nodes = 423
         # Extracted from beam.msh (line beginning with 3 in $Elements)
-        ref_amount_tetras = 1159
+        ref_amount_tetras = 1094
 
         self.assertEqual(len(self.mech_obj.position.value), ref_amount_nodes)
         self.assertEqual(len(self.topo.tetrahedra.value), ref_amount_tetras)
 
     def test_surface_mesh(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 427
+        ref_amount_nodes = 423
         # Extracted from beam.msh (first line under $Elements)
-        ref_amount_faces = 818
+        ref_amount_faces = 826
 
         self.assertEqual(len(self.ogl.position.value), ref_amount_nodes)
         self.assertEqual(len(self.ogl.triangles.value), ref_amount_faces)
 
     def test_volume_mesh_simulation(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 427
+        ref_amount_nodes = 423
         # Extracted from beam.msh (line beginning with 3 in $Elements)
-        ref_amount_tetras = 1159
+        ref_amount_tetras = 1094
 
         for _ in range(10):
             Sofa.Simulation.animate(self.root, self.root.dt.value)
@@ -59,9 +59,9 @@ class TestButterfly(unittest.TestCase):
 
     def test_surface_mesh_simulation(self):
         # Extracted from beam.msh (first line under $Nodes)
-        ref_amount_nodes = 427
+        ref_amount_nodes = 423
         # Extracted from beam.msh (first line under $Elements)
-        ref_amount_faces = 818
+        ref_amount_faces = 826
 
         for _ in range(10):
             Sofa.Simulation.animate(self.root, self.root.dt.value)

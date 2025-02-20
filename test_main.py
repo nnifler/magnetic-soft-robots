@@ -20,6 +20,7 @@ suite.addTests([
     simple_butterfly_test_suite(),
     butterfly_test_suite(),
     json_material_manager_test_suite(),
+    constraints_test_suite(),
 ])
 
 runner = unittest.TextTestRunner()
