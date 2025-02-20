@@ -66,332 +66,332 @@ outputs:
     value: ${{ steps.set-env-vars.outputs.workspace_artifact_path }}
 
 # Action code
-runs:
-  # using: "composite"
-  steps:
-    - name: Clear tool cache and PATH
-      shell: bash
-      run: |
-        mv "${{ runner.tool_cache }}" "${{ runner.tool_cache }}.old"
-        mkdir -p "${{ runner.tool_cache }}"
+jobs:
+  sofa-install:
+    steps:
+      - name: Clear tool cache and PATH
+        shell: bash
+        run: |
+          mv "${{ runner.tool_cache }}" "${{ runner.tool_cache }}.old"
+          mkdir -p "${{ runner.tool_cache }}"
 
-    - name: Set env vars
-      id: set-env-vars
-      shell: bash
-      run: |
-        # Set env vars
-        echo "------ GITHUB_WORKSPACE/sofa-setup-action ------"
-        mkdir -p "$GITHUB_WORKSPACE/sofa-setup-action"
-        cp "${{ github.action_path }}"/*.yml "$GITHUB_WORKSPACE/sofa-setup-action"
-        ls -la "$GITHUB_WORKSPACE/sofa-setup-action"
-        echo "------------------------------------------------"
-        
-        # Set executable extension
-        EXE=''
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          EXE='.exe'
-        fi
-        echo "EXE=$EXE" | tee -a $GITHUB_ENV
-        echo "name=exe::$(echo $EXE)" >> $GITHUB_OUTPUT
-        
-        if [ -n "${{ github.event.number }}" ]; then
-          RUN_BRANCH="PR-${{ github.event.number }}"
-        elif [ -n "${{ github.event.pull_request.number }}" ]; then
-          RUN_BRANCH="PR-${{ github.event.pull_request.number }}"
-        elif [ -n "${{ github.event.issue.number }}" ]; then
-          RUN_BRANCH="PR-${{ github.event.issue.number }}"
-        else
-          RUN_BRANCH="${GITHUB_REF#refs/heads/}"
-        fi
-        echo "RUN_BRANCH=$RUN_BRANCH" | tee -a $GITHUB_ENV
-        echo "name=run_branch::$(echo $RUN_BRANCH)" >> $GITHUB_OUTPUT
-        
-        # Auto-setup workspace + env vars
-        if [[ "${{ inputs.workspace_auto_setup }}" == "true" ]]; then
-          mkdir -p "$GITHUB_WORKSPACE/src" "$GITHUB_WORKSPACE/build" "$GITHUB_WORKSPACE/install" "$GITHUB_WORKSPACE/artifact"
-               WORKSPACE_SRC_PATH="$(cd $GITHUB_WORKSPACE/src      && pwd -W 2>/dev/null || pwd)"
-             WORKSPACE_BUILD_PATH="$(cd $GITHUB_WORKSPACE/build    && pwd -W 2>/dev/null || pwd)"
-           WORKSPACE_INSTALL_PATH="$(cd $GITHUB_WORKSPACE/install  && pwd -W 2>/dev/null || pwd)"
-          WORKSPACE_ARTIFACT_PATH="$(cd $GITHUB_WORKSPACE/artifact && pwd -W 2>/dev/null || pwd)"
-        else
-               WORKSPACE_SRC_PATH="$GITHUB_WORKSPACE"
-             WORKSPACE_BUILD_PATH="$GITHUB_WORKSPACE"
-           WORKSPACE_INSTALL_PATH="$GITHUB_WORKSPACE"
-          WORKSPACE_ARTIFACT_PATH="$GITHUB_WORKSPACE"
-        fi
-        echo "WORKSPACE_SRC_PATH=$WORKSPACE_SRC_PATH" | tee -a $GITHUB_ENV
-        echo "WORKSPACE_BUILD_PATH=$WORKSPACE_BUILD_PATH" | tee -a $GITHUB_ENV
-        echo "WORKSPACE_INSTALL_PATH=$WORKSPACE_INSTALL_PATH" | tee -a $GITHUB_ENV
-        echo "WORKSPACE_ARTIFACT_PATH=$WORKSPACE_ARTIFACT_PATH" | tee -a $GITHUB_ENV
-        echo "name=workspace_src_path::$(echo $WORKSPACE_SRC_PATH)" >> $GITHUB_OUTPUT
-        echo "name=workspace_build_path::$(echo $WORKSPACE_BUILD_PATH)" >> $GITHUB_OUTPUT
-        echo "name=workspace_install_path::$(echo $WORKSPACE_INSTALL_PATH)" >> $GITHUB_OUTPUT
-        echo "name=workspace_artifact_path::$(echo $WORKSPACE_ARTIFACT_PATH)" >> $GITHUB_OUTPUT
-        
-        # Set default settings for ccache
-        echo "CCACHE_COMPRESS=true" | tee -a $GITHUB_ENV
-        echo "CCACHE_COMPRESSLEVEL=6" | tee -a $GITHUB_ENV
-        echo "CCACHE_MAXSIZE=1G" | tee -a $GITHUB_ENV
-        echo "CCACHE_BASEDIR=$WORKSPACE_BUILD_PATH" | tee -a $GITHUB_ENV
-        echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache" | tee -a $GITHUB_ENV
-        
-        # TODO: find a better way to handle dependency versions
-        EIGEN_INSTALL_DIR="/tmp/deps_cache_is_for_windows_only"
-        BOOST_INSTALL_DIR="/tmp/deps_cache_is_for_windows_only"
-        SUDO='sudo'
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          EIGEN_VERSION="apt-latest"
-          BOOST_VERSION="apt-latest"
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          EIGEN_VERSION="brew-latest"
-          BOOST_VERSION="brew-latest"
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          SUDO=''
-          EIGEN_VERSION=3.3.7
-          EIGEN_INSTALL_DIR="C:/eigen"
-          BOOST_VERSION=1.69.0
-          BOOST_INSTALL_DIR="C:/boost"
+      - name: Set env vars
+        id: set-env-vars
+        shell: bash
+        run: |
+          # Set env vars
+          echo "------ GITHUB_WORKSPACE/sofa-setup-action ------"
+          mkdir -p "$GITHUB_WORKSPACE/sofa-setup-action"
+          cp "${{ github.action_path }}"/*.yml "$GITHUB_WORKSPACE/sofa-setup-action"
+          ls -la "$GITHUB_WORKSPACE/sofa-setup-action"
+          echo "------------------------------------------------"
           
-          # vsdevcmd.bat is here: 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd.bat'
-          VS_INSTALL_DIR="$(cmd //c 'vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath')"
-          VS_VSDEVCMD='cd /d '$VS_INSTALL_DIR'\Common7\Tools && VsDevCmd.bat -host_arch=amd64 -arch=amd64'
-        fi
-        
-        echo "SUDO=$SUDO" | tee -a $GITHUB_ENV
-        echo "EIGEN_VERSION=$EIGEN_VERSION" | tee -a $GITHUB_ENV
-        echo "EIGEN_INSTALL_DIR=$EIGEN_INSTALL_DIR" | tee -a $GITHUB_ENV
-        echo "BOOST_VERSION=$BOOST_VERSION" | tee -a $GITHUB_ENV
-        echo "BOOST_INSTALL_DIR=$BOOST_INSTALL_DIR" | tee -a $GITHUB_ENV
-        echo "VS_INSTALL_DIR=$VS_INSTALL_DIR" | tee -a $GITHUB_ENV
-        echo "VS_VSDEVCMD=$VS_VSDEVCMD" | tee -a $GITHUB_ENV
-        
-        echo "name=vs_install_dir::$(echo $VS_INSTALL_DIR)" >> $GITHUB_OUTPUT
-        echo "name=vs_vsdevcmd::$(echo $VS_VSDEVCMD)" >> $GITHUB_OUTPUT
-
-    - name: Install Python
-      id: install-python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ inputs.python_version }}
-
-    - name: Set python-dependent env vars
-      id: set-python-vars
-      shell: bash
-      run: |
-        PYTHONUSERBASE='/tmp/pythonuserbase'
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          PYTHONUSERBASE='C:\pythonuserbase'
-        fi
-        mkdir -p "$PYTHONUSERBASE" && chmod -R 777 "$PYTHONUSERBASE"
-        echo "PYTHONUSERBASE=$PYTHONUSERBASE" | tee -a $GITHUB_ENV
-        echo "PYTHONIOENCODING=UTF-8" | tee -a $GITHUB_ENV
-        
-        PYTHON_ROOT="$(find $RUNNER_TOOL_CACHE -maxdepth 3 -type d -path '**/Python/${{ steps.install-python.outputs.python-version }}*/x64')"
-        PYTHON_ROOT="$(cd $PYTHON_ROOT && pwd -W 2>/dev/null || pwd)"   
-        echo "PYTHON_ROOT=$PYTHON_ROOT" | tee -a $GITHUB_ENV
-        echo "Python_ROOT=$PYTHON_ROOT" | tee -a $GITHUB_ENV
-        echo "name=python_root::$(echo $PYTHON_ROOT)" >> $GITHUB_OUTPUT
-        echo "name=python_version::${{ steps.install-python.outputs.python-version }}" >> $GITHUB_OUTPUT
-        echo "------- ls -la PYTHON_ROOT -------"
-        ls -la "$PYTHON_ROOT"
-        echo "----------------------------------"
-        
-        SOFA_VERSION_FOR_DEPS="$(echo "${{ inputs.sofa_version }}" | sed 's:[^0-9]*::g')"
-        if [ -z "$SOFA_VERSION_FOR_DEPS" ]; then
-          SOFA_VERSION_FOR_DEPS=0
-        fi
-        echo "SOFA_VERSION_FOR_DEPS=$SOFA_VERSION_FOR_DEPS" | tee -a $GITHUB_ENV
-
-    - name: Install numpy and scipy
-      shell: bash
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          $PYTHON_ROOT/python -m pip install numpy scipy
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          brew list | grep python | while read package; do
-            brew unlink $package
-          done
-          $PYTHON_ROOT/python -m pip install numpy scipy
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          cmd //c "$PYTHON_ROOT/python.exe -m pip install numpy scipy"
-        fi
-
-    - name: Install build tools
-      shell: bash
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          sudo apt-get update
-          sudo apt-get -qq install ccache ninja-build
-          sudo apt-get -qq install freeglut3-dev libopengl0
-          sudo apt-get -qq install libpng-dev libjpeg-dev libtiff-dev libglew-dev zlib1g-dev
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          brew update && brew upgrade
-          brew install ccache ninja
-          brew install glew
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          cmd //c 'choco install -y --no-progress nsis curl ninja'
-        fi
-
-    - name: Setup cache for Boost files
-      uses: actions/cache@v4
-      id: boost_cache
-      with:
-        path: ${{ env.BOOST_INSTALL_DIR }}
-        key: boost-${{ env.BOOST_VERSION }}_${{ runner.os }}_for-SOFA-${{ inputs.sofa_version }}_${{ hashFiles('**/*.yml') }}
-
-    - name: Install Boost
-      shell: bash
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          sudo apt-get -qq install libboost-dev
-          if [ "$SOFA_VERSION_FOR_DEPS" -lt 2112 ]; then
-            sudo apt-get -qq install libboost-system-dev libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev
+          # Set executable extension
+          EXE=''
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            EXE='.exe'
           fi
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          brew install boost
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          if ! ls -a "$BOOST_INSTALL_DIR"/* >/dev/null 2>&1; then
-            # directory does not exist or is empty
-            major="$(echo $BOOST_VERSION | cut -d. -f1)"
-            minor="$(echo $BOOST_VERSION | cut -d. -f2)"
-            patch="$(echo $BOOST_VERSION | cut -d. -f3)"
+          echo "EXE=$EXE" | tee -a $GITHUB_ENV
+          echo "name=exe::$(echo $EXE)" >> $GITHUB_OUTPUT
+          
+          if [ -n "${{ github.event.number }}" ]; then
+            RUN_BRANCH="PR-${{ github.event.number }}"
+          elif [ -n "${{ github.event.pull_request.number }}" ]; then
+            RUN_BRANCH="PR-${{ github.event.pull_request.number }}"
+          elif [ -n "${{ github.event.issue.number }}" ]; then
+            RUN_BRANCH="PR-${{ github.event.issue.number }}"
+          else
+            RUN_BRANCH="${GITHUB_REF#refs/heads/}"
+          fi
+          echo "RUN_BRANCH=$RUN_BRANCH" | tee -a $GITHUB_ENV
+          echo "name=run_branch::$(echo $RUN_BRANCH)" >> $GITHUB_OUTPUT
+          
+          # Auto-setup workspace + env vars
+          if [[ "${{ inputs.workspace_auto_setup }}" == "true" ]]; then
+            mkdir -p "$GITHUB_WORKSPACE/src" "$GITHUB_WORKSPACE/build" "$GITHUB_WORKSPACE/install" "$GITHUB_WORKSPACE/artifact"
+                WORKSPACE_SRC_PATH="$(cd $GITHUB_WORKSPACE/src      && pwd -W 2>/dev/null || pwd)"
+              WORKSPACE_BUILD_PATH="$(cd $GITHUB_WORKSPACE/build    && pwd -W 2>/dev/null || pwd)"
+            WORKSPACE_INSTALL_PATH="$(cd $GITHUB_WORKSPACE/install  && pwd -W 2>/dev/null || pwd)"
+            WORKSPACE_ARTIFACT_PATH="$(cd $GITHUB_WORKSPACE/artifact && pwd -W 2>/dev/null || pwd)"
+          else
+                WORKSPACE_SRC_PATH="$GITHUB_WORKSPACE"
+              WORKSPACE_BUILD_PATH="$GITHUB_WORKSPACE"
+            WORKSPACE_INSTALL_PATH="$GITHUB_WORKSPACE"
+            WORKSPACE_ARTIFACT_PATH="$GITHUB_WORKSPACE"
+          fi
+          echo "WORKSPACE_SRC_PATH=$WORKSPACE_SRC_PATH" | tee -a $GITHUB_ENV
+          echo "WORKSPACE_BUILD_PATH=$WORKSPACE_BUILD_PATH" | tee -a $GITHUB_ENV
+          echo "WORKSPACE_INSTALL_PATH=$WORKSPACE_INSTALL_PATH" | tee -a $GITHUB_ENV
+          echo "WORKSPACE_ARTIFACT_PATH=$WORKSPACE_ARTIFACT_PATH" | tee -a $GITHUB_ENV
+          echo "name=workspace_src_path::$(echo $WORKSPACE_SRC_PATH)" >> $GITHUB_OUTPUT
+          echo "name=workspace_build_path::$(echo $WORKSPACE_BUILD_PATH)" >> $GITHUB_OUTPUT
+          echo "name=workspace_install_path::$(echo $WORKSPACE_INSTALL_PATH)" >> $GITHUB_OUTPUT
+          echo "name=workspace_artifact_path::$(echo $WORKSPACE_ARTIFACT_PATH)" >> $GITHUB_OUTPUT
+          
+          # Set default settings for ccache
+          echo "CCACHE_COMPRESS=true" | tee -a $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=6" | tee -a $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=1G" | tee -a $GITHUB_ENV
+          echo "CCACHE_BASEDIR=$WORKSPACE_BUILD_PATH" | tee -a $GITHUB_ENV
+          echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache" | tee -a $GITHUB_ENV
+          
+          # TODO: find a better way to handle dependency versions
+          EIGEN_INSTALL_DIR="/tmp/deps_cache_is_for_windows_only"
+          BOOST_INSTALL_DIR="/tmp/deps_cache_is_for_windows_only"
+          SUDO='sudo'
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            EIGEN_VERSION="apt-latest"
+            BOOST_VERSION="apt-latest"
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            EIGEN_VERSION="brew-latest"
+            BOOST_VERSION="brew-latest"
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            SUDO=''
+            EIGEN_VERSION=3.3.7
+            EIGEN_INSTALL_DIR="C:/eigen"
+            BOOST_VERSION=1.69.0
+            BOOST_INSTALL_DIR="C:/boost"
+            
+            # vsdevcmd.bat is here: 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd.bat'
+            VS_INSTALL_DIR="$(cmd //c 'vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath')"
+            VS_VSDEVCMD='cd /d '$VS_INSTALL_DIR'\Common7\Tools && VsDevCmd.bat -host_arch=amd64 -arch=amd64'
+          fi
+          
+          echo "SUDO=$SUDO" | tee -a $GITHUB_ENV
+          echo "EIGEN_VERSION=$EIGEN_VERSION" | tee -a $GITHUB_ENV
+          echo "EIGEN_INSTALL_DIR=$EIGEN_INSTALL_DIR" | tee -a $GITHUB_ENV
+          echo "BOOST_VERSION=$BOOST_VERSION" | tee -a $GITHUB_ENV
+          echo "BOOST_INSTALL_DIR=$BOOST_INSTALL_DIR" | tee -a $GITHUB_ENV
+          echo "VS_INSTALL_DIR=$VS_INSTALL_DIR" | tee -a $GITHUB_ENV
+          echo "VS_VSDEVCMD=$VS_VSDEVCMD" | tee -a $GITHUB_ENV
+          
+          echo "name=vs_install_dir::$(echo $VS_INSTALL_DIR)" >> $GITHUB_OUTPUT
+          echo "name=vs_vsdevcmd::$(echo $VS_VSDEVCMD)" >> $GITHUB_OUTPUT
+
+      - name: Install Python
+        id: install-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Set python-dependent env vars
+        id: set-python-vars
+        shell: bash
+        run: |
+          PYTHONUSERBASE='/tmp/pythonuserbase'
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            PYTHONUSERBASE='C:\pythonuserbase'
+          fi
+          mkdir -p "$PYTHONUSERBASE" && chmod -R 777 "$PYTHONUSERBASE"
+          echo "PYTHONUSERBASE=$PYTHONUSERBASE" | tee -a $GITHUB_ENV
+          echo "PYTHONIOENCODING=UTF-8" | tee -a $GITHUB_ENV
+          
+          PYTHON_ROOT="$(find $RUNNER_TOOL_CACHE -maxdepth 3 -type d -path '**/Python/${{ steps.install-python.outputs.python-version }}*/x64')"
+          PYTHON_ROOT="$(cd $PYTHON_ROOT && pwd -W 2>/dev/null || pwd)"   
+          echo "PYTHON_ROOT=$PYTHON_ROOT" | tee -a $GITHUB_ENV
+          echo "Python_ROOT=$PYTHON_ROOT" | tee -a $GITHUB_ENV
+          echo "name=python_root::$(echo $PYTHON_ROOT)" >> $GITHUB_OUTPUT
+          echo "name=python_version::${{ steps.install-python.outputs.python-version }}" >> $GITHUB_OUTPUT
+          echo "------- ls -la PYTHON_ROOT -------"
+          ls -la "$PYTHON_ROOT"
+          echo "----------------------------------"
+          
+          SOFA_VERSION_FOR_DEPS="$(echo "${{ inputs.sofa_version }}" | sed 's:[^0-9]*::g')"
+          if [ -z "$SOFA_VERSION_FOR_DEPS" ]; then
+            SOFA_VERSION_FOR_DEPS=0
+          fi
+          echo "SOFA_VERSION_FOR_DEPS=$SOFA_VERSION_FOR_DEPS" | tee -a $GITHUB_ENV
+
+      - name: Install numpy and scipy
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            $PYTHON_ROOT/python -m pip install numpy scipy
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew list | grep python | while read package; do
+              brew unlink $package
+            done
+            $PYTHON_ROOT/python -m pip install numpy scipy
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            cmd //c "$PYTHON_ROOT/python.exe -m pip install numpy scipy"
+          fi
+
+      - name: Install build tools
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get -qq install ccache ninja-build
+            sudo apt-get -qq install freeglut3-dev libopengl0
+            sudo apt-get -qq install libpng-dev libjpeg-dev libtiff-dev libglew-dev zlib1g-dev
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew update && brew upgrade
+            brew install ccache ninja
+            brew install glew
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            cmd //c 'choco install -y --no-progress nsis curl ninja'
+          fi
+
+      - name: Setup cache for Boost files
+        uses: actions/cache@v4
+        id: boost_cache
+        with:
+          path: ${{ env.BOOST_INSTALL_DIR }}
+          key: boost-${{ env.BOOST_VERSION }}_${{ runner.os }}_for-SOFA-${{ inputs.sofa_version }}_${{ hashFiles('**/*.yml') }}
+
+      - name: Install Boost
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get -qq install libboost-dev
             if [ "$SOFA_VERSION_FOR_DEPS" -lt 2112 ]; then
-              # headers and libs
-              curl --output "${{ runner.temp }}/boost_tmp.exe" -L \
-                "https://downloads.sourceforge.net/project/boost/boost-binaries/${BOOST_VERSION}/boost_${major}_${minor}_${patch}-msvc-14.1-64.exe"
-              cmd //c "${{ runner.temp }}/boost_tmp.exe /NORESTART /VERYSILENT /DIR=$BOOST_INSTALL_DIR"
-            else
-              # headers only
-              curl --output "${{ runner.temp }}/boost_tmp.7z" -L \
-                "https://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION}/boost_${major}_${minor}_${patch}.7z"
-              7z x "${{ runner.temp }}/boost_tmp.7z" -o"${{ runner.temp }}/boost_tmp"
-              mv "${{ runner.temp }}"/boost_tmp/boost* "$BOOST_INSTALL_DIR"
+              sudo apt-get -qq install libboost-system-dev libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev
             fi
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install boost
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            if ! ls -a "$BOOST_INSTALL_DIR"/* >/dev/null 2>&1; then
+              # directory does not exist or is empty
+              major="$(echo $BOOST_VERSION | cut -d. -f1)"
+              minor="$(echo $BOOST_VERSION | cut -d. -f2)"
+              patch="$(echo $BOOST_VERSION | cut -d. -f3)"
+              if [ "$SOFA_VERSION_FOR_DEPS" -lt 2112 ]; then
+                # headers and libs
+                curl --output "${{ runner.temp }}/boost_tmp.exe" -L \
+                  "https://downloads.sourceforge.net/project/boost/boost-binaries/${BOOST_VERSION}/boost_${major}_${minor}_${patch}-msvc-14.1-64.exe"
+                cmd //c "${{ runner.temp }}/boost_tmp.exe /NORESTART /VERYSILENT /DIR=$BOOST_INSTALL_DIR"
+              else
+                # headers only
+                curl --output "${{ runner.temp }}/boost_tmp.7z" -L \
+                  "https://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION}/boost_${major}_${minor}_${patch}.7z"
+                7z x "${{ runner.temp }}/boost_tmp.7z" -o"${{ runner.temp }}/boost_tmp"
+                mv "${{ runner.temp }}"/boost_tmp/boost* "$BOOST_INSTALL_DIR"
+              fi
+            fi
+            echo "BOOST_ROOT=$BOOST_INSTALL_DIR" | tee -a $GITHUB_ENV
+            echo "Boost_ROOT=$BOOST_INSTALL_DIR" | tee -a $GITHUB_ENV
+            echo "$BOOST_INSTALL_DIR" >> $GITHUB_PATH
           fi
-          echo "BOOST_ROOT=$BOOST_INSTALL_DIR" | tee -a $GITHUB_ENV
-          echo "Boost_ROOT=$BOOST_INSTALL_DIR" | tee -a $GITHUB_ENV
-          echo "$BOOST_INSTALL_DIR" >> $GITHUB_PATH
-        fi
 
-    - name: Setup cache for Eigen files
-      uses: actions/cache@v4
-      id: eigen_cache
-      with:
-        path: ${{ env.EIGEN_INSTALL_DIR }}
-        key: eigen-${{ env.EIGEN_VERSION }}_${{ runner.os }}_${{ hashFiles('**/*.yml') }}
+      - name: Setup cache for Eigen files
+        uses: actions/cache@v4
+        id: eigen_cache
+        with:
+          path: ${{ env.EIGEN_INSTALL_DIR }}
+          key: eigen-${{ env.EIGEN_VERSION }}_${{ runner.os }}_${{ hashFiles('**/*.yml') }}
 
-    - name: Install Eigen
-      shell: bash
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          sudo apt-get -qq install libeigen3-dev
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          brew install eigen
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          if ! ls -a "$EIGEN_INSTALL_DIR"/* >/dev/null 2>&1; then
-            # directory does not exist or is empty
-            mkdir -p "$EIGEN_INSTALL_DIR"
-            curl --output "${{ runner.temp }}/eigen_tmp.zip" -L \
-              "https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VERSION}/eigen-${EIGEN_VERSION}.zip"
-            unzip -qq "${{ runner.temp }}/eigen_tmp.zip" -d "${{ runner.temp }}/eigen_tmp"
-            mv "${{ runner.temp }}"/eigen_tmp/eigen-*/* $EIGEN_INSTALL_DIR
+      - name: Install Eigen
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get -qq install libeigen3-dev
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install eigen
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            if ! ls -a "$EIGEN_INSTALL_DIR"/* >/dev/null 2>&1; then
+              # directory does not exist or is empty
+              mkdir -p "$EIGEN_INSTALL_DIR"
+              curl --output "${{ runner.temp }}/eigen_tmp.zip" -L \
+                "https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VERSION}/eigen-${EIGEN_VERSION}.zip"
+              unzip -qq "${{ runner.temp }}/eigen_tmp.zip" -d "${{ runner.temp }}/eigen_tmp"
+              mv "${{ runner.temp }}"/eigen_tmp/eigen-*/* $EIGEN_INSTALL_DIR
+            fi
+            echo "EIGEN3_ROOT=$EIGEN_INSTALL_DIR" | tee -a $GITHUB_ENV
+            echo "Eigen3_ROOT=$EIGEN_INSTALL_DIR" | tee -a $GITHUB_ENV
+            echo "$EIGEN_INSTALL_DIR" >> $GITHUB_PATH
           fi
-          echo "EIGEN3_ROOT=$EIGEN_INSTALL_DIR" | tee -a $GITHUB_ENV
-          echo "Eigen3_ROOT=$EIGEN_INSTALL_DIR" | tee -a $GITHUB_ENV
-          echo "$EIGEN_INSTALL_DIR" >> $GITHUB_PATH
-        fi
 
-    - name: Set env vars for pybind11 installation
-      shell: bash
-      run: |
-        # Define pybind11 specs
-        PYBIND11_VERSION=2.6.2
-        PYBIND11_INSTALL_PATH="/tmp/deps_cache_is_for_windows_only"
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          PYBIND11_INSTALL_PATH="C:/pybind11"
-        fi
-        echo "PYBIND11_VERSION=$PYBIND11_VERSION" | tee -a $GITHUB_ENV
-        echo "PYBIND11_INSTALL_PATH=$PYBIND11_INSTALL_PATH" | tee -a $GITHUB_ENV
+      - name: Set env vars for pybind11 installation
+        shell: bash
+        run: |
+          # Define pybind11 specs
+          PYBIND11_VERSION=2.6.2
+          PYBIND11_INSTALL_PATH="/tmp/deps_cache_is_for_windows_only"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            PYBIND11_INSTALL_PATH="C:/pybind11"
+          fi
+          echo "PYBIND11_VERSION=$PYBIND11_VERSION" | tee -a $GITHUB_ENV
+          echo "PYBIND11_INSTALL_PATH=$PYBIND11_INSTALL_PATH" | tee -a $GITHUB_ENV
 
-    - name: Setup cache for pybind11 files
-      uses: actions/cache@v4
-      id: pybind11_cache
-      with:
-        path: ${{ env.PYBIND11_INSTALL_PATH }}
-        key: pybind11-${{ env.PYBIND11_VERSION }}_${{ runner.os }}_python-${{ inputs.python_version }}_${{ hashFiles('**/*.yml') }}
+      - name: Setup cache for pybind11 files
+        uses: actions/cache@v4
+        id: pybind11_cache
+        with:
+          path: ${{ env.PYBIND11_INSTALL_PATH }}
+          key: pybind11-${{ env.PYBIND11_VERSION }}_${{ runner.os }}_python-${{ inputs.python_version }}_${{ hashFiles('**/*.yml') }}
 
-    - name: Install pybind11
-      shell: bash
-      run: |
-        # Build and install pybind11
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          if ! ls -a "$PYBIND11_INSTALL_PATH"/* >/dev/null 2>&1; then
+      - name: Install pybind11
+        shell: bash
+        run: |
+          # Build and install pybind11
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            if ! ls -a "$PYBIND11_INSTALL_PATH"/* >/dev/null 2>&1; then
+              # directory does not exist or is empty
+              git clone -b v$PYBIND11_VERSION --depth 1 https://github.com/pybind/pybind11.git "${{ runner.temp }}/pybind11_tmp"
+              cmd //c "${{ steps.set-env-vars.outputs.vs_vsdevcmd }} && \
+                cd /d ${{ runner.temp }}/pybind11_tmp && \
+                cmake \
+                  -GNinja \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DPYBIND11_TEST=OFF \
+                  -DCMAKE_INSTALL_PREFIX=$PYBIND11_INSTALL_PATH \
+                  -DPYTHON_ROOT=$PYTHON_ROOT \
+                  -DPython_ROOT=$PYTHON_ROOT \
+                  -DPYTHON_EXECUTABLE=$PYTHON_ROOT/python.exe \
+                  -DPython_EXECUTABLE=$PYTHON_ROOT/python.exe \
+                  . && \
+                  ninja install"
+            fi          
+            echo "pybind11_ROOT=$PYBIND11_INSTALL_PATH" | tee -a $GITHUB_ENV
+            echo "$PYBIND11_INSTALL_PATH" >> $GITHUB_PATH
+          else
+            git clone -b v${PYBIND11_VERSION} --depth 1 https://github.com/pybind/pybind11.git "${{ runner.temp }}/pybind11_tmp"
+            cd "${{ runner.temp }}/pybind11_tmp"
+            cmake \
+              -GNinja \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DPYBIND11_TEST=OFF \
+              -DPYTHON_ROOT=$PYTHON_ROOT \
+              -DPython_ROOT=$PYTHON_ROOT \
+              -DPYTHON_EXECUTABLE=$PYTHON_ROOT/python \
+              -DPython_EXECUTABLE=$PYTHON_ROOT/python \
+              .
+            sudo ninja install
+          fi
+
+      - name: Download and install the latest SOFA ${{ inputs.sofa_version }} binaries
+        shell: bash
+        run: |
+          # Download and install the latest SOFA ${{ inputs.sofa_version }} binaries
+          SOFA_OS="$RUNNER_OS"
+          if [[ "$SOFA_OS" == "macOS" ]]; then
+            SOFA_OS="MacOS"
+          fi
+          if ! ls -a "${{ inputs.sofa_root }}"/* >/dev/null 2>&1; then
             # directory does not exist or is empty
-            git clone -b v$PYBIND11_VERSION --depth 1 https://github.com/pybind/pybind11.git "${{ runner.temp }}/pybind11_tmp"
-            cmd //c "${{ steps.set-env-vars.outputs.vs_vsdevcmd }} && \
-              cd /d ${{ runner.temp }}/pybind11_tmp && \
-              cmake \
-                -GNinja \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DPYBIND11_TEST=OFF \
-                -DCMAKE_INSTALL_PREFIX=$PYBIND11_INSTALL_PATH \
-                -DPYTHON_ROOT=$PYTHON_ROOT \
-                -DPython_ROOT=$PYTHON_ROOT \
-                -DPYTHON_EXECUTABLE=$PYTHON_ROOT/python.exe \
-                -DPython_EXECUTABLE=$PYTHON_ROOT/python.exe \
-                . && \
-                ninja install"
-          fi          
-          echo "pybind11_ROOT=$PYBIND11_INSTALL_PATH" | tee -a $GITHUB_ENV
-          echo "$PYBIND11_INSTALL_PATH" >> $GITHUB_PATH
-        else
-          git clone -b v${PYBIND11_VERSION} --depth 1 https://github.com/pybind/pybind11.git "${{ runner.temp }}/pybind11_tmp"
-          cd "${{ runner.temp }}/pybind11_tmp"
-          cmake \
-            -GNinja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DPYBIND11_TEST=OFF \
-            -DPYTHON_ROOT=$PYTHON_ROOT \
-            -DPython_ROOT=$PYTHON_ROOT \
-            -DPYTHON_EXECUTABLE=$PYTHON_ROOT/python \
-            -DPython_EXECUTABLE=$PYTHON_ROOT/python \
-            .
-          sudo ninja install
-        fi
+            mkdir -p "/opt/sofa_tmp/zip" "/opt/sofa_tmp/binaries"
+            curl --output "$/opt/sofa_tmp/${SOFA_OS}.zip" -L \
+              https://ci.inria.fr/sofa-ci-dev/job/nightly-generate-binaries/CI_BRANCH=${{ inputs.sofa_version }},CI_SCOPE=${{ inputs.sofa_scope }}/lastSuccessfulBuild/artifact/${SOFA_OS}/*zip*/${SOFA_OS}.zip
+            unzip -qq "/opt/sofa_tmp/${SOFA_OS}.zip -d "/opt/sofa_tmp/zip"
+            unzip -qq "/opt/sofa_tmp/zip/${SOFA_OS}/SOFA_*.zip -d "/opt/sofa_tmp/binaries"
+            $SUDO mkdir -p "${{ inputs.sofa_root }}"
+            $SUDO mv "/opt/sofa_tmp/binaries/SOFA_*/* "${{ inputs.sofa_root }}"
+          fi
+          echo '--------------------------------------------'
+          echo "SOFA successfully downloaded and installed in ${{ inputs.sofa_root }}"
+          echo '------------- inputs.sofa_root -------------'
+          ls -la "${{ inputs.sofa_root }}"
+          echo '--------------- git-info.txt ---------------'
+          cat "${{ inputs.sofa_root }}"/git-info.txt 2>&1 || true
 
-    - name: Download and install the latest SOFA ${{ inputs.sofa_version }} binaries
-      shell: bash
-      run: |
-        # Download and install the latest SOFA ${{ inputs.sofa_version }} binaries
-        SOFA_OS="$RUNNER_OS"
-        if [[ "$SOFA_OS" == "macOS" ]]; then
-          SOFA_OS="MacOS"
-        fi
-        if ! ls -a "${{ inputs.sofa_root }}"/* >/dev/null 2>&1; then
-          # directory does not exist or is empty
-          mkdir -p "/opt/sofa_tmp/zip" "/opt/sofa_tmp/binaries"
-          curl --output "$/opt/sofa_tmp/${SOFA_OS}.zip" -L \
-            https://ci.inria.fr/sofa-ci-dev/job/nightly-generate-binaries/CI_BRANCH=${{ inputs.sofa_version }},CI_SCOPE=${{ inputs.sofa_scope }}/lastSuccessfulBuild/artifact/${SOFA_OS}/*zip*/${SOFA_OS}.zip
-          unzip -qq "/opt/sofa_tmp/${SOFA_OS}.zip -d "/opt/sofa_tmp/zip"
-          unzip -qq "/opt/sofa_tmp/zip/${SOFA_OS}/SOFA_*.zip -d "/opt/sofa_tmp/binaries"
-          $SUDO mkdir -p "${{ inputs.sofa_root }}"
-          $SUDO mv "/opt/sofa_tmp/binaries/SOFA_*/* "${{ inputs.sofa_root }}"
-        fi
-        echo '--------------------------------------------'
-        echo "SOFA successfully downloaded and installed in ${{ inputs.sofa_root }}"
-        echo '------------- inputs.sofa_root -------------'
-        ls -la "${{ inputs.sofa_root }}"
-        echo '--------------- git-info.txt ---------------'
-        cat "${{ inputs.sofa_root }}"/git-info.txt 2>&1 || true
-
-    - name: Set SOFA_ROOT and outputs.sofa_root
-      id: set-sofa-root
-      shell: bash
-      run: |
-        SOFA_ROOT='${{ inputs.sofa_root }}'
-        echo "SOFA_ROOT=$SOFA_ROOT" | tee -a $GITHUB_ENV
-        echo "$SOFA_ROOT" >> $GITHUB_PATH
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          echo "$SOFA_ROOT\bin" >> $GITHUB_PATH
-        fi
-        echo "name=sofa_root::$(echo $SOFA_ROOT)" >> $GITHUB_OUTPUT
+      - name: Set SOFA_ROOT and outputs.sofa_root
+        id: set-sofa-root
+        shell: bash
+        run: |
+          SOFA_ROOT='${{ inputs.sofa_root }}'
+          echo "SOFA_ROOT=$SOFA_ROOT" | tee -a $GITHUB_ENV
+          echo "$SOFA_ROOT" >> $GITHUB_PATH
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            echo "$SOFA_ROOT\bin" >> $GITHUB_PATH
+          fi
+          echo "name=sofa_root::$(echo $SOFA_ROOT)" >> $GITHUB_OUTPUT
