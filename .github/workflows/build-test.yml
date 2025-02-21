@@ -24,7 +24,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup SOFA and environment
-      uses: ./.github/workflows/action.yml
+      uses: orthographiepro/sofa-setup-action@v0.1-alpha
       with:
         sofa_root: ${{ github.workspace }}/sofa
         sofa_version: 'v24.06'
