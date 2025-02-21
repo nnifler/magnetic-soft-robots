@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Setup SOFA and environment
-      uses: orthographiepro/sofa-setup-action@358b9042f73c4a8f8a127429033dcbcdc4e150cd 
+      uses: orthographiepro/sofa-setup-action@a4b5fbd748f269868d148146be2dfe694d8501fe
       with:
         sofa_root: ${{ github.workspace }}/sofa
         sofa_version: 'v24.06'
