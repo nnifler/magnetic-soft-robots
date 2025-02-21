@@ -3,4 +3,4 @@ source = .
 omit = 
     ./shibokensupport/*
     ./signature_bootstrap.py
-    ./tests
+    ./tests/*
