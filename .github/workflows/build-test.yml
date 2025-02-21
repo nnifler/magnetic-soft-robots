@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Setup SOFA and environment
-      uses: orthographiepro/sofa-setup-action@36e91bac0db7bc5d33ce32b66947a778c3ee79d3
+      uses: orthographiepro/sofa-setup-action@8c4b35a0a841c65a117efc419a1dee1152ce35ef
       with:
         sofa_root: ${{ github.workspace }}/sofa
         sofa_version: 'v24.06'
@@ -41,5 +41,6 @@ jobs:
     
     - name: Test with coverage and analyze coverage
       run: |
+        set PATH=%PATH%;%PYTHON_ROOT%;%PYTHON_ROOT%\dlls;%PYTHON_ROOT%\lib;%SOFA_ROOT%\bin; 
         coverage run test_main.py
         coverage report -m
