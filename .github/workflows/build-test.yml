@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Setup SOFA and environment
-      uses: orthographiepro/sofa-setup-action@v0.1-alpha
+      uses: orthographiepro/sofa-setup-action@f54a871066ced092cb322e6f0be9041cc357b8b4
       with:
         sofa_root: ${{ github.workspace }}/sofa
         sofa_version: 'v24.06'
@@ -36,7 +36,7 @@ jobs:
     - name: Install our dependencies
       run: |
         python3.10 -m pip install --upgrade pip
-        python3.10 -m pip install coverage pybind11==2.9.1
+        python3.10 -m pip install coverage
         python3.10 -m pip install -r requirements.txt
     
     - name: Test with coverage and analyze coverage
