@@ -41,5 +41,9 @@ jobs:
     
     - name: Test with coverage and analyze coverage
       run: |
+        set PYTHONPATH=$PYTHONPATH
+        set SOFA_ROOT=$SOFA_ROOT
+        set PYTHON_ROOT=$PYTHON_ROOT
+        set PATH=%PATH%;%PYTHON_ROOT%;%PYTHON_ROOT%\DLLs;%PYTHON_ROOT%\Lib;%SOFA_ROOT%\bin;
         coverage run test_main.py
         coverage report -m
