@@ -1,8 +1,9 @@
 """This module contains the main window of the application."""
 
 import os
+import re
 from builtins import ValueError
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import numpy as np
 
 from PySide6.QtWidgets import (
@@ -13,7 +14,7 @@ from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import Tesla
-from src import Config, sofa_instantiator, MeshLoader
+from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
 from src.mesh_loader import Mode as MeshMode
 
 from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
@@ -222,7 +223,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(False)
+        Config.set_show_force(True)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
@@ -246,20 +247,52 @@ class MainWindow(QMainWindow):
             Config.set_constraints(
                 np.array(bounding_box_a), np.array(bounding_box_b))
 
-        # Check input for deformation analysis (temporary)
+        deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
+
+        analysis_parameters = AnalysisParameters()
+        if deformation_widget_enabled:
+            analysis_parameters.set_max_deformation_parameters(
+                self.deformation_widget, deformation_input_list)
+
+        sofa_instantiator.main(analysis_parameters)
+
+    def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
+        """Parses the information from the deformation widget 
+        and returns whether it is enabled and the input list.
+
+        Returns:
+            Tuple[bool, List[int | np.ndarray]]: A tuple containing
+            - A boolean indicating whether the deformation widget is enabled.
+            - A list containing the indices or coordinates, depending on the selection mode.
+        """
+        input_list = []
+        deformation_widget_enabled = False
         if self.deformation_widget.is_enabled():
+            deformation_widget_enabled = True
+            # Check coordinates
             if self.deformation_widget.point_radio_buttons[1].isChecked():
                 coords = self.deformation_widget.point_inputs[0].toPlainText()
+                # Match with regex
                 if not self.deformation_widget.coord_regex.match(coords):
                     QMessageBox.warning(self, "Error", "Invalid coordinates!")
                     return
+                # Extract information
+                coord_nums = list(
+                    map(float, re.findall(r"-?\d+(?:\.\d+)?", coords)))
+                # Save coordinates in numpy arrays
+                for i in range(0, len(coord_nums), 3):
+                    input_list.append(np.array(coord_nums[i:i+3]))
+
+            # Check indices
             if self.deformation_widget.point_radio_buttons[2].isChecked():
                 indices = self.deformation_widget.point_inputs[1].toPlainText()
+                # Match with regex
                 if not self.deformation_widget.indices_regex.match(indices):
                     QMessageBox.warning(self, "Error", "Invalid indices!")
                     return
-
-        sofa_instantiator.main()
+                # Extract information
+                input_list = list(map(int, re.findall(r"\d+", indices)))
+        return deformation_widget_enabled, input_list
 
     def import_mesh_file(self) -> None:
         """Imports a custom mesh file.
