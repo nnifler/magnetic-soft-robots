@@ -199,6 +199,78 @@ class TestConfig(unittest.TestCase):
         for pair in zip(Config.get_plugin_list(), ref_plugin_list):
             self.assertEqual(*pair)
 
+    def test_constraints(self):
+        ref_a = np.random.uniform(0, 100, 3)
+        ref_b = np.random.uniform(0, 100, 3)
+
+        Config.set_constraints(ref_a, ref_b)
+
+        for pair in zip(Config.get_constraints()[0], ref_a):
+            self.assertAlmostEqual(
+                *pair, msg=f"Constraint a is not correct, got {Config.get_constraints()[0]}, expected {ref_a}")
+        for pair in zip(Config.get_constraints()[1], ref_b):
+            self.assertAlmostEqual(
+                *pair, msg=f"Constraint b is not correct, got {Config.get_constraints()[1]}, expected {ref_b}")
+        self.assertTrue(Config.get_use_constraints())
+
+    def test_default_constraints(self):
+        ref_a = np.array([0, 0, 0])
+        ref_b = np.array([0, 0, 0])
+        Config.set_default_constraints()
+
+        self.assertFalse(Config.get_use_constraints())
+        for pair in zip(Config.get_constraints()[0], ref_a):
+            self.assertAlmostEqual(
+                *pair, msg=f"Constraint a is not correct, got {Config.get_constraints()[0]}, expected {ref_a}")
+        for pair in zip(Config.get_constraints()[1], ref_b):
+            self.assertAlmostEqual(
+                *pair, msg=f"Constraint b is not correct, got {Config.get_constraints()[1]}, expected {ref_b}")
+
+        names = ["beam", "butterfly", "gripper_3_arm",
+                 "gripper_4_arm", "simple_butterfly"]
+        refs_a = [
+            [-0.005, 0, 0],
+            [-0.1, -0.6, -0.2],
+            [-0.05, -0.05, 0.01],
+            [-0.05, -0.05, 0.01],
+            [-0.1, -0.6, -0.2]
+        ]
+        refs_b = [
+            [0.005, 0.05, 0.05],
+            [0.1, 0.05, 0.1],
+            [0.05, 0.05, 0.03],
+            [0.05, 0.05, 0.03],
+            [0.1, 0.05, 0.1]
+        ]
+        for i, name in enumerate(names):
+            Config.set_model(name, 1)
+            Config.set_default_constraints()
+            self.assertTrue(Config.get_use_constraints())
+            for pair in zip(Config.get_constraints()[0], refs_a[i]):
+                self.assertAlmostEqual(
+                    *pair, msg=f"Constraint a is not correct, got {Config.get_constraints()[0]}, expected {refs_a[i]}")
+            for pair in zip(Config.get_constraints()[1], refs_b[i]):
+                self.assertAlmostEqual(
+                    *pair, msg=f"Constraint b is not correct, got {Config.get_constraints()[1]}, expected {refs_b[i]}")
+
+    def test_constraints_exceptional(self):
+        err_a1 = np.random.uniform(0, 100, 4)
+        err_a2 = np.random.uniform(0, 100, (3, 1))
+        err_b1 = np.random.uniform(0, 100, 4)
+        err_b2 = np.random.uniform(0, 100, (3, 1))
+
+        with self.assertRaises(ValueError):
+            Config.set_constraints(err_a1, np.array([0, 0, 0]))
+
+        with self.assertRaises(ValueError):
+            Config.set_constraints(err_a2, np.array([0, 0, 0]))
+
+        with self.assertRaises(ValueError):
+            Config.set_constraints(np.array([0, 0, 0]), err_b1)
+
+        with self.assertRaises(ValueError):
+            Config.set_constraints(np.array([0, 0, 0]), err_b2)
+
     def tearDown(self) -> None:
         """Resets config after each test."""
         Config.reset()

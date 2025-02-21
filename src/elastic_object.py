@@ -1,6 +1,7 @@
 """This module contains the ElasticObject class,
    which is used to create the elastic object that is simulated in the MSR."""
 
+import numpy as np
 import Sofa.Core
 from . import MeshLoader, Config
 from .mesh_loader import Mode
@@ -70,26 +71,15 @@ class ElasticObject():
         )
 
         # Add Constraints
-        visualize_constraints = False
-        use_constraints = True
-        model_name = Config.get_name()
-        if model_name == "beam":
-            eo_node.addObject('BoxROI', name='constraint_roi',
-                              box='-0.005 0 0 0.005 0.05 0.05',
-                              drawBoxes=1 if visualize_constraints else 0)
-        elif model_name == "gripper_3_arm" or model_name == "gripper_4_arm":
-            eo_node.addObject('BoxROI', name='constraint_roi',
-                              box='-0.05 -0.05 0.01 0.05 0.05 0.03',
-                              drawBoxes=1 if visualize_constraints else 0)
-        elif model_name == "butterfly" or model_name == "simple_butterfly":
-            eo_node.addObject('BoxROI', name='constraint_roi',
-                              box='-0.1 -0.6 -0.2 0.1 0.05 0.1',
-                              drawBoxes=1 if visualize_constraints else 0)
-        else:
-            use_constraints = False
         # If True, forces will be added and displayed on the vertices used as a constraint
         # (use only for debugging)
-        if use_constraints:
+        visualize_constraints = False
+        if Config.get_use_constraints():
+            point_a, point_b = Config.get_constraints()
+            box = np.concatenate((point_a, point_b))
+            eo_node.addObject('BoxROI', name='constraint_roi',
+                              box=box,
+                              drawBoxes=1 if visualize_constraints else 0)
             eo_node.addObject('FixedConstraint',
                               name='FixedConstraint', indices='@constraint_roi.indices')
         eo_node.addObject('LinearSolverConstraintCorrection')

@@ -8,16 +8,19 @@ import numpy as np
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
-    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QTabWidget
+    QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout, QTabWidget
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from src.units import Tesla
-from src import Config, AnalysisParameters
-from src import sofa_instantiator
+from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
+from src.mesh_loader import Mode as MeshMode
 
 from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
+
+from pathlib import Path
+import Sofa.Core
 
 
 class MainWindow(QMainWindow):
@@ -40,7 +43,7 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout(central_widget)
 
         # Header-View
-        header_widget = MSRHeaderWidget()
+        header_widget = MSRHeaderWidget(self)
         main_layout.addWidget(header_widget)
 
         # Hauptinhalt - Horizontal Layout
@@ -56,6 +59,38 @@ class MainWindow(QMainWindow):
         # Materialeigenschaften
         self.material_group = MSRMaterialGroup()
         simulation_layout.addWidget(self.material_group)
+
+        # Model configuration
+        model_group = QGroupBox("Model Configuration")
+        model_layout = QGridLayout(model_group)
+
+        model_name_label = QLabel("Selected Model:")
+        self._model_name = QLabel()
+        model_nodes_label = QLabel("Number of Nodes:")
+        self._model_nodes = QLabel()
+        model_tetrahedra_label = QLabel("Number of Tetrahedra:")
+        self._model_tetrahedra = QLabel()
+
+        model_bounding_box_a_label = QLabel("Constraint Box Lower Corner:")
+        self._model_bounding_box_a = QLineEdit()
+        self._model_bounding_box_a.setPlaceholderText(
+            "Enter as [x, y, z], leave empty for default model")
+
+        model_bounding_box_b_label = QLabel("Constraint Box Upper Corner:")
+        self._model_bounding_box_b = QLineEdit()
+        self._model_bounding_box_b.setPlaceholderText(
+            "Enter as [x, y, z], leave empty for default model")
+
+        model_layout.addWidget(model_name_label, 0, 0)
+        model_layout.addWidget(self._model_name, 0, 1)
+        model_layout.addWidget(model_nodes_label, 1, 0)
+        model_layout.addWidget(self._model_nodes, 1, 1)
+        model_layout.addWidget(model_tetrahedra_label, 2, 0)
+        model_layout.addWidget(self._model_tetrahedra, 2, 1)
+        model_layout.addWidget(model_bounding_box_a_label, 3, 0, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_a, 4, 0, 1, 2)
+        model_layout.addWidget(model_bounding_box_b_label, 5, 0, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_b, 6, 0, 1, 2)
 
         # Magnetfeldsteuerung
         field_group = QGroupBox("Magnet Field Settings")
@@ -79,6 +114,8 @@ class MainWindow(QMainWindow):
             r"^\s*\[\s*(-?\d+(\.\d+)?\s*,\s*){2}-?\d+(\.\d+)?\s*\]\s*$")
         validator = QRegularExpressionValidator(vector_regex)
         self.field_direction_input.setValidator(validator)
+        self._model_bounding_box_a.setValidator(validator)
+        self._model_bounding_box_b.setValidator(validator)
 
         field_layout.addWidget(self.field_strength_label)
         field_layout.addWidget(self.field_strength_slider)
@@ -86,6 +123,7 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(self.field_direction_input)
 
         simulation_layout.addWidget(field_group)
+        simulation_layout.addWidget(model_group)
 
         sidebar.addWidget(sidebar_tabs)
 
@@ -116,8 +154,30 @@ class MainWindow(QMainWindow):
         # Default values
         Config.set_model("beam", 0.02)
 
+    def update_model(self) -> None:
+        """Updates the model value fields in the GUI after setting the model."""
+        name = Config.get_name()
+
+        # SOFA to get nodes and tetrahedra
+        root = Sofa.Core.Node("root")
+        root.addObject(
+            "RequiredPlugin", pluginName='Sofa.Component.IO.Mesh')
+        mesh_loader = MeshLoader()
+        # TODO: still hardcoded mesh file type (GUI - Import Meshes)
+        # TODO: hardcodced path --> change for packaging
+        mesh_loader.load_file(
+            Path(__file__).parents[1] / f'lib/models/{name}.msh', MeshMode.VOLUMETRIC)
+        model_obj = mesh_loader.load_mesh_into(root, MeshMode.VOLUMETRIC)
+
+        # updating the values
+        node_count = len(model_obj.position.value)
+        tetrahedron_count = len(model_obj.tetrahedra.value)
+        self._model_name.setText(name)
+        self._model_nodes.setText(str(node_count))
+        self._model_tetrahedra.setText(str(tetrahedron_count))
+
     def update_field_strength_label(self) -> None:
-        """Updates the field strength output based 
+        """Updates the field strength output based
         on the current position of the slider in tesla values.
         """
         strength_in_tesla = self.field_strength_slider.value() / 10
@@ -126,7 +186,7 @@ class MainWindow(QMainWindow):
             f"Magnetic Field Strength: {formatted_strength} T")
 
     def parse_direction_input(self, text: str) -> Optional[List[float]]:
-        """Parses the direction input from the user 
+        """Parses the direction input from the user
         and ensures that it is a valid vector with 3 components.
 
         Args:
@@ -175,6 +235,17 @@ class MainWindow(QMainWindow):
                                        params["youngs_modulus"].value(),
                                        params["density"].value(),
                                        params["remanence"].value())
+
+        bounding_box_a = self.parse_direction_input(
+            self._model_bounding_box_a.text())
+        bounding_box_b = self.parse_direction_input(
+            self._model_bounding_box_b.text())
+
+        if bounding_box_a is None or bounding_box_b is None:
+            Config.set_default_constraints()
+        else:
+            Config.set_constraints(
+                np.array(bounding_box_a), np.array(bounding_box_b))
 
         deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
 

@@ -19,6 +19,8 @@ suite.addTests([
     gripper_4_arm_test_suite(),
     simple_butterfly_test_suite(),
     butterfly_test_suite(),
+    json_material_manager_test_suite(),
+    constraints_test_suite(),
     simulation_analyser_test_suite(),
     analysis_parameters_test_suite(),
 ])
