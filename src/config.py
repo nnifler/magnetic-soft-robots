@@ -259,6 +259,35 @@ class Config:
         return cls._plugin_list
 
     @classmethod
+    def set_default_plugin_list(cls) -> None:
+        """Set the plugins to the default values.
+        """
+        cls.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
+                             'Sofa.Component.Collision.Detection.Intersection',
+                             'Sofa.Component.Collision.Geometry',
+                             'Sofa.Component.Collision.Response.Contact',
+                             'Sofa.Component.Constraint.Lagrangian.Correction',
+                             'Sofa.Component.Constraint.Lagrangian.Solver',
+                             'Sofa.Component.Constraint.Projective',
+                             'Sofa.Component.LinearSolver.Direct',
+                             'Sofa.Component.LinearSolver.Iterative',
+                             'Sofa.Component.SolidMechanics.FEM.Elastic',
+                             'Sofa.Component.Topology.Container.Dynamic',
+                             'Sofa.Component.Topology.Mapping',
+                             'Sofa.Component.ODESolver.Backward',
+                             'Sofa.Component.Mapping.Linear',
+                             'Sofa.Component.StateContainer',
+                             'Sofa.Component.AnimationLoop',
+                             'Sofa.Component.MechanicalLoad',
+                             'Sofa.Component.Engine.Select',
+                             'Sofa.Component.IO.Mesh',
+                             'Sofa.Component.Visual',
+                             'Sofa.Component.Mass',
+                             'Sofa.GL.Component.Rendering3D',
+                             'Sofa.GL.Component.Shader',
+                             ])
+
+    @classmethod
     def set_constraints(cls, point_a: np.ndarray, point_b: np.ndarray) -> None:
         """Set the constraints for the model.
 
@@ -329,28 +358,7 @@ class Config:
                                     Density.from_Mgpm3(1.1),
                                     Tesla.from_T(0.35)
                                     )
-        cls.set_plugin_list(['Sofa.Component.Collision.Detection.Algorithm',
-                             'Sofa.Component.Collision.Detection.Intersection',
-                             'Sofa.Component.Collision.Geometry',
-                             'Sofa.Component.Collision.Response.Contact',
-                             'Sofa.Component.Constraint.Projective',
-                             'Sofa.Component.IO.Mesh',
-                             'Sofa.Component.LinearSolver.Iterative',
-                             'Sofa.Component.Mapping.Linear',
-                             'Sofa.Component.Mass',
-                             'Sofa.Component.ODESolver.Backward',
-                             'Sofa.Component.SolidMechanics.FEM.Elastic',
-                             'Sofa.Component.StateContainer',
-                             'Sofa.Component.Topology.Container.Dynamic',
-                             'Sofa.Component.Visual',
-                             'Sofa.GL.Component.Rendering3D',
-                             'Sofa.Component.AnimationLoop',
-                             'Sofa.Component.LinearSolver.Direct',
-                             'Sofa.Component.Constraint.Lagrangian.Correction',
-                             'Sofa.Component.Topology.Mapping',
-                             'Sofa.Component.MechanicalLoad',
-                             'Sofa.Component.Engine.Select',
-                             ])
+        cls.set_default_plugin_list()
 
     @classmethod
     def reset(cls) -> None:

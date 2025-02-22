@@ -91,6 +91,7 @@ class SceneBuilder():
 
     def _setup_root_simulation(self):
         """Sets up basic simulation parameters for the root node."""
+        self.root.addObject('CompositingVisualLoop')
         self.root.addObject('FreeMotionAnimationLoop')
         self.root.addObject('GenericConstraintSolver',
                             maxIterations=1000, tolerance=1e-6)
@@ -98,7 +99,7 @@ class SceneBuilder():
         self.root.addObject('CollisionPipeline', name="CollisionPipeline")
         self.root.addObject('BruteForceBroadPhase', name="BroadPhase")
         self.root.addObject('BVHNarrowPhase', name="NarrowPhase")
-        self.root.addObject('DefaultContactManager',
+        self.root.addObject('CollisionResponse',
                             name="CollisionResponse", response="FrictionContactConstraint")
         self.root.addObject('MinProximityIntersection', useLineLine=True, usePointPoint=True,
                             alarmDistance=0.003, contactDistance=0.0015, useLinePoint=True)
