@@ -223,7 +223,6 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_stress_kwargs(True)
         Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
@@ -254,6 +253,11 @@ class MainWindow(QMainWindow):
         if deformation_widget_enabled:
             analysis_parameters.set_max_deformation_parameters(
                 self.deformation_widget, deformation_input_list)
+
+        show_stress = True
+        analysis_parameters.stress_analysis = show_stress
+        # set analysis_parameters.stress_widget
+        Config.set_stress_kwargs(show_stress)
 
         sofa_instantiator.main(analysis_parameters)
 

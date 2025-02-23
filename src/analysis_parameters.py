@@ -14,6 +14,7 @@ class AnalysisParameters:
         self.max_deformation_input = None
         self.max_deformation_widget = None
         self.stress_analysis = False
+        self.stress_widget = None
 
     def __repr__(self) -> str:
         """Returns a string representation of the class.
@@ -26,6 +27,10 @@ class AnalysisParameters:
         Enabled: {self.max_deformation_analysis}
         Input: {self.max_deformation_input}
         Widget: {self.max_deformation_widget}
+
+    Stress Analysis:
+        Enabled: {self.stress_analysis}
+        Widget: {self.stress_widget}
 )"""
 
     # The parameter widget has no type hint,
