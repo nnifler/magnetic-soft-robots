@@ -9,3 +9,4 @@ from .simulation_analyser_test import suite as simulation_analyser_test_suite
 from .analysis_parameters_test import suite as analysis_parameters_test_suite
 from .json_material_manager_test import suite as json_material_manager_test_suite
 from .constraints_test import suite as constraints_test_suite
+from .stress_analyzer_test import suite as stress_test_suite

@@ -8,8 +8,12 @@ class StressAnalyzer(Sofa.Core.Controller):
     def __init__(self, elastic_object: ElasticObject, parameters: AnalysisParameters) -> None:
         super().__init__()
 
+        if elastic_object is None or parameters is None:
+            raise ValueError("provided Parameter is None")
+
         self._elastic_object = elastic_object
         self._params = parameters
+
         self.max_stress = -np.inf
         self.min_stress = np.inf
 
