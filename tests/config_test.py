@@ -271,6 +271,38 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             Config.set_constraints(np.array([0, 0, 0]), err_b2)
 
+    def test_stress_kwargs(self) -> None:
+        ref_dict_0 = {
+            'computeVonMisesStress': 0,
+            'showVonMisesStressPerNodeColorMap': 0,
+        }
+        ref_dict_1 = {
+            'computeVonMisesStress': 1,
+            'showVonMisesStressPerNodeColorMap': 1,
+        }
+        self.assertFalse(Config.get_show_stress(), "default should be false")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="default should be dict with two keys and 0 vals")
+
+        Config.set_stress_kwargs(True)
+        self.assertTrue(Config.get_show_stress(),
+                        "should be True after kwargs set to True")
+        self.assertEqual(ref_dict_1, Config.get_stress_kwargs(),
+                         msg="vals should hold value 1 after kwargs set to False")
+
+        Config.set_stress_kwargs(False)
+        self.assertFalse(Config.get_show_stress(),
+                         "should be False after kwargs set to False")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="vals should hold value 0 after kwargs set to False")
+
+        Config.set_stress_kwargs(True)
+        Config._reset_stress_kwargs()
+        self.assertFalse(Config.get_show_stress(),
+                         "should be False after kwargs reset")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="vals should hold value 0 after kwargs reset")
+
     def tearDown(self) -> None:
         """Resets config after each test."""
         Config.reset()
