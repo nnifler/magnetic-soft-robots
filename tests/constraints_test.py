@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import Sofa
 import Sofa.Simulation
-from src import Config, sofa_instantiator
+from src import Config, sofa_instantiator, AnalysisParameters
 
 
 class TestConstraints(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestConstraints(unittest.TestCase):
         Config.set_constraints(ref_a, ref_b)
         ref_box = np.concatenate((ref_a, ref_b))
 
-        sofa_instantiator.createScene(self.root)
+        sofa_instantiator.createScene(self.root, AnalysisParameters())
         elastic_object = self.root.getChild('object')
 
         roi = elastic_object.getObject('constraint_roi')
@@ -39,7 +39,7 @@ class TestConstraints(unittest.TestCase):
         for i, name in enumerate(names):
             Config.set_model(name, 1)
             Config.set_default_constraints()
-            sofa_instantiator.createScene(self.root)
+            sofa_instantiator.createScene(self.root, AnalysisParameters())
             elastic_object = self.root.getChild('object')
 
             roi = elastic_object.getObject('constraint_roi')
@@ -48,7 +48,7 @@ class TestConstraints(unittest.TestCase):
             self.root = Sofa.Core.Node("root")
 
     def test_no_constraints(self):
-        sofa_instantiator.createScene(self.root)
+        sofa_instantiator.createScene(self.root, AnalysisParameters())
         elastic_object = self.root.getChild('object')
 
         self.assertIsNone(elastic_object.getChild('constraint_roi'))
