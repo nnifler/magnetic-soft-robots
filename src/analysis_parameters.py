@@ -13,6 +13,7 @@ class AnalysisParameters:
         self.max_deformation_analysis = False
         self.max_deformation_input = None
         self.max_deformation_widget = None
+        self.stress_analysis = False
 
     def __repr__(self) -> str:
         """Returns a string representation of the class.
