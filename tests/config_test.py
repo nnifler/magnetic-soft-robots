@@ -303,6 +303,13 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
                          msg="vals should hold value 0 after kwargs reset")
 
+        Config.set_stress_kwargs(True)
+        Config.reset()
+        self.assertFalse(Config.get_show_stress(),
+                         "should be False after hard reset")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="vals should hold value 0 after hard reset")
+
     def tearDown(self) -> None:
         """Resets config after each test."""
         Config.reset()
