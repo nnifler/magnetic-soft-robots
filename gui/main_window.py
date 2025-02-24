@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("beam", 0.02)
+        Config.set_model("butterfly", 0.02)
 
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
