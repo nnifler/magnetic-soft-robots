@@ -1,6 +1,6 @@
 """This module contains the configuration for the Sofa simulation."""
 
-from typing import List
+from typing import List, Tuple
 import numpy as np
 
 from .units import YoungsModulus, Density, Tesla
@@ -14,6 +14,9 @@ class Config:
     ### Model ###
     _name = ""
     _scale = 1.0
+    _use_constraints = False
+    _point_a = np.array([0, 0, 0])
+    _point_b = np.array([0, 0, 0])
 
     ### External forces ###
     _use_gravity = True
@@ -242,7 +245,7 @@ class Config:
         return cls._remanence
 
     @classmethod
-    def set_plugin_list(cls, plugin_list: List[str]):
+    def set_plugin_list(cls, plugin_list: List[str]) -> None:
         """Set the plugins used in the Sofa simulation.
 
         Args:
@@ -258,6 +261,60 @@ class Config:
             List[str]: The list of plugins.
         """
         return cls._plugin_list
+
+    @classmethod
+    def set_constraints(cls, point_a: np.ndarray, point_b: np.ndarray) -> None:
+        """Set the constraints for the model.
+
+        Args:
+            point_a (np.ndarray): The minimum point of the bounding box.
+            point_b (np.ndarray): The maximum point of the bounding box.
+
+        Raises:
+            ValueError: If point_a or point_b does not have shape (3,).
+        """
+        if point_a.shape != (3,) or point_b.shape != (3,):
+            raise ValueError("Points must have shape (3,).")
+        cls._use_constraints = True
+        cls._point_a = point_a
+        cls._point_b = point_b
+
+    @classmethod
+    def get_constraints(cls) -> Tuple[np.ndarray, np.ndarray]:
+        """Get the constraints for the model.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: The minimum and maximum points of the bounding box.
+        """
+        return cls._point_a, cls._point_b
+
+    @classmethod
+    def get_use_constraints(cls) -> bool:
+        """Get the use_constraints value.
+
+        Returns:
+            bool: True if constraints are used.
+        """
+        return cls._use_constraints
+
+    @classmethod
+    def set_default_constraints(cls) -> None:
+        """Set the constraints to the default values.
+        """
+        cls._use_constraints = True
+        if cls.get_name() == "beam":
+            cls._point_a = np.array([-0.005, 0, 0])
+            cls._point_b = np.array([0.005, 0.05, 0.05])
+        elif cls.get_name() == "gripper_3_arm" or cls.get_name() == "gripper_4_arm":
+            cls._point_a = np.array([-0.05, -0.05, 0.01])
+            cls._point_b = np.array([0.05, 0.05, 0.03])
+        elif cls.get_name() == "butterfly" or cls.get_name() == "simple_butterfly":
+            cls._point_a = np.array([-0.1, -0.6, -0.2])
+            cls._point_b = np.array([0.1, 0.05, 0.1])
+        else:
+            cls._use_constraints = False
+            cls._point_a = np.array([0, 0, 0])
+            cls._point_b = np.array([0, 0, 0])
 
     @classmethod
     def set_test_env(cls) -> None:
@@ -305,6 +362,7 @@ class Config:
         """
         cls.set_show_force(True)
         cls.set_model('', 1)
+        cls.set_default_constraints()
         cls.set_external_forces(True, np.zeros(
             3, dtype=int), Tesla.from_T(.01), np.array([1, 0, 0]), np.zeros(3, dtype=int))
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))

@@ -13,7 +13,7 @@ class TestBeam(unittest.TestCase):
         Config.set_model('beam', 1)
 
         cls.root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(cls.root)
+        sofa_instantiator.createScene(cls.root, None)
         Sofa.Simulation.init(cls.root)
 
         cls.elastic_object = cls.root.getChild('object')
@@ -36,8 +36,8 @@ class TestBeam(unittest.TestCase):
         self.assertEqual(len(self.topo.tetrahedra.value), ref_amount_tetras)
 
     def test_surface_mesh(self):
-        # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 290
+        # Extracted from beam.msh (first line under $Nodes)
+        ref_amount_nodes = 306
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 576
 
@@ -58,8 +58,8 @@ class TestBeam(unittest.TestCase):
                              ref_amount_tetras)
 
     def test_surface_mesh_simulation(self):
-        # Extracted from beam.msh (second line under $Nodes)
-        ref_amount_nodes = 290
+        # Extracted from beam.msh (first line under $Nodes)
+        ref_amount_nodes = 306
         # Extracted from beam.msh (first line under $Elements)
         ref_amount_faces = 576
 

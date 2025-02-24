@@ -2,8 +2,8 @@
 
 from pathlib import Path
 from typing import List
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QMenu, QListWidget, QMessageBox,)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
+                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow,)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
 from src import Config
@@ -13,10 +13,11 @@ from gui import MSRModelImportPopup
 class MSRHeaderWidget(QWidget):
     """Implements the header of the GUI as a QWidget."""
 
-    def __init__(self) -> None:
+    def __init__(self, main_window: QMainWindow) -> None:
         """Initializes the header widget."""
         super().__init__()
 
+        self.main_window = main_window
         self._popup_open: QWidget = None
         self._popup_import: QWidget = MSRModelImportPopup()
 
@@ -112,6 +113,7 @@ class MSRHeaderWidget(QWidget):
                 widget.clearSelection()
 
         Config.set_model(model_name, scale, custom_model)
+        self.main_window.update_model()
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
         """Loads the default models from the default folder into the list widget.
