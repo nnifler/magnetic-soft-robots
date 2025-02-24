@@ -4,7 +4,6 @@ It provides a GUI to import surface and volumetric mesh models, with options to 
 The module also handles file import and format validation.
 """
 
-import os
 from typing import Set
 from shutil import copy2
 from pathlib import Path
@@ -110,7 +109,7 @@ class MSRModelImportPopup(QWidget):
         name = '_'.join(name.strip().split(sep=" "))
 
         dst_dir = Path(__file__).parents[1] / "lib/imported_models"
-        existing_names = [os.path.splitext(file)[0] for file in dst_dir]
+        existing_names = [path.stem for path in dst_dir.iterdir()]
         if name in existing_names:
             QMessageBox.warning(
                 self, "Warning", "Model with this name already exists.")
@@ -131,8 +130,6 @@ class MSRModelImportPopup(QWidget):
             # use mesh loader for file integrity checks
             self._mesh_loader.load_file(Path(surf_path_str), Mode.SURFACE)
             self._mesh_loader.load_file(Path(vol_path_str), Mode.VOLUMETRIC)
-
-            os.makedirs(dst_dir, exist_ok=True)
 
             copy2(vol_path_str, dst_dir / f'{name}.msh')
             copy2(surf_path_str, dst_dir / f'{name}.stl')
