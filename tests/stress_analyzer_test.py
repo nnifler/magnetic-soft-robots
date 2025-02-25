@@ -2,7 +2,7 @@ import unittest
 import unittest.mock
 import numpy as np
 
-from src import StressAnalyzer
+from src import StressAnalyzer, AnalysisParameters
 
 
 class TestStressAnalyzer(unittest.TestCase):
@@ -39,6 +39,12 @@ class TestStressAnalyzer(unittest.TestCase):
             StressAnalyzer(mock, None)
         with self.assertRaises(ValueError):
             StressAnalyzer(None, mock)
+
+    def test_none_widget(self):
+        mock = unittest.mock.Mock()
+        params = AnalysisParameters()
+        with self.assertRaises(ValueError):
+            StressAnalyzer(mock, params)
 
 
 def suite() -> unittest.TestSuite:
