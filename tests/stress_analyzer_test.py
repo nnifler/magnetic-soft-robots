@@ -43,8 +43,9 @@ class TestStressAnalyzer(unittest.TestCase):
     def test_none_widget(self):
         mock = unittest.mock.Mock()
         params = AnalysisParameters()
+        params.stress_analysis = True
         with self.assertRaises(ValueError):
-            StressAnalyzer(mock, params)
+            StressAnalyzer(mock, params).onAnimateBeginEvent(None)
 
 
 def suite() -> unittest.TestSuite:

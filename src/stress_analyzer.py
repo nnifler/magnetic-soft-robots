@@ -22,16 +22,11 @@ class StressAnalyzer(Sofa.Core.Controller):
 
         Raises:
             ValueError: If elastic_object or parameters are None.
-            ValueError: If parameters.stress_widget is None
         """
         super().__init__()
 
         if elastic_object is None or parameters is None:
             raise ValueError("provided argument is None")
-
-        if parameters.stress_widget is None:
-            raise ValueError(
-                "provided parameter.stress_widget needs to be set")
 
         self._elastic_object = elastic_object
         self._params = parameters
@@ -47,6 +42,8 @@ class StressAnalyzer(Sofa.Core.Controller):
         Args:
             _ (Any): the (unused) event
 
+        Raises:
+            ValueError: If parameters.stress_widget is None, but parameters.stress_analysis is True
         """
         if not self._params.stress_analysis:
             return
@@ -56,6 +53,10 @@ class StressAnalyzer(Sofa.Core.Controller):
 
         cur_max = stress_values.max()
         cur_min = stress_values.min()
+
+        if self._params.stress_widget is None:
+            raise ValueError(
+                "provided parameter.stress_widget needs to be set")
 
         if cur_max > self.max_stress:
             self.max_stress = cur_max
