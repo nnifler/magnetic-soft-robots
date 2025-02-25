@@ -27,7 +27,7 @@ class MSRHeatmapBar(QLabel):
         gradient = QLinearGradient(
             self.width()/2, self.height(), self.width()/2, 0)
 
-        colors = ["blue", "green", "yellow", "red"]
+        colors = ["blue", "cyan", "yellow", "red"]
         for i, c in enumerate(colors):
             # c = 255*c
             gradient.setColorAt(
