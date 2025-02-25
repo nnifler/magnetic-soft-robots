@@ -10,16 +10,28 @@ from src import AnalysisParameters, ElasticObject
 class StressAnalyzer(Sofa.Core.Controller):
     """Analyzer responsible for the von Mises stress analysis. 
     Updates max_stress and min_stress on each step.
+    Is a subclass of Sofa.Core.Controller.
     """
 
     def __init__(self, elastic_object: ElasticObject, parameters: AnalysisParameters) -> None:
+        """Builds the Stress Analyzer.
+
+        Args:
+            elastic_object (ElasticObject): The ElasticObject which needs to be analyzed.
+            parameters (AnalysisParameters): The parameters of the stress analysis.
+
+        Raises:
+            ValueError: If elastic_object or parameters are None.
+            ValueError: If parameters.stress_widget is None
+        """
         super().__init__()
 
         if elastic_object is None or parameters is None:
             raise ValueError("provided argument is None")
 
         if parameters.stress_widget is None:
-            raise ValueError("provided parameter widget is None")
+            raise ValueError(
+                "provided parameter.stress_widget needs to be set")
 
         self._elastic_object = elastic_object
         self._params = parameters

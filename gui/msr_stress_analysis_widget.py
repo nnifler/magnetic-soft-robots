@@ -1,14 +1,27 @@
+"""This module bundles functionality needed for the GUI implementation of the stress analysis.
+"""
+
 from PySide6.QtWidgets import (
     QGroupBox, QVBoxLayout, QCheckBox, QLabel, QWidget, QHBoxLayout
 )
-from PySide6.QtGui import QLinearGradient, QPainter
+from PySide6.QtGui import QLinearGradient, QPainter, QPaintEvent
 
 from src.units import YoungsModulus
 
 
 class MSRHeatmapBar(QLabel):
-    def paintEvent(self, arg__1) -> None:
+    """Subclass of QLabel displaying the stress color gradient.
+    """
+
+    def paintEvent(self, arg__1: QPaintEvent) -> None:
+        """custom reimplementation of the paintEvent of QLabel. Responsible for drawing the gradient.
+
+        Args:
+            arg__1 (QPaintEvent): the event
+        """
         super().paintEvent(arg__1)
+        self.setFixedWidth(40)
+        self.setFixedHeight(170)
 
         painter = QPainter(self)
         gradient = QLinearGradient(
@@ -26,12 +39,18 @@ class MSRHeatmapBar(QLabel):
 
 
 class MSRHeatmap(QWidget):
-    def __init__(self, parent=...):
+    """A QWidget that displays a heatmap and labels for minimum / maximum measured stress.
+    """
+
+    def __init__(self, parent: QWidget = ...):
+        """Initializes the heatmap display includimg labels for minimum and maximum stress.
+
+        Args:
+            parent (QWidget, optional): Parent widget. Defaults to ....
+        """
         super().__init__(parent)
 
         self._heatmap = MSRHeatmapBar(self)
-        self._heatmap.setFixedWidth(40)
-        self._heatmap.setFixedHeight(170)
 
         self._min_label = QLabel("min: tbd", self)
         self._max_label = QLabel("max: tbd", self)
@@ -42,16 +61,34 @@ class MSRHeatmap(QWidget):
         self._layout.addWidget(self._min_label)
 
     def set_min(self, val: float) -> None:
+        """Updates the minimum measured value for the heatmap legend.
+
+        Args:
+            val (float): The new value in Pa.
+        """
         self._min_label.setText(
             f"min: {round(YoungsModulus.from_Pa(val).Pa, 2)} Pa")
 
     def set_max(self, val: float) -> None:
+        """Updates the maximum measured value for the heatmap legend.
+
+        Args:
+            val (float): The new value in Pa.
+        """
         self._max_label.setText(
             f"max: {round(YoungsModulus.from_Pa(val).MPa, 2)} MPa")
 
 
 class MSRStressAnalysisWidget(QGroupBox):
+    """Widget to setup stress analysis. Inherits from QGroupBox.
+    """
+
     def __init__(self, parent: QWidget = None) -> None:
+        """Initializes the MSRStressAnalyzationWidget.
+
+        Args:
+            parent (QWidget, optional): the parent widget. Defaults to None.
+        """
         super().__init__(parent)
 
         self._stress_checkbox = QCheckBox("Stress Visualization", self)
@@ -71,7 +108,17 @@ class MSRStressAnalysisWidget(QGroupBox):
         return self._stress_checkbox.isChecked()
 
     def set_min(self, val: float) -> None:
+        """Updates the minimum measured value for the heatmap legend.
+
+        Args:
+            val (float): The new value in Pa.
+        """
         self._heatmap.set_min(val)
 
     def set_max(self, val: float) -> None:
+        """Updates the maximum measured value for the heatmap legend.
+
+        Args:
+            val (float): The new value in Pa.
+        """
         self._heatmap.set_max(val)
