@@ -17,7 +17,7 @@ from src.units import Tesla
 from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
 from src.mesh_loader import Mode as MeshMode
 
-from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
+from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget, MSRStressAnalysisWidget
 
 from pathlib import Path
 import Sofa.Core
@@ -133,6 +133,9 @@ class MainWindow(QMainWindow):
         sidebar_tabs.addTab(analysis_settings, "Analysis Settings")
 
         # Space to add to analysis tab
+        self.stress_analysis = MSRStressAnalysisWidget(analysis_settings)
+        analysis_layout.addWidget(self.stress_analysis)
+
         self.deformation_widget = MSRDeformationAnalysisWidget()
         analysis_layout.addWidget(self.deformation_widget)
 
@@ -254,9 +257,9 @@ class MainWindow(QMainWindow):
             analysis_parameters.set_max_deformation_parameters(
                 self.deformation_widget, deformation_input_list)
 
-        show_stress = True
+        show_stress = self.stress_analysis.show_stress
         analysis_parameters.stress_analysis = show_stress
-        # set analysis_parameters.stress_widget
+        analysis_parameters.stress_widget = self.stress_analysis
         Config.set_stress_kwargs(show_stress)
 
         sofa_instantiator.main(analysis_parameters)

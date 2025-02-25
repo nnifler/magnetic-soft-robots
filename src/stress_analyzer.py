@@ -18,8 +18,12 @@ class StressAnalyzer(Sofa.Core.Controller):
         if elastic_object is None or parameters is None:
             raise ValueError("provided argument is None")
 
+        if parameters.stress_widget is None:
+            raise ValueError("provided parameter widget is None")
+
         self._elastic_object = elastic_object
         self._params = parameters
+        self._widget = parameters.stress_widget
 
         self.max_stress = -np.inf
         self.min_stress = np.inf
@@ -30,6 +34,7 @@ class StressAnalyzer(Sofa.Core.Controller):
 
         Args:
             _ (Any): the (unused) event
+
         """
         if not self._params.stress_analysis:
             return
@@ -42,10 +47,10 @@ class StressAnalyzer(Sofa.Core.Controller):
 
         if cur_max > self.max_stress:
             self.max_stress = cur_max
-            # update gui
+            self._widget.set_max(self.max_stress)
             # max stress alert check
         if cur_min < self.min_stress:
             self.min_stress = cur_min
-            # update gui
+            self._widget.set_min(self.min_stress)
 
         return
