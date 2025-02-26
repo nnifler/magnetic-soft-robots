@@ -5,7 +5,7 @@ from typing import List
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
                                QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow,)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeySequence, QAction
+from PySide6.QtGui import QAction
 from src import Config
 from gui import MSRModelImportPopup
 
@@ -44,13 +44,11 @@ class MSRHeaderWidget(QWidget):
 
         # Add action to the Library menu
         open_action = QAction("Open", self)
-        open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(
             self._open_models_popup)
         context_menu.addAction(open_action)
 
         import_action = QAction("Import", self)
-        import_action.setShortcut(QKeySequence("Ctrl+I"))
         import_action.triggered.connect(
             self._popup_import.show)
         context_menu.addAction(import_action)

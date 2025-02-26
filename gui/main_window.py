@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.custom_list = None
 
         self.setWindowTitle("Soft Robotics Simulation")
-        self.resize(1200, 800)
+        self.resize(500, 800)
 
         # Haupt-Widget und Layout
         central_widget = QWidget()
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
 
         # Materialeigenschaften
         self.material_group = MSRMaterialGroup()
-        simulation_layout.addWidget(self.material_group)
+        simulation_layout.addWidget(self.material_group, stretch=3)
 
         # Model configuration
         model_group = QGroupBox("Model Configuration")
@@ -122,8 +122,8 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(field_direction_label)
         field_layout.addWidget(self.field_direction_input)
 
-        simulation_layout.addWidget(field_group)
-        simulation_layout.addWidget(model_group)
+        simulation_layout.addWidget(field_group, stretch=1)
+        simulation_layout.addWidget(model_group, stretch=3)
 
         sidebar.addWidget(sidebar_tabs)
 
@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
         apply_button.clicked.connect(self.apply_parameters)
         sidebar.addWidget(apply_button)
 
-        sidebar_tabs.setFixedWidth(400)
+        sidebar_tabs.setFixedWidth(500)
         content_layout.addLayout(sidebar)
 
         # Hauptanzeige für Visualisierung
