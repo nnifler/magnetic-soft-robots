@@ -13,19 +13,19 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 ## Test
 1. **Start of the application**
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
-2. **Open Pupup Menu**
+2. **Open Popup Menu**
     1. Click the `Models` button at the top right corner.
     2. Click the `Open` button that appeared after clicking the `Models` button.
 3. **Select Model**
     1. Select a random model out of the default or custom models.
-    2. Click the Close button in the bottom of the popup window.
+    2. Click the `Close` button in the bottom of the popup window.
 4. **Validate selected model**
     1. Click the `Apply` button at the bottom of the GUI.
 
 
 ## Expected Result
-1. 2.1 A popup window titled Models appears.
-2. 2.1 The popup window contains the following default model listed under 'Default Models:'
+1. 2.1 A popup window titled `Models` appears.
+2. 2.1 The popup window contains the following default models listed under 'Default Models:'
    - `gripper_4_arm`
    - `beam`
    - `simple_buttefly`
