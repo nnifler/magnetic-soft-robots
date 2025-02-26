@@ -1,4 +1,13 @@
-"""This module provides a toolkit for the GUI header definition."""
+"""
+This module provides a header widget for the MSR GUI.
+
+The header includes buttons and menus to manage model imports 
+and the display of models. It integrates with other modules to handle 
+custom and default models.
+
+Classes:
+    MSRHeaderWidget: Implements the header of the GUI as a QWidget.
+"""
 
 from pathlib import Path
 from typing import List
@@ -36,7 +45,7 @@ class MSRHeaderWidget(QWidget):
         header_layout.addWidget(self._models_button)
 
     def _show_models_menu(self) -> None:
-        """Creates the models context menu."""
+        """Creates and displays the models context menu."""
 
         # Create the menu bar
         context_menu = QMenu(self)
@@ -96,13 +105,15 @@ class MSRHeaderWidget(QWidget):
 
     def update_loaded_model(self, model_name: str, custom_model: bool,
                             other_widgets: List[QListWidget] = None, scale=0.02) -> None:
-        """Updates the loaded model in the config.
+        """Updates the model loaded in the application configuration.
 
         Args:
             model_name (str): The name of the model to load.
             custom_model (bool): Whether the model is a custom model.
-            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
-            scale (float, optional): The scale of the model shown in the simulation. Defaults to 0.02.
+            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear 
+            the selection of. Defaults to None.
+            scale (float, optional): The scale of the model shown in the simulation. 
+            Defaults to 0.02.
         """
         # TODO: accept different file suffixes
         # TODO: make scaling factor configurable
@@ -114,11 +125,11 @@ class MSRHeaderWidget(QWidget):
         self.main_window.update_model()
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
-        """Loads the default models from the default folder into the list widget.
+        """Loads the models from the specified directory into the given list widget.
 
         Args:
-            list_widget (QListWidget): The list widget to add the items to.
-            models_path (Path): The path to the models folder.
+            list_widget (QListWidget): The widget to display the list of models.
+            models_path (Path): The path to the directory containing model files.
         """
         if not models_path.exists():
             QMessageBox.warning(

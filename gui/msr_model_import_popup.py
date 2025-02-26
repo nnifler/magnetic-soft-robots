@@ -1,9 +1,13 @@
 """
-This module bundles functionality around the import popup window.
-It provides a GUI to import surface and volumetric mesh models, with options to define names and paths. 
-The module also handles file import and format validation.
-"""
+This module provides functionality for the Import Models popup window.
 
+It allows users to import surface and volumetric mesh models, with options to define
+names and file paths. The module includes methods to handle file selection, import,
+and format validation.
+
+Classes:
+    MSRModelImportPopup: Defines the behavior and interface for the Import Models popup.
+"""
 from typing import Set
 from shutil import copy2
 from pathlib import Path
@@ -15,10 +19,10 @@ from src.mesh_loader import MeshLoader, Mode
 
 
 class MSRModelImportPopup(QWidget):
-    """Class defining behaviour of the Import Models popup."""
+    """Defines the behavior and interface for the Import Models popup."""
 
     def __init__(self) -> None:
-        """Create the Import Models popup menu."""
+        """Initializes the Import Models popup"""
 
         super().__init__()
 
@@ -92,13 +96,12 @@ class MSRModelImportPopup(QWidget):
                                 "Please select a file to import.")
 
     def _import(self) -> None:
-        """Copies entries into import mesh folder.
+        """Handles the process of importing models.
 
-        For input errors, it opens: 
-            QMessageBox: If no name is provided.
-            QMessageBox: If no mesh is selected.
-            QMessageBox: If import fails.
+        Validates the input data, checks for existing models, copies the files to the
+        library, and informs the user about the success or failure of the import process.
         """
+
         name = self.name_definition.text()
 
         if not name:
