@@ -190,6 +190,7 @@ class MSRMaterialGroup(QGroupBox):
 
         self._material_combo_box.currentIndexChanged.connect(
             self.update_material_parameters)
+        self._material_combo_box.setCurrentText("Neodymium Powder")
 
         self._layout.addWidget(material_label, 0, 0)
         self._layout.addWidget(self._material_combo_box, 0, 1)
