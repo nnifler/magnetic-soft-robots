@@ -1,5 +1,6 @@
 """This module bundles functionality needed for the GUI implementation of the stress analysis.
 """
+import math
 
 from PySide6.QtWidgets import (
     QGroupBox, QVBoxLayout, QCheckBox, QLabel, QWidget, QHBoxLayout
@@ -55,6 +56,9 @@ class MSRHeatmap(QWidget):
         self._min_label = QLabel("min: tbd", self)
         self._max_label = QLabel("max: tbd", self)
 
+        self._min_val = None
+        self._max_val = None
+
         self._layout = QVBoxLayout(self)
         self._layout.addWidget(self._max_label)
         self._layout.addWidget(self._heatmap)
@@ -65,7 +69,22 @@ class MSRHeatmap(QWidget):
 
         Args:
             val (float): The new value in Pa.
+
+        Raises:
+            ValueError: if val < 0
+            ValueError: if val is higher than previous min
+            ValueError: if val is higher than max
         """
+
+        if val < 0:
+            raise ValueError("val must not be negative")
+        if not (self._max_val is None) and (val > self._max_val):
+            raise ValueError("given value for min is higher than maximum")
+        if not (self._min_val is None) and (val > self._min_val):
+            raise ValueError(
+                "given value for min is higher than previous min val")
+
+        self._min_val = val
         self._min_label.setText(
             f"min: {round(YoungsModulus.from_Pa(val).Pa, 2)} Pa")
 
@@ -74,7 +93,22 @@ class MSRHeatmap(QWidget):
 
         Args:
             val (float): The new value in Pa.
+
+        Raises:
+            ValueError: if val < 0
+            ValueError: if val is lower than previous max
+            ValueError: if val is lower than min
         """
+
+        if val < 0:
+            raise ValueError("val must not be negative")
+        if not (self._min_val is None) and (val < self._min_val):
+            raise ValueError("given value for max is lower than minimum")
+        if not (self._max_val is None) and (val < self._max_val):
+            raise ValueError(
+                "given value for max is lower than previous max val")
+
+        self._max_val = val
         self._max_label.setText(
             f"max: {round(YoungsModulus.from_Pa(val).MPa, 2)} MPa")
 
@@ -103,7 +137,7 @@ class MSRStressAnalysisWidget(QGroupBox):
         """Should stress be visualized?
 
         Returns:
-            bool: True iff stress should be visualized?
+            bool: True iff stress should be visualized
         """
         return self._stress_checkbox.isChecked()
 
@@ -112,6 +146,11 @@ class MSRStressAnalysisWidget(QGroupBox):
 
         Args:
             val (float): The new value in Pa.
+
+        Raises:
+            ValueError: if val < 0
+            ValueError: if val is higher than previous min
+            ValueError: if val is higher than max
         """
         self._heatmap.set_min(val)
 
@@ -120,5 +159,10 @@ class MSRStressAnalysisWidget(QGroupBox):
 
         Args:
             val (float): The new value in Pa.
+
+        Raises:
+            ValueError: if val < 0
+            ValueError: if val is lower than previous max
+            ValueError: if val is lower than min
         """
         self._heatmap.set_max(val)

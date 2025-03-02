@@ -1,5 +1,6 @@
 from .units import *
 from .models import *
+from .gui import *
 from .config_test import suite as config_test_suite
 from .magnetic_controller_test import suite as magnetic_controller_test_suite
 from .material_loader_test import suite as material_loader_test_suite
