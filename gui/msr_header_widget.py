@@ -12,9 +12,9 @@ Classes:
 from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow,)
+                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QPixmap
 from src import Config
 from gui import MSRModelImportPopup
 
@@ -35,9 +35,19 @@ class MSRHeaderWidget(QWidget):
         header_layout.setContentsMargins(5, 0, 5, 0)
         header_layout.setSpacing(5)  # min distance between buttons
 
-        msr_label = QLabel("MSR")
-        msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
-        header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
+        self.logo_label = QLabel(self)
+        pixmap = QPixmap(Path(__file__).parent / "logo" / "butterfly_logo.png")
+
+        desired_hight = 32
+        aspect_ratio = pixmap.width() / pixmap.height()
+        desired_width = int(desired_hight * aspect_ratio)
+        pixmap = pixmap.scaled(
+            desired_width, desired_hight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.logo_label.setPixmap(pixmap)
+        self.logo_label.setFixedSize(pixmap.size())
+        self.logo_label.setScaledContents(True)
+
+        header_layout.addWidget(self.logo_label)
 
         self._models_button = QPushButton("Models")
         self._models_button.clicked.connect(self._show_models_menu)

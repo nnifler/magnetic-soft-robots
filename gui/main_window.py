@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         # Unintialized variables for later code
         self.custom_list = None
 
-        self.setWindowTitle("Soft Robotics Simulation")
+        self.setWindowTitle("Magnetic Soft Robotics Simulation")
         self.resize(500, 800)
 
         # Main widget and layout
