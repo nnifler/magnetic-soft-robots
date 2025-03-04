@@ -39,7 +39,7 @@ class MSROpenModelsPopup(QWidget):
             self.update_loaded_model(item.text(), True, [self.default_list]))
 
         open_button = QPushButton("Open Model")
-        open_button.clicked.connect(self._open_model)
+        open_button.clicked.connect(self.open_model)
 
         self._layout.addWidget(default_label)
         self._layout.addWidget(self.default_list)
@@ -71,7 +71,11 @@ class MSROpenModelsPopup(QWidget):
 
         self._selection_label.setText(f">> {model_name}")
 
-    def _open_model(self):
+    def open_model(self):
+        """Loads the selected model into the configuration file and displays information on the model in the main window.
+        Displays a warning if no model is selected.
+        Displays a message after everything succeeds.
+        """
         if self._selected_is_custom is None or self._selected_model_name is None or self._selected_scale is None:
             QMessageBox.warning(
                 self,

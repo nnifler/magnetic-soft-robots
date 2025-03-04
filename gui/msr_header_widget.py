@@ -16,7 +16,7 @@ class MSRHeaderWidget(QWidget):
 
         self.main_window = main_window
         self._popup_open: QWidget = MSROpenModelsPopup(self.main_window)
-        self._popup_import: QWidget = MSRModelImportPopup()
+        self._popup_import: QWidget = MSRModelImportPopup(self._popup_open)
 
         self.setFixedHeight(30)  # max 1cm height
         header_layout = QHBoxLayout(self)

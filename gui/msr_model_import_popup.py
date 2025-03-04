@@ -9,15 +9,17 @@ from shutil import copy2
 from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QFileDialog, QGridLayout, QGroupBox,
-    QLabel, QPushButton, QLineEdit, QMessageBox
+    QLabel, QPushButton, QLineEdit, QMessageBox, QMainWindow
 )
+from PySide6.QtCore import Qt
 from src.mesh_loader import MeshLoader, Mode
+from gui import MSROpenModelsPopup
 
 
 class MSRModelImportPopup(QWidget):
     """Class defining behaviour of the Import Models popup."""
 
-    def __init__(self) -> None:
+    def __init__(self, open_models_popup: MSROpenModelsPopup) -> None:
         """Create the Import Models popup menu."""
 
         super().__init__()
@@ -26,6 +28,7 @@ class MSRModelImportPopup(QWidget):
         self.resize(600, 200)
 
         self._mesh_loader = MeshLoader()
+        self._selection_widget = open_models_popup
 
         self.surface_formats = {".stl"}
         # self.surface_formats = MeshLoader.get_supported_meshes(Mode.SURFACE)
@@ -58,7 +61,7 @@ class MSRModelImportPopup(QWidget):
         def_layout.addWidget(self.vol_button, OFFSET+1, 0)
         def_layout.addWidget(self.vol_path_label, OFFSET+1, 1)
 
-        import_button = QPushButton("Import Model")
+        import_button = QPushButton("Import and Select Model")
         import_button.clicked.connect(
             self._import
         )
@@ -134,8 +137,19 @@ class MSRModelImportPopup(QWidget):
             copy2(vol_path_str, dst_dir / f'{name}.msh')
             copy2(surf_path_str, dst_dir / f'{name}.stl')
 
+            if self._selection_widget is None:
+                raise ValueError("No MSROpenModelsPopup provided to select.")
+            model_list = self._selection_widget.custom_list
+            self._selection_widget.load_models(model_list, dst_dir)
+            item = model_list.findItems(name, Qt.MatchFlag.MatchExactly)[0]
+            index = model_list.indexFromItem(item)
+            model_list.activated.emit(index)
+
             QMessageBox.information(
                 self, "Success", "Model imported successfully.")
+
+            # after import success as selection success should come after import success
+            self._selection_widget.open_model()
             self.close()
 
         except (FileNotFoundError, ValueError) as e:
