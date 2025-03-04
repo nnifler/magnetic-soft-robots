@@ -16,29 +16,38 @@ class MSROpenModelsPopup(QWidget):
         self.default_list = QListWidget()
         self.custom_list = QListWidget()
 
+        self._selected_model_name = None
+        self._selected_is_custom = None
+        self._selected_scale = None
+
         default_label = QLabel("Default Models:")
         custom_label = QLabel("Custom Models:")
+
+        selection_text_label = QLabel("Current Selection:")
+        self._selection_label = QLabel("")
 
         lib_path = Path(__file__).parents[1] / "lib"
 
         self.load_models(self.default_list, lib_path / "models")
-        self.default_list.itemClicked.connect(
+        self.default_list.itemActivated.connect(
             lambda item:
             self.update_loaded_model(item.text(), False, [self.custom_list]))
 
         self.load_models(self.custom_list, lib_path / "imported_models")
-        self.custom_list.itemClicked.connect(
+        self.custom_list.itemActivated.connect(
             lambda item:
             self.update_loaded_model(item.text(), True, [self.default_list]))
 
-        close_button = QPushButton("Close")
-        close_button.clicked.connect(self.close)
+        open_button = QPushButton("Open Model")
+        open_button.clicked.connect(self._open_model)
 
         self._layout.addWidget(default_label)
         self._layout.addWidget(self.default_list)
         self._layout.addWidget(custom_label)
         self._layout.addWidget(self.custom_list)
-        self._layout.addWidget(close_button)
+        self._layout.addWidget(selection_text_label)
+        self._layout.addWidget(self._selection_label)
+        self._layout.addWidget(open_button)
 
     def update_loaded_model(self, model_name: str, custom_model: bool,
                             other_widgets: List[QListWidget] = None, scale=0.02) -> None:
@@ -56,8 +65,31 @@ class MSROpenModelsPopup(QWidget):
             for widget in other_widgets:
                 widget.clearSelection()
 
-        Config.set_model(model_name, scale, custom_model)
+        self._selected_model_name = model_name
+        self._selected_is_custom = custom_model
+        self._selected_scale = scale
+
+        self._selection_label.setText(f">> {model_name}")
+
+    def _open_model(self):
+        if self._selected_is_custom is None or self._selected_model_name is None or self._selected_scale is None:
+            QMessageBox.warning(
+                self,
+                "Model Selection Error",
+                "Please select a model. If you find none appealing, feel free to import your own.",
+            )
+            return
+
+        Config.set_model(self._selected_model_name,
+                         self._selected_scale, self._selected_is_custom)
         self._main_window.update_model()
+
+        QMessageBox.information(
+            self,
+            "Success!",
+            "The selected model will be used in the next simulation run.",
+        )
+        self.close()
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
         """Loads the default models from the default folder into the list widget.
