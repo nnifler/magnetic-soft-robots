@@ -180,7 +180,7 @@ class MainWindow(QMainWindow):
         """Updates the field strength output based
         on the current position of the slider in tesla values.
         """
-        strength_in_tesla = self.field_strength_slider.value() / 10
+        strength_in_tesla = self.field_strength_slider.value() / 1000
         formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
         self.field_strength_label.setText(
             f"Magnetic Field Strength: {formatted_strength} T")
@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Invalid direction!")
             return
 
-        field_strength_val = self.field_strength_slider.value() / 10  # Umrechnung in Tesla
+        field_strength_val = self.field_strength_slider.value() / 1000  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
         Config.set_show_force(True)
