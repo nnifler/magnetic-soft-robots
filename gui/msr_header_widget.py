@@ -1,13 +1,10 @@
 """This module provides a toolkit for the GUI header definition."""
 
-from pathlib import Path
-from typing import List
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow,)
+from PySide6.QtWidgets import (QWidget, QHBoxLayout,
+                               QLabel, QPushButton, QMenu, QMainWindow,)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QAction
-from src import Config
-from gui import MSRModelImportPopup
+from gui import MSROpenModelsPopup, MSRModelImportPopup
 
 
 class MSRHeaderWidget(QWidget):
@@ -18,7 +15,7 @@ class MSRHeaderWidget(QWidget):
         super().__init__()
 
         self.main_window = main_window
-        self._popup_open: QWidget = None
+        self._popup_open: QWidget = MSROpenModelsPopup(self.main_window)
         self._popup_import: QWidget = MSRModelImportPopup()
 
         self.setFixedHeight(30)  # max 1cm height
@@ -46,7 +43,7 @@ class MSRHeaderWidget(QWidget):
         open_action = QAction("Open", self)
         open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(
-            self._open_models_popup)
+            self._popup_open.show)
         context_menu.addAction(open_action)
 
         import_action = QAction("Import", self)
@@ -57,78 +54,3 @@ class MSRHeaderWidget(QWidget):
 
         context_menu.exec(self._models_button.mapToGlobal(
             self._models_button.rect().bottomLeft()))
-
-    def _open_models_popup(self) -> None:
-        """Opens the model selection popup menu."""
-
-        self._popup_open = QWidget()  # garbage collected without self
-        self._popup_open.setWindowTitle("Models")
-        self._popup_open.resize(600, 400)
-
-        layout = QVBoxLayout(self._popup_open)
-
-        default_label = QLabel("Default Models:")
-        default_list = QListWidget()
-
-        custom_label = QLabel("Custom Models:")
-        custom_list = QListWidget()
-
-        lib_path = Path(__file__).parents[1] / "lib"
-
-        self.load_models(default_list, lib_path / "models")
-        default_list.itemClicked.connect(
-            lambda item:
-            self.update_loaded_model(item.text(), False, [custom_list]))
-
-        self.load_models(custom_list, lib_path / "imported_models")
-        custom_list.itemClicked.connect(
-            lambda item:
-            self.update_loaded_model(item.text(), True, [default_list]))
-
-        close_button = QPushButton("Close")
-        close_button.clicked.connect(self._popup_open.close)
-
-        layout.addWidget(default_label)
-        layout.addWidget(default_list)
-        layout.addWidget(custom_label)
-        layout.addWidget(custom_list)
-        layout.addWidget(close_button)
-
-        self._popup_open.show()
-
-    def update_loaded_model(self, model_name: str, custom_model: bool,
-                            other_widgets: List[QListWidget] = None, scale=0.02) -> None:
-        """Updates the loaded model in the config.
-
-        Args:
-            model_name (str): The name of the model to load.
-            custom_model (bool): Whether the model is a custom model.
-            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
-            scale (float, optional): The scale of the model shown in the simulation. Defaults to 0.02.
-        """
-        # TODO: accept different file suffixes
-        # TODO: make scaling factor configurable
-        if other_widgets is not None:
-            for widget in other_widgets:
-                widget.clearSelection()
-
-        Config.set_model(model_name, scale, custom_model)
-        self.main_window.update_model()
-
-    def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
-        """Loads the default models from the default folder into the list widget.
-
-        Args:
-            list_widget (QListWidget): The list widget to add the items to.
-            models_path (Path): The path to the models folder.
-        """
-        if not models_path.exists():
-            QMessageBox.warning(
-                self, "Error", f"Models folder not found at: {models_path}")
-            return
-
-        model_names = list(
-            {path.stem for path in models_path.iterdir()} - {".gitkeep"})
-        # use set comprehension to remove duplicates
-        for model_name in model_names:
-            list_widget.addItem(model_name)
