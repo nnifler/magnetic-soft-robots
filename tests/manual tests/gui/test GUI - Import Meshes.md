@@ -15,25 +15,25 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
 2. **Click Models button**
     1. Click the `Models` button at the top right corner.
-    2. In the opening menu, select the QAction Import.
+    2. In the opening menu, select the menu item `Import`.
 3. **Import Models Popup - regular**
-    1. Check which Widgets appear in the Popup
+    1. Check which widgets appear in the popup.
     2. Define a name in the box for that, include spaces.
     3. Select a random .stl as a surface mesh, for instance from the provided examples
     4. Select a random .msh as a volumetric mesh, for instance from the provided examples
-    5. Press the Import button.
+    5. Press the `Import` button.
     6. Check for success popup and close it.
 4. **Provoke Errors**
     0. For each of the following points, repeat the previous instructions for the regular case (see point 1-3), except...
-    1. Press import with nothing specified.
-    2. Press import with no paths but valid name specified.
-    3. Press import with either path unspecified.
+    1. Press `Import` with nothing specified.
+    2. Press `Import` with no paths but valid name specified.
+    3. Press `Import` with either path unspecified.
     4. Try selecting a file with invalid format in the dialog.
-    5. Press import with no name but valid paths specified.
+    5. Press `Import` with no name but valid paths specified.
 ## Expected Result
-1. Our main window is started.
+1. The main window is started.
 2. 
-    1. A QMenu should open.
+    1. A menu should open.
     2. A popup window titled "Import Models" should appear.
 3. 
     1. Box to define models, which holds lables for declaring the model name, and both paths. Furthermore this box includes 2 buttons for selecting paths, and there is one big button to import the mesh below the box.

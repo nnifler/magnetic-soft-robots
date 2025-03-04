@@ -13,44 +13,45 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 ## Test
 1. Start of the application
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
-2. Selected Tab
-    1. Make sure you selected the default tab simulation settings.
-3. Check the behaviour of the application: Check whether a sub widget with the name "Material Configuration" opens in the interface at start.
-4. Test exceptional Material Name functionality
-    1. Click the save button without specifing a name in the Material Name field.
-    2. Input random text only from whitespace and punctuation characters in the Material Name field.
-    3. Click the save button.
-    4. Select a random material from the Select Material field.
-    5. If the text right of the selection states the material is custom redo step 4.4.
-    6. Copy the text of your selection to the Material Name field. If you're unsure how to type the material name take a look in [the corresponding json file](../../../lib/materials/default.json).
-    7. Click the save button.
-5. Test Material Name functionality
-    1. Input random accepted values in each text field except the name field in the material configuration widget.
-    2. Input a unique text, that is not part of the Select Materials field yet, in the Material Name text field.
-    3. Click the save button.
+2. Select the tab in the sidebar of the interface.  
+    1. Make sure you selected the default tab `Simulation Settings`.
+3. Check the behaviour of the application: 
+    1. Check whether a sub widget with the name `Material Configuration` opens in the interface at start.
+4. Test the exceptional behaviour of the save material functionality.
+    1. Click the save button without specifing a name in the `Material Name` field.
+    2. Enter a random text only from whitespace and punctuation characters in the `Material Name` field.
+    3. Click the `Save` button.
+    4. Select a random material from the `Select Material` field.
+    5. If the text right of the selected material states that the material is custom redo step 4.4.
+    6. Copy the text of your previous selected material to the `Material Name` field. If you're unsure how to type the material name take a look in [the corresponding json file](../../../lib/materials/default.json).
+    7. Click the `Save` button.
+5. Test `Material Name` functionality
+    1. Enter random accepted values in each text field except the name field in the `Material Configuration` widget.
+    2. Enter a unique text, that is not yet part of the database shown under the `Select Materials` field, in the `Material Name` text field.
+    3. Click the `Save` button.
 6. Select Material
-    1. Look at the Select Material dropdown
-    2. Look at the values
-    3. Look at the text right of the dropdown
+    1. Check the current selected material name shown in the `Select Material` dropdown and compare it to the material name specified in 5.2
+    2. Check if the shown values are as specified in 5.1
+    3. Check which mode the text right of the dropdown shows
 7. Test further exceptional behavior
-    1. Copy the text out of the dropdown selection to the Material Name field.
-    2. Input random accepted values in each text field except the name field in the material configuration widget.
-    3. Click the Save button.
-    4. In the error box click the Abort button.
-    5. In the Select Material Dropdown select a random material.
-    6. In the Select Material Dropdown select the material with the name you specified.
-    7. Look at the values.
-    8. Input random accepted values in each text field except the name field in the material configuration widget.
-    9. Click the Save button.
-    10. In the error box click the Save button.
-    11. In the Select Material Dropdown select a random material.
-    12. In the Select Material Dropdown select the material with the name you specified.
-    13. Look at the values.
+    1. Copy the current text from the `Select material` dropdown into the `Material Name` field.
+    2. Enter random valid values in each text field except the `Material Name` field in the `Material Configuration` widget.
+    3. Click the `Save` button.
+    4. If an error box is shown click the `Abort` button.
+    5. In the `Select Material` dropdown select a random material.
+    6. Now select the material with the name you specified in 5.2 from the `Select Material` dropdown.
+    7. Check the displayed values.
+    8. Enter random valid values in each text field in the `Material Configuration` except the `Material Name` field, which should stay the same. 
+    9. Click the `Save` button.
+    10. If an error box appears, click the `Save` button in the error box.
+    11. Select a random material from the `Select Material` dropdown.
+    12. From the `Select Material` dropdown select the material with the name you specified in 5.2.
+    13. Check the displayed values.
 8. Restart Behavior
-    1. Close the Soft Robotics Simulation window.
-    2. Redo 1-2
-    3. Select the material you defined in 5.2 in the Select Material selection.
-    4. Look at the values.
+    1. Close the `Soft Robotics Simulation` window.
+    2. Redo the steps 1 and 2. 
+    3. Select the material you defined in 5.2 in the `Select Material` dropdown menu.
+    4. Check the displayed values.
 
 ## Expected Result
 
