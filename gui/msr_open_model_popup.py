@@ -1,3 +1,12 @@
+"""This module bundels functionality around the selection of models. 
+It includes a widget with two list selections, for choosing between builtin and custom models.
+Upon selecting a model, the selection process might either be discarded by closing the window, 
+or loading the selected model into the simulation by the press of a button.
+
+Classes:
+    Implements a popup window for model selection as a QWidget.
+"""
+
 from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QMainWindow,
@@ -6,7 +15,22 @@ from src import Config
 
 
 class MSROpenModelsPopup(QWidget):
+    """A class implementing the popup for model selection.
+    Inherits from QWidget.
+    Provides functionality for loading, selecting and opening models into the simulation.
+    """
+
     def __init__(self, main_window: QMainWindow):
+        """Initializes the popup for model selection. 
+
+        Attributes:
+            default_list (QListWidget): The widget listing the predefined models
+            custom_list (QListWidget): The widget listing all user-imported models
+
+        Args:
+            main_window (QMainWindow): The main GUI window.
+        """
+
         super().__init__()
         self.setWindowTitle("Models")
         self.resize(600, 400)
