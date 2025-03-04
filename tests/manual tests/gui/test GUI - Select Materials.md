@@ -16,7 +16,7 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 2. **Check the behaviour of the application**
     1. Check whether a sub widget with the name "Material Configuration" opens in the simulation tab at start including a field with the name "Select Materials:"
 3. **Window check**
-    1. Selecting materials
+    1. Select materials via the "Select Materials" dropdown
     2. Switching between different materials 
         1. Switching between different materials is possible
     3. Displays the parameters of the selected material.
