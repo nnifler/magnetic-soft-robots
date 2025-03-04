@@ -3,7 +3,7 @@
 ### Test Goal
 
 Check whether model properties and selections are shown correctly.
-Check if the following criteria are meet: 
+Check if the following criteria are met: 
 To define the bounding box inside of which all vertices are fixed, two (diagonally opposing) points need to be specified in the GUI. Each point should be represented as a vector, allowing float values for each of its three places. For that, an own widget should be defined dedicated to the definition of model parameters.
 In the same widget, the name of the currently selected mesh should be displayed in a label, so that it is clear for which model the fixation is defined. For further information, the number of nodes in the specified mesh should be displayed.
 
