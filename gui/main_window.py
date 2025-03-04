@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("butterfly", 0.02)
+        Config.set_model("butterfly", None, False)
 
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
@@ -223,7 +223,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 1000  # Umrechnung in Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(True)
+        Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,

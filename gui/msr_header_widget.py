@@ -1,7 +1,7 @@
 """This module provides a toolkit for the GUI header definition."""
 
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
                                QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow,)
 from PySide6.QtCore import Qt
@@ -97,14 +97,18 @@ class MSRHeaderWidget(QWidget):
         self._popup_open.show()
 
     def update_loaded_model(self, model_name: str, custom_model: bool,
-                            other_widgets: List[QListWidget] = None, scale=0.02) -> None:
+                            other_widgets: List[QListWidget] = None, scale: Optional[float] = None) -> None:
         """Updates the loaded model in the config.
 
         Args:
             model_name (str): The name of the model to load.
             custom_model (bool): Whether the model is a custom model.
             other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
-            scale (float, optional): The scale of the model shown in the simulation. Defaults to 0.02.
+            scale (Optional[float], optional): The scale of the model shown in the simulation. 
+                If set to None, uses the default scales. Defaults to None.
+
+        Raises:
+            ValueError: If scale is less than or equal to 0.
         """
         # TODO: accept different file suffixes
         # TODO: make scaling factor configurable
