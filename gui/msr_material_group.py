@@ -137,11 +137,6 @@ class MSRMaterialGroup(QGroupBox):
         self._custom_material_manager = JsonMaterialManager()
         self._custom_material_manager.materials = self._custom_material_data.copy()
 
-        behavior_label = QLabel("Material Behavior:")
-        self.behavior_combo_box = QComboBox()
-        self.behavior_combo_box.addItems(
-            ["Linear-Elastic", "Plastic", "Viscoelastic"])
-
         self.parameters = {
             "youngs_modulus": MSRMaterialParameter(
                 name="(E) Young's Modulus:",
@@ -195,15 +190,12 @@ class MSRMaterialGroup(QGroupBox):
         self._layout.addWidget(self._material_combo_box, 0, 1)
         self._layout.addWidget(self._material_custom_label, 0, 2)
 
-        self._layout.addWidget(behavior_label, 1, 0)
-        self._layout.addWidget(self.behavior_combo_box, 1, 1)
-
         for row, param in enumerate(self.parameters.values(), start=2):
             self._layout.addWidget(param.label, row, 0)
             self._layout.addWidget(param.spinbox, row, 1)
             self._layout.addWidget(param.unit_selector, row, 2)
 
-        row = len(self.parameters) + 2
+        row = len(self.parameters) + 1
         self._layout.addWidget(self._material_name_input, row+1, 0, 1, 2)
         self._layout.addWidget(material_save_button, row+1, 2)
 

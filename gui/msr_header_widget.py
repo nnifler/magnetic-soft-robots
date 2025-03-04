@@ -1,9 +1,18 @@
-"""This module provides a toolkit for the GUI header definition."""
+"""
+This module provides a header widget for the MSR GUI.
+
+The header includes buttons and menus to manage model imports 
+and the display of models. It integrates with other modules to handle 
+custom and default models.
+
+Classes:
+    MSRHeaderWidget: Implements the header of the GUI as a QWidget.
+"""
 
 from PySide6.QtWidgets import (QWidget, QHBoxLayout,
                                QLabel, QPushButton, QMenu, QMainWindow,)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeySequence, QAction
+from PySide6.QtGui import QAction
 from gui import MSROpenModelsPopup, MSRModelImportPopup
 
 
@@ -33,7 +42,7 @@ class MSRHeaderWidget(QWidget):
         header_layout.addWidget(self._models_button)
 
     def _show_models_menu(self) -> None:
-        """Creates the models context menu."""
+        """Creates and displays the models context menu."""
 
         # Create the menu bar
         context_menu = QMenu(self)
@@ -41,13 +50,11 @@ class MSRHeaderWidget(QWidget):
 
         # Add action to the Library menu
         open_action = QAction("Open", self)
-        open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(
             self._popup_open.show)
         context_menu.addAction(open_action)
 
         import_action = QAction("Import", self)
-        import_action.setShortcut(QKeySequence("Ctrl+I"))
         import_action.triggered.connect(
             self._popup_import.show)
         context_menu.addAction(import_action)
