@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QMainWindow,
                                QLabel, QPushButton, QListWidget, QMessageBox,)
+from PySide6.QtGui import QFont
 from src import Config
 
 
@@ -50,17 +51,26 @@ class MSROpenModelsPopup(QWidget):
         selection_text_label = QLabel("Current Selection:")
         self._selection_label = QLabel("")
 
+        fat_text = QFont()
+        fat_text.setBold(True)
+        for label in [default_label, custom_label, selection_text_label]:
+            label.setFont(fat_text)
+
         lib_path = Path(__file__).parents[1] / "lib"
 
         self.load_models(self.default_list, lib_path / "models")
         self.default_list.itemActivated.connect(
             lambda item:
             self.update_loaded_model(item.text(), False, [self.custom_list]))
+        self.default_list.itemSelectionChanged.connect(
+            self.custom_list.clearSelection)
 
         self.load_models(self.custom_list, lib_path / "imported_models")
         self.custom_list.itemActivated.connect(
             lambda item:
             self.update_loaded_model(item.text(), True, [self.default_list]))
+        self.custom_list.itemSelectionChanged.connect(
+            self.default_list.clearSelection)
 
         open_button = QPushButton("Open Model")
         open_button.clicked.connect(self.open_model)
