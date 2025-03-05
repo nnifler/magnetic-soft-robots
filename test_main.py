@@ -23,6 +23,7 @@ suite.addTests([
     constraints_test_suite(),
     simulation_analyser_test_suite(),
     analysis_parameters_test_suite(),
+    show_force_test_suite()
 ])
 
 runner = unittest.TextTestRunner()

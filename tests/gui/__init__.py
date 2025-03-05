@@ -1,0 +1,1 @@
+from .test_show_force_checkbox import suite as show_force_test_suite

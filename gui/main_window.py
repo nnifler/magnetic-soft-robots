@@ -177,6 +177,7 @@ class MainWindow(QMainWindow):
 
         # Default values
         Config.set_model("butterfly", 0.02)
+        self._very_secret_bool_to_stop_sofa_for_tests = False
 
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
@@ -281,6 +282,9 @@ class MainWindow(QMainWindow):
         if deformation_widget_enabled:
             analysis_parameters.set_max_deformation_parameters(
                 self.deformation_widget, deformation_input_list)
+
+        if self._very_secret_bool_to_stop_sofa_for_tests:
+            return
 
         sofa_instantiator.main(analysis_parameters)
 
