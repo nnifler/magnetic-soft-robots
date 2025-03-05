@@ -13,13 +13,23 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 ## Test
 1. **Start of the application**
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
-2. **Click library button**
+2. **Open Popup Menu**
     1. Click the `Models` button at the top right corner.
     2. Click the `Open` button that appeared after clicking the `Models` button.
-    3. Select a random model from the displayed lists.
-    4. Close the popup window.
-3. **Click Apply Button**
+3. **Select Model**
+    1. Select a random model out of the default or custom models.
+    2. Click the `Close` button in the bottom of the popup window.
+4. **Validate selected model**
     1. Click the `Apply` button at the bottom of the GUI.
 
+
 ## Expected Result
-The in step 2.ii selected model is shown in the SOFA GUI.
+1. 2.1 A popup window titled `Models` appears.
+2. 2.1 The popup window contains the following default models listed under 'Default Models:'
+   - `gripper_4_arm`
+   - `beam`
+   - `simple_buttefly`
+   - `butterfly`
+   - `gripper_3_arm`
+3. 2.1 The popup window can also contain models listed under 'Custom Models'.
+4. 4.1 The selected model is applied in the GUI. 
