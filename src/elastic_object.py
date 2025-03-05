@@ -121,5 +121,5 @@ class ElasticObject():
                 indices=f"{i}",
                 name=f"force_{i}",
                 forces=[0, 0, 0],
-                showArrowSize="0.001" if Config.get_show_force() else "0"
+                showArrowSize=f"{0.001 * self._mesh_loader.scaling}" if Config.get_show_force() else "0"
             )

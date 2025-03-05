@@ -25,7 +25,11 @@ endings = [('.obj', '.stl', '.vtk', '.off', '.msh'),  # SURFACE
 
 
 class MeshLoader():
-    """Loads meshes into the Sofa Scene."""
+    """Loads meshes into the Sofa Scene.
+
+    Attributes:
+        scaling (float): the scaling of the given mesh
+    """
 
     def __init__(self, name: str = "meshLoader", scaling_factor: float = 1.) -> None:
         """Initializes the MeshLoader.
@@ -36,7 +40,7 @@ class MeshLoader():
         """
         self._path: list = [None, None]
         self._name = name
-        self._scaling = scaling_factor
+        self.scaling = scaling_factor
 
     def load_file(self, path: Path, mode: Mode) -> None:
         """Loads a filepath into loader
@@ -109,7 +113,7 @@ class MeshLoader():
             ending_to_loader[path.suffix],
             name=self._name+"_"+mode.name.lower(),
             filename=str(path.absolute()),
-            scale3d=[self._scaling]*3,
+            scale3d=[self.scaling]*3,
         )
         return mesh
 

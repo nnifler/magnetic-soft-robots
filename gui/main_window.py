@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QCheckBox,
     QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout, QTabWidget
 )
 from PySide6.QtCore import Qt, QRegularExpression
@@ -153,6 +153,10 @@ class MainWindow(QMainWindow):
         sidebar_tabs.addTab(analysis_settings, "Analysis Settings")
 
         # Space to add to analysis tab
+        self._show_force_checkbox = QCheckBox("Show Force", self)
+        self._show_force_checkbox.setChecked(False)
+        analysis_layout.addWidget(self._show_force_checkbox)
+
         self.deformation_widget = MSRDeformationAnalysisWidget()
         analysis_layout.addWidget(self.deformation_widget)
 
@@ -247,7 +251,7 @@ class MainWindow(QMainWindow):
         field_strength_val = self.field_strength_slider.value() / 10  # Conversion to Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(True)
+        Config.set_show_force(self._show_force_checkbox.isChecked())
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
