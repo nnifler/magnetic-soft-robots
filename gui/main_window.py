@@ -55,7 +55,6 @@ class MainWindow(QMainWindow):
         self.custom_list = None
 
         self.setWindowTitle("Soft Robotics Simulation")
-        self.resize(500, 800)
 
         # Main widget and layout
         central_widget = QWidget()
