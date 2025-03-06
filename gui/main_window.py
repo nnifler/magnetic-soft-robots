@@ -183,11 +183,7 @@ class MainWindow(QMainWindow):
         Config.set_model("butterfly", 0.02)
 
     def _update_bounding_box_enabled(self) -> None:
-        """Enables or disables the bounding box inputs based on the model type.
-
-        Args:
-            custom_model (bool): Whether the model is a custom model.
-        """
+        """Enables or disables the bounding box inputs based on the model type."""
         self._model_bounding_box_a_label.setDisabled(not self._custom_model)
         self._model_bounding_box_b_label.setDisabled(not self._custom_model)
         self._model_bounding_box_a.setDisabled(not self._custom_model)
