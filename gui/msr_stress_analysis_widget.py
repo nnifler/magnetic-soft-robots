@@ -15,7 +15,7 @@ class MSRHeatmapBar(QLabel):
     """
 
     def paintEvent(self, arg__1: QPaintEvent) -> None:
-        """custom reimplementation of the paintEvent of QLabel. Responsible for drawing the gradient.
+        """Custom reimplementation of the paintEvent of QLabel. Responsible for drawing the gradient.
 
         Args:
             arg__1 (QPaintEvent): the event
@@ -44,7 +44,7 @@ class MSRHeatmap(QWidget):
     """
 
     def __init__(self, parent: QWidget = ...):
-        """Initializes the heatmap display includimg labels for minimum and maximum stress.
+        """Initializes the heatmap display including labels for minimum and maximum stress.
 
         Args:
             parent (QWidget, optional): Parent widget. Defaults to ....
