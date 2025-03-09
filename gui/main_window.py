@@ -272,6 +272,8 @@ class MainWindow(QMainWindow):
                 np.array(bounding_box_a), np.array(bounding_box_b))
 
         deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
+        if deformation_widget_enabled is None:
+            return
 
         analysis_parameters = AnalysisParameters()
         if deformation_widget_enabled:
@@ -299,7 +301,7 @@ class MainWindow(QMainWindow):
                 # Match with regex
                 if not self.deformation_widget.coord_regex.match(coords):
                     QMessageBox.warning(self, "Error", "Invalid coordinates!")
-                    return
+                    return None, None
                 # Extract information
                 coord_nums = list(
                     map(float, re.findall(r"-?\d+(?:\.\d+)?", coords)))
@@ -313,7 +315,7 @@ class MainWindow(QMainWindow):
                 # Match with regex
                 if not self.deformation_widget.indices_regex.match(indices):
                     QMessageBox.warning(self, "Error", "Invalid indices!")
-                    return
+                    return None, None
                 # Extract information
                 input_list = list(map(int, re.findall(r"\d+", indices)))
         return deformation_widget_enabled, input_list
