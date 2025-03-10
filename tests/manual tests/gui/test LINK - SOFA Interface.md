@@ -21,7 +21,12 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 2. **Start of the application**
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
 
-3. **Input values**
+3. **Select custom model**
+    1. Click the `Models` button up right
+    2. Select open
+    3. Select a random custom model
+
+4. **Input values**
     1. Ensure, that the simulation tab is selected
     2. Input a random valid value in the number field `Young's Modulus`
     3. Choose a random option in the unit selector next to the number field `Young's Modulus`
@@ -34,20 +39,20 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     10. Input a random valid vector in the `Constraint Box Lower Corner` field
     11. Input a random valid vector in the `Constraint Box Upper Corner` field
 
-4. **Click Apply Button**
+5. **Click Apply Button**
     1. Click the `Apply` button at the bottom of the GUI
 
-5. **Verify Config Class**
+6. **Verify Config Class**
     1. Look into the console and verify if the values in the output are the same as the ones you put into the GUI
 
-6. **Deactivate debug mode**
+7. **Deactivate debug mode**
     1. Locate the file [$ magnetic-soft-robots/src/sofa_instantiator.py](../../../src/sofa_instantiator.py)
     2. Change the variable `debug` in the `main`-Method to `False`
 
-7. **Start of the application**
+8. **Start of the application**
     1. Run the file [$ magnetic-soft-robots/main.py](../../../main.py)
 
-8. **Verify if the simulation starts**
+9. **Verify if the simulation starts**
 
 ## Expected Result
 

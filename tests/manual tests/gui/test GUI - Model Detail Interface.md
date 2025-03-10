@@ -27,16 +27,17 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     2. Select "Open"
     3. Select a random default model
 4. Window check
-    1. "Selected Model" displays the name of the selected model
-    2. "Number of Nodes" displays the number of nodes.
-    3. "Number of Tetrahedra" displays the number of tetrahedra
-    4. Bounding Boxes: --> see [LINK - SOFA Interface 3.9-10](test LINK - SOFA Interface.md)
+    1. The garyed out label displays default.
+    2. "Selected Model" displays the name of the selected model.
+    3. "Number of Nodes" displays the number of nodes.
+    4. "Number of Tetrahedra" displays the number of tetrahedra
+    5. The constraints selection is grayed out and it is impossible to input constraints.
 
 ## Expected Result
 
 1. 2.1: The widget appears.
-2. 4.1: The model name equals the model name you selected in 3.3
-3. 4.2-3: The model nodes count equals the following values for default models:
+2. 4.2: The model name equals the model name you selected in 3.3
+3. 4.3-4: The model nodes count equals the following values for default models:
     1. `beam`: 306 Nodes, 807 Tetrahedra
     2. `butterfly`: 423 Nodes, 1094 Tetrahedra
     3. `gripper_3_arm`: 466 Nodes, 1131 Tetrahedra
