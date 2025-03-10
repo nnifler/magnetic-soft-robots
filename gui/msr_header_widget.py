@@ -35,7 +35,7 @@ class MSRHeaderWidget(QWidget):
         self._popup_open: QWidget = None
         self._popup_import: QWidget = MSRModelImportPopup()
 
-        self.setFixedHeight(35)  # max 1cm height
+        self.setFixedHeight(30)  # max 1cm height
         header_layout = QHBoxLayout(self)
         header_layout.setContentsMargins(5, 0, 5, 0)
         header_layout.setSpacing(5)  # min distance between buttons
