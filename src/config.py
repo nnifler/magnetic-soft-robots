@@ -60,25 +60,25 @@ class Config:
         Args:
             name (str): The name of the model and all necessary mesh files.
             scale (Optional[float], optional): The scaling factor used in the simulation. 
-             If set to None, uses the default scales. Defaults to None.
+             If set to None, uses the default scales (This means a predefined scale for the example models 
+             and a scale of `0.01` for any custom model). Defaults to None.
             custom_model (bool, optional): True, if the set model is custom. Defaults to False.
 
         Raises:
             ValueError: If scale is less than or equal to 0.
         """
-        scales = {
-            "beam": 0.02,
-            "gripper_3_arm": 0.02,
-            "gripper_4_arm": 0.02,
-            "butterfly": 0.0002898551,
-            "simple_butterfly": 0.0002898551,
-        }
+        if scale is not None and scale <= 0:
+            raise ValueError("Scale must be positive.")
 
         if scale is None:
-            scale = scales.get(name, 1)
-
-        if scale <= 0:
-            raise ValueError("Scale must be positive.")
+            scales = {
+                "beam": 0.02,
+                "gripper_3_arm": 0.02,
+                "gripper_4_arm": 0.02,
+                "butterfly": 0.0002898551,
+                "simple_butterfly": 0.0002898551,
+            }
+            scale = scales.get(name, 0.01)
 
         if custom_model:
             name = "../imported_models/"+name

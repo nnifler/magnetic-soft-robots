@@ -175,7 +175,6 @@ class MagneticController(Sofa.Core.Controller):
 
             for node in tetrahedron:
                 if not force_defined_at[node]:
-                    # TO DO: check if volume per node is relevant here
                     dipole_moment = Config.get_remanence().T * self._volume / MU0
 
                     m = dipole_moment * orientation

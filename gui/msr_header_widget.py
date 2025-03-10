@@ -105,7 +105,8 @@ class MSRHeaderWidget(QWidget):
             custom_model (bool): Whether the model is a custom model.
             other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
             scale (Optional[float], optional): The scale of the model shown in the simulation. 
-                If set to None, uses the default scales. Defaults to None.
+                If set to None, uses the default scales (This means a predefined scale for the example models
+                and a scale of `0.01` for any custom model). Defaults to None.
 
         Raises:
             ValueError: If scale is less than or equal to 0.
