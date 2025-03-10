@@ -13,16 +13,22 @@ As a student of material sciences, I’d like to experiment with different magne
     1. Check whether a sub widget with the name "Magnetic Field Settings" is visible in the simulation tab upon application start.
 3. **Window check**
     1. Slider for Strength Adjustment
-        1. Verify that it contains a slider with the label `Magnetic Field Strength`.
-        2. Slider is adjustable to various positions within its range.
-        3. Ensure that the minimum and maximum values of the slider are correct zero and 100 T.
-        4. Check that changes in the slider position update the `Magnetic Field Strength` output in the `Magnetic Field Setting` widget in real time and match the expected values in Tesla.
+        1. Verify an input with the label `Magnetic Field Strength` is shown.
+        2. Invalid input is restricted to ensure only values between 0 and 100.0000 are allowed (excluding negative numbers, non-numeric characters, except comma or dot).
+        3. Verify the unit `T` is shown after the input field
+        4. Verify a coarse slider from 0 to 100 is shown.
+        5. Verify a fine slider from 49.5 to 50.5 is shown.
+        6. The Sliders are adjustable to various positions within its range.
+        7. Ensure that the minimum and maximum values of the first slider are correct zero and 100 T.
+        8. Insert a random number from 0.0000 to 100.0000 with up to 4 decimal places in the spinbox.
+        9. Input a random number in the first slider.
+        10. Input a random number in the second slider.
     2. Vector Input Field
         1. Verify the presence of the input field with the label `Direction (Vector)`.
         2. Allowed: Numbers in the format [x, y, z], with optional spaces and decimal places.
         3. Invalid input is restricted: Anything that does not adhere to the format [x, y, z] with exactly three valid numbers and separators.
         4. The text field contains a description of the correct input format when empty. 
-    3. Apply Function 
+    3. Apply Function
         1. Verify that the current slider value is applied to the magnetic field strength by checking the console output.
         2. Verify that the vector value from the input field is parsed correctly by checking the console output.
         3. Confirm that invalid vector inputs trigger a warning dialog box ad prevent the application of values. 
@@ -39,3 +45,7 @@ As a student of material sciences, I’d like to experiment with different magne
 7. Description of the correct entry is shown if the field is empty.
 8. The console output for magnettic field strength and direction vector matches the input in the GUI .
 9. No errors or warnings in the console.
+10. 3.1.8 Both the first sliders update.
+11. 3.1.8 The min/mid/max labels update to -.5 the rounded number, the rounded number, +.5 the rounded number.
+12. 3.1.9 The spinbox updates to the selected input, the second slider updates again with it's labels.
+13. 3.1.10 The spinbox updates mainly it's decimal places, the first slider updates less than one percent.
