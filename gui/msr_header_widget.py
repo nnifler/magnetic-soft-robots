@@ -12,7 +12,8 @@ Classes:
 from pathlib import Path
 from typing import List
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow)
+                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox,
+                               QMainWindow, QSizePolicy)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QPixmap
 from src import Config
@@ -23,36 +24,42 @@ class MSRHeaderWidget(QWidget):
     """Implements the header of the GUI as a QWidget."""
 
     def __init__(self, main_window: QMainWindow) -> None:
-        """Initializes the header widget."""
+        """Initializes the header widget.
+
+        Args:
+            main_window (QMainWindow): The main window of the application.
+        """
         super().__init__()
 
         self.main_window = main_window
         self._popup_open: QWidget = None
         self._popup_import: QWidget = MSRModelImportPopup()
 
-        self.setFixedHeight(30)  # max 1cm height
+        self.setFixedHeight(35)  # max 1cm height
         header_layout = QHBoxLayout(self)
         header_layout.setContentsMargins(5, 0, 5, 0)
         header_layout.setSpacing(5)  # min distance between buttons
 
-        self.logo_label = QLabel(self)
-        pixmap = QPixmap(Path(__file__).parent / "logo" / "butterfly_logo.png")
-
-        desired_hight = 32
-        aspect_ratio = pixmap.width() / pixmap.height()
-        desired_width = int(desired_hight * aspect_ratio)
-        pixmap = pixmap.scaled(
-            desired_width, desired_hight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.logo_label.setPixmap(pixmap)
-        self.logo_label.setFixedSize(pixmap.size())
-        self.logo_label.setScaledContents(True)
-
-        header_layout.addWidget(self.logo_label)
-
         self._models_button = QPushButton("Models")
         self._models_button.clicked.connect(self._show_models_menu)
+
+        button_height = self._models_button.sizeHint().height() - 10
+
+        self.logo_label = QLabel(self)
+        pixmap = QPixmap(Path(__file__).parent / "logo" / "butterfly_logo.png")
+        aspect_ratio = pixmap.width() / pixmap.height()
+        desired_width = int(button_height * aspect_ratio)
+
+        pixmap = pixmap.scaled(
+            desired_width, button_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.logo_label.setPixmap(pixmap)
+        self.logo_label.setFixedSize(desired_width, button_height)
+        self.logo_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        header_layout.addWidget(self.logo_label, alignment=Qt.AlignVCenter)
         header_layout.addStretch()
-        header_layout.addWidget(self._models_button)
+        header_layout.addWidget(self._models_button, alignment=Qt.AlignVCenter)
 
     def _show_models_menu(self) -> None:
         """Creates and displays the models context menu."""
@@ -72,8 +79,8 @@ class MSRHeaderWidget(QWidget):
             self._popup_import.show)
         context_menu.addAction(import_action)
 
-        context_menu.exec(self._models_button.mapToGlobal(
-            self._models_button.rect().bottomLeft()))
+        context_menu.exec(
+            self._models_button.mapToGlobal(self._models_button.rect().bottomLeft()))
 
     def _open_models_popup(self) -> None:
         """Opens the model selection popup menu."""

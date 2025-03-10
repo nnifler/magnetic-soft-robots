@@ -40,10 +40,10 @@ class MainWindow(QMainWindow):
     simulation controls, and visualization.
 
     Attributes:
-    material_group (MSRMaterialGroup): Widget for material properties.
-    deformation_widget (MSRDeformationAnalysisWidget): Widget for deformation analysis.
-    field_strength_slider (QSlider): Slider for adjusting the magnetic field strength.
-    field_direction_input (QLineEdit): Input field for defining the magnetic field direction.
+        material_group (MSRMaterialGroup): Widget for material properties.
+        deformation_widget (MSRDeformationAnalysisWidget): Widget for deformation analysis.
+        field_strength_slider (QSlider): Slider for adjusting the magnetic field strength.
+        field_direction_input (QLineEdit): Input field for defining the magnetic field direction.
     """
 
     def __init__(self):
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         self.custom_list = None
 
         self.setWindowTitle("Magnetic Soft Robotics Simulation")
-        self.resize(500, 800)
+        self.resize(400, 600)
 
         # Main widget and layout
         central_widget = QWidget()
@@ -161,12 +161,11 @@ class MainWindow(QMainWindow):
         apply_button.clicked.connect(self.apply_parameters)
         sidebar.addWidget(apply_button)
 
-        sidebar_tabs.setFixedWidth(500)
+        sidebar_tabs.setFixedWidth(400)
         content_layout.addLayout(sidebar)
 
         # Main display for visualisation
         visualization_area = QWidget()
-        visualization_area.setStyleSheet("background-color: #f0f0f0;")
         content_layout.addWidget(visualization_area)
 
         main_layout.addLayout(content_layout)
