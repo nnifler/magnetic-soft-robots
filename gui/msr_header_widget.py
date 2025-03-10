@@ -14,7 +14,7 @@ from typing import List
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
                                QLabel, QPushButton, QMenu, QListWidget, QMessageBox,
                                QMainWindow, QSizePolicy)
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QPixmap
 from src import Config
 from gui import MSRModelImportPopup
@@ -24,10 +24,20 @@ class MSRHeaderWidget(QWidget):
     """Implements the header of the GUI as a QWidget."""
 
     def __init__(self, main_window: QMainWindow) -> None:
-        """Initializes the header widget.
-
+        """Initializes the header widget. 
         Args:
             main_window (QMainWindow): The main window of the application.
+
+        Attributes:
+            main_window (QMainWindow): Reference to the main window.
+            _popup_open (QWidget): Reference to the currently open popup, if any.
+            _popup_import (QWidget): Instance of the import popup.
+            _models_button (QPushButton): Button to open the models menu.
+            logo_label (QLabel): Label to display the application logo.
+
+        Notes: The `button_height` value is derived from `self._models_button.sizeHint().height() - 10`.
+        The `-10` offset compensates for additional padding/margins that Qt includes in the 
+        button's size hint calculation. This ensures the logo height aligns visually with the button.
         """
         super().__init__()
 
@@ -43,7 +53,9 @@ class MSRHeaderWidget(QWidget):
         self._models_button = QPushButton("Models")
         self._models_button.clicked.connect(self._show_models_menu)
 
-        button_height = self._models_button.sizeHint().height() - 10
+        button_size_hint = self._models_button.sizeHint()
+        button_height = max(1, button_size_hint.height() -
+                            10) if isinstance(button_size_hint, QSize) else 22
 
         self.logo_label = QLabel(self)
         pixmap = QPixmap(Path(__file__).parent / "logo" / "butterfly_logo.png")
