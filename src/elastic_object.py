@@ -73,14 +73,7 @@ class ElasticObject():
                 "VisualStyle",
                 displayFlags="hideVisual showBehaviorModels showForceFields hideCollisionModels",
             )
-            # eo_node.addObject(
-            #     "OglColorMap",
-            #     name="stress_heatmap",
-            # )
 
-        # Add Constraints
-        # If True, forces will be added and displayed on the vertices used as a constraint
-        # (use only for debugging)
         visualize_constraints = False
         if Config.get_use_constraints():
             point_a, point_b = Config.get_constraints()

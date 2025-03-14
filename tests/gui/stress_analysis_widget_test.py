@@ -2,11 +2,11 @@ import unittest
 import unittest.mock
 
 import numpy as np
-from PySide6.QtWidgets import QLabel, QWidget, QApplication
+from PySide6.QtWidgets import QLabel, QApplication
 from PySide6.QtGui import QColor
 
 from gui.main_window import MainWindow
-from gui.msr_stress_analysis_widget import MSRStressAnalysisWidget, MSRHeatmap, MSRHeatmapBar
+from gui.msr_stress_analysis_widget import MSRHeatmapBar
 
 from src.units import YoungsModulus
 
@@ -51,39 +51,41 @@ class TestHeatmapWidget(unittest.TestCase):
     def test_min(self):
         uut = self.uut
         input_val = np.random.uniform(0, 100, None)
+
+        uut.set_max(input_val + 10)
+        with self.assertRaises(ValueError, msg="no ValueError when min higher than max"):
+            uut.set_min(input_val + 20)
+
         uut.set_min(input_val)
         self.assertEqual(
             f"min: {round(YoungsModulus.from_Pa(input_val).Pa, 2)} Pa",
             uut._min_label.text(),
             msg=str(input_val))
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError when min higher than previous min"):
             uut.set_min(input_val + 1)
 
-        uut.set_max(input_val + 10)
-        with self.assertRaises(ValueError):
-            uut.set_min(input_val + 20)
-
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError with negative input"):
             uut.set_min(-1)
 
     def test_max(self):
         uut = self.uut
         input_val = np.random.uniform(20.1, 10000, None)
+
+        uut.set_min(input_val - 10)
+        with self.assertRaises(ValueError, msg="no ValueError when max lower than min"):
+            uut.set_max(input_val - 20)
+
         uut.set_max(input_val)
         self.assertEqual(
             f"max: {round(YoungsModulus.from_Pa(input_val).MPa, 2)} MPa",
             uut._max_label.text(),
             msg=str(input_val))
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError when max lower than previous max"):
             uut.set_max(input_val - 1)
 
-        uut.set_min(input_val - 10)
-        with self.assertRaises(ValueError):
-            uut.set_max(input_val - 20)
-
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError with negative input"):
             uut.set_max(-1)
 
 
@@ -101,39 +103,41 @@ class TestStressWidget(unittest.TestCase):
     def test_max(self):
         uut = self.uut
         input_val = np.random.uniform(20.1, 10000, None)
+
+        uut.set_min(input_val - 10)
+        with self.assertRaises(ValueError, msg="no ValueError when max lower than min"):
+            uut.set_max(input_val - 20)
+
         uut.set_max(input_val)
         self.assertEqual(
             f"max: {round(YoungsModulus.from_Pa(input_val).MPa, 2)} MPa",
             uut._heatmap._max_label.text(),
             msg=str(input_val))
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError when max lower than previous max"):
             uut.set_max(input_val - 1)
 
-        uut.set_min(input_val - 10)
-        with self.assertRaises(ValueError):
-            uut.set_max(input_val - 20)
-
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError with negative input"):
             uut.set_max(-1)
 
     def test_min(self):
         uut = self.uut
         input_val = np.random.uniform(0, 100, None)
+
+        uut.set_max(input_val + 10)
+        with self.assertRaises(ValueError, msg="no ValueError when min higher than max"):
+            uut.set_min(input_val + 20)
+
         uut.set_min(input_val)
         self.assertEqual(
             f"min: {round(YoungsModulus.from_Pa(input_val).Pa, 2)} Pa",
             uut._heatmap._min_label.text(),
             msg=str(input_val))
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError when min higher than previous min"):
             uut.set_min(input_val + 1)
 
-        uut.set_max(input_val + 10)
-        with self.assertRaises(ValueError):
-            uut.set_min(input_val + 20)
-
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="no ValueError with negative input"):
             uut.set_min(-1)
 
     def test_show_stress(self):

@@ -1,9 +1,15 @@
 """This module bundles functionality needed for the GUI implementation of the stress analysis.
+
+Classes:
+    MSRHeatmapBar: Inherits from QLabel to draw the color gradient 
+    used in the stress analysis of Sofa.
+    MSRHeatmap: A QWidget that bundles the Gradient with two labels.
+    MSRStressAnalysisWidget: A QGroupBox that bundles the complete heatmap 
+    with a QCheckbox enabling to toggle the stress analysis.
 """
-import math
 
 from PySide6.QtWidgets import (
-    QGroupBox, QVBoxLayout, QCheckBox, QLabel, QWidget, QHBoxLayout
+    QGroupBox, QVBoxLayout, QCheckBox, QLabel, QWidget
 )
 from PySide6.QtGui import QLinearGradient, QPainter, QPaintEvent
 
@@ -123,10 +129,13 @@ class MSRStressAnalysisWidget(QGroupBox):
         Args:
             parent (QWidget, optional): the parent widget. Defaults to None.
         """
-        super().__init__(parent)
-
-        self._stress_checkbox = QCheckBox("Stress Visualization", self)
+        super().__init__(parent, title="Stress Analysis")
+        self._stress_checkbox = QCheckBox("Enable Stress Analysis", self)
         self._heatmap = MSRHeatmap(self)
+
+        self._stress_checkbox.stateChanged.connect(
+            self._heatmap.setEnabled
+        )
 
         self._layout = QVBoxLayout(self)
         self._layout.addWidget(self._stress_checkbox)
