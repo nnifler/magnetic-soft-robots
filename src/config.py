@@ -72,9 +72,9 @@ class Config:
 
         if scale is None:
             scales = {
-                "beam": 0.02,
-                "gripper_3_arm": 0.02,
-                "gripper_4_arm": 0.02,
+                "beam": 0.01,
+                "gripper_3_arm": 0.01,
+                "gripper_4_arm": 0.01,
                 "butterfly": 0.0002898551,
                 "simple_butterfly": 0.0002898551,
             }
