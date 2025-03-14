@@ -120,7 +120,7 @@ class TestAnalysisParameters(unittest.TestCase):
         self.assertFalse(uut.stress_analysis,
                          "stress_analysis should be False after disabling")
         with self.assertRaises(ValueError, msg="not raised ValueError for undefined widget"):
-            uut.stress_widget()
+            _ = uut.stress_widget
 
     def test_stress_enable_errors(self):
         mock_no_min, mock_no_max = unittest.mock.MagicMock(), unittest.mock.MagicMock()

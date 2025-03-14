@@ -85,7 +85,7 @@ class AnalysisParameters:
             raise ValueError("Widget cannot be None")
         if not hasattr(widget, "set_min") or not callable(widget.set_min) \
                 or not hasattr(widget, "set_max") or not callable(widget.set_max):
-            raise ValueError("widget has not the necessary methods")
+            raise ValueError("Widget does not have the necessary methods")
 
         self._stress_analysis = True
         self._stress_widget = widget
