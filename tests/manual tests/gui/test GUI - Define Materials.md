@@ -16,6 +16,8 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     1. Check whether a sub widget with the name "Material Configuration" opens in the simulation tab at start.
 3. **Window check**
     1. Selecting materials
+        1. By default, the first material from the dropdown should be selected
+        2. Its parameters are displayed accordingly in the fields described below.
     2. Selecting material behavior
     3. Input field with label for Young modulus:
         1. Input of positive values with up to four decimal digits possible
