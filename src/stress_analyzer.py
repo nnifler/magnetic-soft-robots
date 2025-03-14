@@ -29,8 +29,11 @@ class StressAnalyzer(Sofa.Core.Controller):
             raise ValueError("provided argument is None")
 
         self._elastic_object = elastic_object
-        self._params = parameters
-        self._widget = parameters.stress_widget
+
+        self._analyze = parameters.stress_analysis
+        self._widget = None
+        if self._analyze:
+            self._widget = parameters.stress_widget
 
         self.max_stress = -np.inf
         self.min_stress = np.inf
@@ -45,7 +48,7 @@ class StressAnalyzer(Sofa.Core.Controller):
         Raises:
             ValueError: If parameters.stress_widget is None, but parameters.stress_analysis is True
         """
-        if not self._params.stress_analysis:
+        if not self._analyze:
             return
 
         stress_values = self._elastic_object.FEM_force_field.vonMisesPerNode.value
@@ -53,10 +56,6 @@ class StressAnalyzer(Sofa.Core.Controller):
 
         cur_max = stress_values.max()
         cur_min = stress_values.min()
-
-        if self._params.stress_widget is None:
-            raise ValueError(
-                "provided parameter.stress_widget needs to be set")
 
         if cur_max > self.max_stress:
             self.max_stress = cur_max

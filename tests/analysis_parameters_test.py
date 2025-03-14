@@ -28,7 +28,7 @@ class TestAnalysisParameters(unittest.TestCase):
 
         ap = AnalysisParameters()
         input_list = np.random.randint(3, size=(3,)).tolist()
-        ap.set_max_deformation_parameters(widget, input_list)
+        ap.enable_max_deformation_analysis(widget, input_list)
         self.assertTrue(ap.max_deformation_analysis)
         self.assertEqual(ap.max_deformation_widget, widget)
         self.assertListEqual(ap.max_deformation_input, input_list)
@@ -45,7 +45,7 @@ class TestAnalysisParameters(unittest.TestCase):
 
         ap = AnalysisParameters()
         input_list = [(np.random.rand(3) - 0.5) * 100 for _ in range(3)]
-        ap.set_max_deformation_parameters(widget, input_list)
+        ap.enable_max_deformation_analysis(widget, input_list)
         self.assertTrue(ap.max_deformation_analysis)
         self.assertEqual(ap.max_deformation_widget, widget)
         self.assertListEqual(ap.max_deformation_input, input_list)
@@ -62,7 +62,7 @@ class TestAnalysisParameters(unittest.TestCase):
 
         ap = AnalysisParameters()
         input_list = None
-        ap.set_max_deformation_parameters(widget, input_list)
+        ap.enable_max_deformation_analysis(widget, input_list)
         self.assertTrue(ap.max_deformation_analysis)
         self.assertEqual(ap.max_deformation_widget, widget)
         self.assertIsNone(ap.max_deformation_input)
@@ -80,7 +80,7 @@ class TestAnalysisParameters(unittest.TestCase):
         ap = AnalysisParameters()
         input_list = None
         with self.assertRaises(ValueError):
-            ap.set_max_deformation_parameters(widget, input_list)
+            ap.enable_max_deformation_analysis(widget, input_list)
 
     def test_disable_max_deformation_analysis(self):
         selection_mode = MSRDeformationAnalysisWidget.SelectionMode.INDICES
@@ -94,7 +94,7 @@ class TestAnalysisParameters(unittest.TestCase):
 
         ap = AnalysisParameters()
         input_list = np.random.randint(3, size=(3,)).tolist()
-        ap.set_max_deformation_parameters(widget, input_list)
+        ap.enable_max_deformation_analysis(widget, input_list)
 
         ap.disable_max_deformation_analysis()
         self.assertFalse(ap.max_deformation_analysis)

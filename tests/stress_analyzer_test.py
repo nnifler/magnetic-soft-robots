@@ -21,10 +21,10 @@ class TestStressAnalyzer(unittest.TestCase):
             side_effect=von_mises_vals
         )
 
-        para_mock = unittest.mock.MagicMock()
-        para_mock.stress_analysis = True
+        params = AnalysisParameters()
+        params.enable_stress_analysis(unittest.mock.MagicMock())
 
-        uut = StressAnalyzer(elastic_object=eo_mock, parameters=para_mock)
+        uut = StressAnalyzer(elastic_object=eo_mock, parameters=params)
         for _ in range(len(von_mises_vals)):
             uut.onAnimateBeginEvent(None)
 
@@ -40,12 +40,15 @@ class TestStressAnalyzer(unittest.TestCase):
         with self.assertRaises(ValueError):
             StressAnalyzer(None, mock)
 
-    def test_none_widget(self):
-        mock = unittest.mock.Mock()
+    def test_no_change(self):
         params = AnalysisParameters()
-        params.stress_analysis = True
-        with self.assertRaises(ValueError):
-            StressAnalyzer(mock, params).onAnimateBeginEvent(None)
+        params.disable_stress_analysis()
+        eo_mock = unittest.mock.MagicMock()
+
+        uut = StressAnalyzer(eo_mock, params)
+        uut.onAnimateBeginEvent(None)
+
+        eo_mock.assert_not_called()
 
 
 def suite() -> unittest.TestSuite:

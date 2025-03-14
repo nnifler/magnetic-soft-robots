@@ -254,12 +254,14 @@ class MainWindow(QMainWindow):
 
         analysis_parameters = AnalysisParameters()
         if deformation_widget_enabled:
-            analysis_parameters.set_max_deformation_parameters(
+            analysis_parameters.enable_max_deformation_analysis(
                 self.deformation_widget, deformation_input_list)
 
         show_stress = self.stress_analysis.show_stress
-        analysis_parameters.stress_analysis = show_stress
-        analysis_parameters.stress_widget = self.stress_analysis
+        if show_stress:
+            analysis_parameters.enable_stress_analysis(self.stress_analysis)
+        else:
+            analysis_parameters.disable_stress_analysis()
         Config.set_stress_kwargs(show_stress)
 
         sofa_instantiator.main(analysis_parameters)
