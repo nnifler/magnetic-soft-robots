@@ -136,6 +136,8 @@ class MSRStressAnalysisWidget(QGroupBox):
         self._stress_checkbox.stateChanged.connect(
             self._heatmap.setEnabled
         )
+        self._stress_checkbox.setChecked(False)
+        self._heatmap.setEnabled(False)
 
         self._layout = QVBoxLayout(self)
         self._layout.addWidget(self._stress_checkbox)
