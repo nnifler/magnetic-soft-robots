@@ -70,8 +70,8 @@ class AnalysisParameters:
     def enable_stress_analysis(self, widget: QWidget) -> None:
         if widget is None:
             raise ValueError("Widget cannot be None")
-        if not hasattr(widget, "set_min") and not callable(widget.set_min) \
-                or not hasattr(widget, "set_max") and not callable(widget.set_max):
+        if not hasattr(widget, "set_min") or not callable(widget.set_min) \
+                or not hasattr(widget, "set_max") or not callable(widget.set_max):
             raise ValueError("widget has not the necessary methods")
 
         self._stress_analysis = True
