@@ -255,7 +255,8 @@ class TestDeformation(unittest.TestCase):
 class TestAnalysisController(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    def setUp(cls):
+        Config.reset()
         Config.set_test_env()
         Config.set_model('beam', 1)
 
@@ -273,9 +274,10 @@ class TestAnalysisController(unittest.TestCase):
 
         parameters = AnalysisParameters()
         parameters.enable_max_deformation_analysis(widget, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
 
         controller: SimulationAnalysisController = root.getObject(
             'AnalysisController')
@@ -299,9 +301,10 @@ class TestAnalysisController(unittest.TestCase):
 
         parameters = AnalysisParameters()
         parameters.enable_max_deformation_analysis(widget, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
         analyser = SimulationAnalyser(root)
 
         controller: SimulationAnalysisController = root.getObject(
@@ -329,9 +332,10 @@ class TestAnalysisController(unittest.TestCase):
 
         parameters = AnalysisParameters()
         parameters.enable_max_deformation_analysis(widget, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
         analyser = SimulationAnalyser(root)
 
         Sofa.Simulation.init(root)
@@ -375,9 +379,10 @@ class TestAnalysisController(unittest.TestCase):
 
         parameters = AnalysisParameters()
         parameters.enable_max_deformation_analysis(widget, None)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
         analyser = SimulationAnalyser(root)
 
         Sofa.Simulation.init(root)
@@ -422,9 +427,10 @@ class TestAnalysisController(unittest.TestCase):
 
         parameters = AnalysisParameters()
         parameters.enable_max_deformation_analysis(widget, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
 
         Sofa.Simulation.init(root)
         Sofa.Simulation.animate(root, root.dt.value)
