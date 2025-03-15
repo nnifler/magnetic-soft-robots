@@ -1,9 +1,20 @@
-"""This module contains the main window of the application."""
+"""Main window module for the Magnetic Soft Robotics Simulation.
+
+Provides the graphical user interface (GUI) for configuring and running 
+soft robotics simulations. It includes controls for selecting materials, 
+adjusting simulation parameters, and visualizing results.
+
+Classes:
+    MainWindow: The main application window containing UI elements and 
+                parameter management for the simulation.
+"""
+
 
 import os
 import re
 from builtins import ValueError
 from typing import Optional, List, Tuple
+from pathlib import Path
 import numpy as np
 
 from PySide6.QtWidgets import (
@@ -12,32 +23,41 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
+import Sofa.Core
 
 from src.units import Tesla
 from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
 from src.mesh_loader import Mode as MeshMode
 
-from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
-
-from pathlib import Path
-import Sofa.Core
+from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget, MSRStressAnalysisWidget
 
 
 class MainWindow(QMainWindow):
-    """Main window of the application."""
+    """Main window of the application.
+
+    This class sets up the graphical user interface (GUI) for the 
+    Soft Robotics Simulation, including material selection, 
+    simulation controls, and visualization.
+
+    Attributes:
+    material_group (MSRMaterialGroup): Widget for material properties.
+    deformation_widget (MSRDeformationAnalysisWidget): Widget for deformation analysis.
+    field_strength_slider (QSlider): Slider for adjusting the magnetic field strength.
+    field_direction_input (QLineEdit): Input field for defining the magnetic field direction.
+    """
 
     def __init__(self):
-        """Initializes the main window.
-        """
+        """Initialize the main window and set up the UI."""
+
         super().__init__()
 
         # Unintialized variables for later code
         self.custom_list = None
 
         self.setWindowTitle("Soft Robotics Simulation")
-        self.resize(1200, 800)
+        self.resize(500, 800)
 
-        # Haupt-Widget und Layout
+        # Main widget and layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
@@ -46,19 +66,19 @@ class MainWindow(QMainWindow):
         header_widget = MSRHeaderWidget(self)
         main_layout.addWidget(header_widget)
 
-        # Hauptinhalt - Horizontal Layout
+        # Main content - Horizontal layout
         content_layout = QHBoxLayout()
 
-        # Linke Seitenleiste für Navigation und Parametersteuerung
+        # Left sidebar for navigation and parameter control
         sidebar = QVBoxLayout()
         sidebar_tabs = QTabWidget()
         simulation_settings = QWidget()
         simulation_layout = QVBoxLayout(simulation_settings)
         sidebar_tabs.addTab(simulation_settings, "Simulation Settings")
 
-        # Materialeigenschaften
+        # Material properties
         self.material_group = MSRMaterialGroup()
-        simulation_layout.addWidget(self.material_group)
+        simulation_layout.addWidget(self.material_group, stretch=3)
 
         # Model configuration
         model_group = QGroupBox("Model Configuration")
@@ -92,7 +112,7 @@ class MainWindow(QMainWindow):
         model_layout.addWidget(model_bounding_box_b_label, 5, 0, 1, 2)
         model_layout.addWidget(self._model_bounding_box_b, 6, 0, 1, 2)
 
-        # Magnetfeldsteuerung
+        # Magnetic field control
         field_group = QGroupBox("Magnet Field Settings")
         field_layout = QVBoxLayout(field_group)
 
@@ -122,8 +142,8 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(field_direction_label)
         field_layout.addWidget(self.field_direction_input)
 
-        simulation_layout.addWidget(field_group)
-        simulation_layout.addWidget(model_group)
+        simulation_layout.addWidget(field_group, stretch=1)
+        simulation_layout.addWidget(model_group, stretch=3)
 
         sidebar.addWidget(sidebar_tabs)
 
@@ -133,18 +153,21 @@ class MainWindow(QMainWindow):
         sidebar_tabs.addTab(analysis_settings, "Analysis Settings")
 
         # Space to add to analysis tab
+        self.stress_analysis = MSRStressAnalysisWidget(analysis_settings)
+        analysis_layout.addWidget(self.stress_analysis)
+
         self.deformation_widget = MSRDeformationAnalysisWidget()
         analysis_layout.addWidget(self.deformation_widget)
 
-        # Schaltfläche zum Anwenden der Parameter
+        # Button for applying the parameters
         apply_button = QPushButton("Apply")
         apply_button.clicked.connect(self.apply_parameters)
         sidebar.addWidget(apply_button)
 
-        sidebar_tabs.setFixedWidth(400)
+        sidebar_tabs.setFixedWidth(500)
         content_layout.addLayout(sidebar)
 
-        # Hauptanzeige für Visualisierung
+        # Main display for visualisation
         visualization_area = QWidget()
         visualization_area.setStyleSheet("background-color: #f0f0f0;")
         content_layout.addWidget(visualization_area)
@@ -177,8 +200,10 @@ class MainWindow(QMainWindow):
         self._model_tetrahedra.setText(str(tetrahedron_count))
 
     def update_field_strength_label(self) -> None:
-        """Updates the field strength output based
-        on the current position of the slider in tesla values.
+        """Update the magnetic field strength label based on the slider value.
+
+        The slider value is divided by 10 to convert it into Tesla
+        and displayed with up to four decimal places.
         """
         strength_in_tesla = self.field_strength_slider.value() / 1000
         formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
@@ -191,9 +216,6 @@ class MainWindow(QMainWindow):
 
         Args:
             text (str): Direction input of the user.
-
-        Raises:
-            ValueError: Should never be raised as it is catched.
 
         Returns:
             Optional[List[float]]: The parsed direction vector.
@@ -212,15 +234,20 @@ class MainWindow(QMainWindow):
             return None
 
     def apply_parameters(self) -> None:
-        """Print the parameters and throws exception if invalid direction input.
+        """Apply the selected parameters and update the simulation configuration.
+
+        This method retrieves material parameters, field strength, and direction 
+        from the UI and updates the simulation settings accordingly. 
+        If the direction input is invalid, a warning message is displayed.
         """
+
         direction = self.parse_direction_input(
             self.field_direction_input.text())
         if direction is None:
             QMessageBox.warning(self, "Error", "Invalid direction!")
             return
 
-        field_strength_val = self.field_strength_slider.value() / 1000  # Umrechnung in Tesla
+        field_strength_val = self.field_strength_slider.value() / 1000  # Conversion to Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
         Config.set_show_force(False)
@@ -248,11 +275,20 @@ class MainWindow(QMainWindow):
                 np.array(bounding_box_a), np.array(bounding_box_b))
 
         deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
+        if deformation_widget_enabled is None:
+            return
 
         analysis_parameters = AnalysisParameters()
         if deformation_widget_enabled:
-            analysis_parameters.set_max_deformation_parameters(
+            analysis_parameters.enable_max_deformation_analysis(
                 self.deformation_widget, deformation_input_list)
+
+        show_stress = self.stress_analysis.show_stress
+        if show_stress:
+            analysis_parameters.enable_stress_analysis(self.stress_analysis)
+        else:
+            analysis_parameters.disable_stress_analysis()
+        Config.set_stress_kwargs(show_stress)
 
         sofa_instantiator.main(analysis_parameters)
 
@@ -275,7 +311,7 @@ class MainWindow(QMainWindow):
                 # Match with regex
                 if not self.deformation_widget.coord_regex.match(coords):
                     QMessageBox.warning(self, "Error", "Invalid coordinates!")
-                    return
+                    return None, None
                 # Extract information
                 coord_nums = list(
                     map(float, re.findall(r"-?\d+(?:\.\d+)?", coords)))
@@ -289,14 +325,19 @@ class MainWindow(QMainWindow):
                 # Match with regex
                 if not self.deformation_widget.indices_regex.match(indices):
                     QMessageBox.warning(self, "Error", "Invalid indices!")
-                    return
+                    return None, None
                 # Extract information
                 input_list = list(map(int, re.findall(r"\d+", indices)))
         return deformation_widget_enabled, input_list
 
     def import_mesh_file(self) -> None:
-        """Imports a custom mesh file.
+        """Import a custom mesh file and update the model list.
+
+        Opens a file dialog for selecting an OBJ or STL file.
+        If a file is successfully imported, it is added to the list
+        and a confirmation message is displayed.
         """
+
         file_dialog = QFileDialog(self)
         file_dialog.setNameFilter("Mesh Files (*.obj *.stl)")
         file_dialog.setFileMode(QFileDialog.ExistingFile)

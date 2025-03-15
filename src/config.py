@@ -10,6 +10,11 @@ class Config:
     """This class contains the configuration for the Sofa simulation."""
     ### SOFA UI ###
     _show_force = True
+    _show_stress = False
+    _stress_kwargs = {
+        'computeVonMisesStress': 0,
+        'showVonMisesStressPerNodeColorMap': 0,
+    }
 
     ### Model ###
     _name = ""
@@ -330,6 +335,43 @@ class Config:
             cls._point_b = np.array([0, 0, 0])
 
     @classmethod
+    def set_stress_kwargs(cls, show_stress: bool, ) -> None:
+        cls._show_stress = show_stress
+        binary_bool = int(show_stress)
+        cls._stress_kwargs = {
+            'computeVonMisesStress': binary_bool,
+            'showVonMisesStressPerNodeColorMap': binary_bool,
+        }
+
+    @classmethod
+    def get_stress_kwargs(cls) -> dict:
+        """Get the keyword arguments for stress visualization.
+
+        Returns:
+            dict: stress kwargs that may be dereferenced in the FEMForceField.
+        """
+        return cls._stress_kwargs
+
+    @classmethod
+    def get_show_stress(cls) -> bool:
+        """Get the bool of whether stress is shown or not
+
+        Returns:
+            bool: whether stress is shown or not.
+        """
+        return cls._show_stress
+
+    @classmethod
+    def _reset_stress_kwargs(cls) -> None:
+        """Resets the stress visualization arguments to the default of showing no stress.
+        """
+        cls._show_stress = False
+        cls._stress_kwargs = {
+            'computeVonMisesStress': 0,
+            'showVonMisesStressPerNodeColorMap': 0,
+        }
+
+    @classmethod
     def set_test_env(cls) -> None:
         """Set the configuration to values that can be used in the test environment.
         """
@@ -380,3 +422,4 @@ class Config:
             3, dtype=int), Tesla.from_T(.01), np.array([1, 0, 0]), np.zeros(3, dtype=int))
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         cls.set_plugin_list([""])
+        cls._reset_stress_kwargs()

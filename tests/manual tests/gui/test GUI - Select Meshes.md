@@ -1,7 +1,7 @@
 # Manual Test for the User Story 'GUI - Select Meshes'
 
 ### Test Goal
-Check whether the input in the Models interface gets progressed properly so it is visible in the SOFA simulation.
+Check whether the input in the models interface gets progressed properly so it is visible in the SOFA simulation.
 
 ### User Story
 As a material science engineer, I’d like to switch between several meshes to compare my material’s behaviour on different geometries, so that I can evaluate material properties on different test subjects.

@@ -272,7 +272,7 @@ class TestAnalysisController(unittest.TestCase):
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
         parameters = AnalysisParameters()
-        parameters.set_max_deformation_parameters(widget, deform_input)
+        parameters.enable_max_deformation_analysis(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -298,7 +298,7 @@ class TestAnalysisController(unittest.TestCase):
         deform_input = [np.random.randint(10, size=(3,)) for _ in range(25)]
 
         parameters = AnalysisParameters()
-        parameters.set_max_deformation_parameters(widget, deform_input)
+        parameters.enable_max_deformation_analysis(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -328,7 +328,7 @@ class TestAnalysisController(unittest.TestCase):
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
         parameters = AnalysisParameters()
-        parameters.set_max_deformation_parameters(widget, deform_input)
+        parameters.enable_max_deformation_analysis(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -374,7 +374,7 @@ class TestAnalysisController(unittest.TestCase):
         widget = unittest.mock.Mock(**widget_args)
 
         parameters = AnalysisParameters()
-        parameters.set_max_deformation_parameters(widget, None)
+        parameters.enable_max_deformation_analysis(widget, None)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)
@@ -421,7 +421,7 @@ class TestAnalysisController(unittest.TestCase):
         deform_input = [int(1e10)]
 
         parameters = AnalysisParameters()
-        parameters.set_max_deformation_parameters(widget, deform_input)
+        parameters.enable_max_deformation_analysis(widget, deform_input)
 
         root = Sofa.Core.Node("root")
         sofa_instantiator.createScene(root, parameters)

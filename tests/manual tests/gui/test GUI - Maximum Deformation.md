@@ -22,7 +22,7 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 4. **Check enabled status**
     1. Click on the checkbox `Enable Deformation Analysis` and make sure it is enabled
     2. Check if all other radio buttons (`Indices`, `Coordinates`, `All Points`) are usable
-    3. Check if clicking on on of these radio buttons deselects the other two radio buttons
+    3. Check if clicking on one of these radio buttons deselects the other two radio buttons
     4. Check if the text fields under `Indices` and `Coordinates` are usable if the corresponding radio button is checked
     5. Check if the text fields under `Indices` and `Coordinates` are only usable if the corresponding radio button is checked
 5. **Check correct indices input**
