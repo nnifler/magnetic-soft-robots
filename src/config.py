@@ -316,11 +316,11 @@ class Config:
         """
         cls._use_constraints = True
         if cls.get_name() == "beam":
-            cls._point_a = np.array([-0.005, 0, 0])
-            cls._point_b = np.array([0.005, 0.05, 0.05])
+            cls._point_a = np.array([-0.0025,  0.,  0.])
+            cls._point_b = np.array([0.0025, 0.025, 0.025])
         elif cls.get_name() == "gripper_3_arm" or cls.get_name() == "gripper_4_arm":
-            cls._point_a = np.array([-0.05, -0.05, 0.01])
-            cls._point_b = np.array([0.05, 0.05, 0.03])
+            cls._point_a = np.array([-0.025, -0.025,  0.005])
+            cls._point_b = np.array([0.025, 0.025, 0.015])
         elif cls.get_name() == "butterfly" or cls.get_name() == "simple_butterfly":
             cls._point_a = np.array([-0.001449, -0.00869, -0.00289])
             cls._point_b = np.array([0.001449, 0.000724, 0.001449])
