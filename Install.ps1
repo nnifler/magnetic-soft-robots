@@ -5,13 +5,13 @@ $sofa_version = "v24.12.00"
 $sofa_arch = "Win64"
 $sofa_url = "https://github.com/sofa-framework/sofa/releases/download/$sofa_version/SOFA_${sofa_version}_$sofa_arch.zip"
 $sofa_archive = "sofa-$sofa_version-$sofa_arch.zip"
-$sofa_path = "sofa_${sofa_version}_$sofa_arch"
+$sofa_path = "SOFA_${sofa_version}_$sofa_arch"
 $py_url = "https://www.python.org/ftp/python/$py_version/python-$py_version-embed-$arch.zip"
 $get_pip_url = "https://bootstrap.pypa.io/get-pip.py"
 $py_archive = "python-$py_version-$arch.zip"
 $py_path = "python-$py_version-$arch"
 
-$py_version_a, $py_version_b, $py_version_c = $py_version.split("-")
+$py_version_a, $py_version_b, $py_version_c = $py_version.split(".")
 function Save-EnvFile {
     param (
         [string]$FilePath = "env.txt",
@@ -43,9 +43,9 @@ $pthFile = "$py_path\python$py_version_a$py_version_b._pth"
 Add-Content -Path $pthFile -Value "$pwd\$py_path\Lib\site-packages"
 Add-Content -Path $pthFile -Value "$pwd\$sofa_path\STLIB\lib\python3\site-packages"
 Add-Content -Path $pthFile -Value "$pwd\$sofa_path\SofaPython3\lib\python3\site-packages"
-& "$py_path\python.exe" -m pip install numpy
+& "$py_path\python.exe" -m pip install -r requirements.txt
 
-$sofa_root = "$sofa_path"
-$python_root = "$py_path"
+$sofa_root = "$pwd\$sofa_path"
+$python_root = "$pwd\$py_path"
 
 Save-EnvFile -FilePath .env -VariableNames @("sofa_root", "python_root")
