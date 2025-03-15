@@ -277,8 +277,8 @@ class MainWindow(QMainWindow):
         if deformation_widget_enabled:
             analysis_parameters.set_max_deformation_parameters(
                 self.deformation_widget, deformation_input_list)
-
-        sofa_instantiator.main(analysis_parameters)
+            Config.set_analysis_parameters(analysis_parameters)
+        sofa_instantiator.main()
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
         """Parses the information from the deformation widget 

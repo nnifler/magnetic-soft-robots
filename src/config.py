@@ -4,12 +4,14 @@ from typing import List, Tuple
 import numpy as np
 
 from .units import YoungsModulus, Density, Tesla
+from .analysis_parameters import AnalysisParameters
 
 
 class Config:
     """This class contains the configuration for the Sofa simulation."""
     ### SOFA UI ###
     _show_force = True
+    _is_first_launch = True
 
     ### Model ###
     _name = ""
@@ -34,6 +36,9 @@ class Config:
 
     ### Plugins ###
     _plugin_list = [""]
+
+    ### Analysis ###
+    _analysis_parameters = None
 
     @classmethod
     def set_show_force(cls, show_force: bool) -> None:
@@ -357,6 +362,32 @@ class Config:
                              ])
 
     @classmethod
+    def set_analysis_parameters(cls, analysis_parameters: AnalysisParameters = None) -> None:
+        """Sets the analysis parameters. If none are provided, works as a reset.
+
+        Args:
+            analysis_parameters (AnalysisParameters, optional): _description_. Defaults to None.
+        """
+        cls._analysis_parameters = analysis_parameters
+
+    @classmethod
+    def get_analysis_parameters(cls) -> None | AnalysisParameters:
+        """Returns the analysis parameters that were set.
+
+        Returns:
+            None | AnalysisParameters: the parameters, or None by default.
+        """
+        return cls._analysis_parameters
+
+    @classmethod
+    def set_first_launch(cls, is_first_launch: bool = True) -> None:
+        cls._is_first_launch = is_first_launch
+
+    @classmethod
+    def is_first_launch(cls) -> bool:
+        return cls._is_first_launch
+
+    @classmethod
     def reset(cls) -> None:
         """Reset the configuration to the default values.
         """
@@ -367,3 +398,5 @@ class Config:
             3, dtype=int), Tesla.from_T(.01), np.array([1, 0, 0]), np.zeros(3, dtype=int))
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         cls.set_plugin_list([""])
+        cls.set_analysis_parameters()
+        cls.set_first_launch()
