@@ -1,4 +1,5 @@
 $py_version = "3.12.9"
+
 $arch = "amd64"
 $sofa_version = "v24.12.00"
 $sofa_arch = "Win64"
@@ -10,6 +11,7 @@ $get_pip_url = "https://bootstrap.pypa.io/get-pip.py"
 $py_archive = "python-$py_version-$arch.zip"
 $py_path = "python-$py_version-$arch"
 
+$py_version_a, $py_version_b, $py_version_c = $py_version.split("-")
 function Save-EnvFile {
     param (
         [string]$FilePath = "env.txt",
@@ -28,20 +30,22 @@ function Save-EnvFile {
     Write-Host "Environment variables saved to $FilePath"
 }
 
-# Invoke-WebRequest -uri $py_url -Method "GET" -Outfile $py_archive
+Invoke-WebRequest -uri $py_url -Method "GET" -Outfile $py_archive
 Expand-Archive -Path $py_archive -DestinationPath $py_path
 
-# Invoke-WebRequest -uri $sofa_url -Method "GET" -Outfile $sofa_archive
+Invoke-WebRequest -uri $sofa_url -Method "GET" -Outfile $sofa_archive
 Expand-Archive -Path $sofa_archive -DestinationPath .
 
-# Invoke-WebRequest -uri $get_pip_url -Method "GET" -Outfile get_pip.py
+Invoke-WebRequest -uri $get_pip_url -Method "GET" -Outfile get_pip.py
 & "$py_path/python.exe" get_pip.py
 
-# git clone --depth 1
-
+$pthFile = "$py_path\python$py_version_a$py_version_b._pth"
+Add-Content -Path $pthFile -Value "$pwd\$py_path\Lib\site-packages"
+Add-Content -Path $pthFile -Value "$pwd\$sofa_path\STLIB\lib\python3\site-packages"
+Add-Content -Path $pthFile -Value "$pwd\$sofa_path\SofaPython3\lib\python3\site-packages"
+& "$py_path\python.exe" -m pip install numpy
 
 $sofa_root = "$sofa_path"
-$python_path = "$sofa_path/STLIB/lib/python3/site-packages:$sofa_path/SofaPython3/lib/python3/site-packages"
 $python_root = "$py_path"
 
-Save-EnvFile -FilePath .env -VariableNames @("sofa_root", "python_path", "python_root")
+Save-EnvFile -FilePath .env -VariableNames @("sofa_root", "python_root")
