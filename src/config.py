@@ -1,6 +1,6 @@
 """This module contains the configuration for the Sofa simulation."""
 
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import numpy as np
 
 from .units import YoungsModulus, Density, Tesla
@@ -12,6 +12,11 @@ class Config:
     ### SOFA UI ###
     _show_force = True
     _is_first_launch = True
+    _show_stress = False
+    _stress_kwargs = {
+        'computeVonMisesStress': 0,
+        'showVonMisesStressPerNodeColorMap': 0,
+    }
 
     ### Model ###
     _name = ""
@@ -59,18 +64,31 @@ class Config:
         return cls._show_force
 
     @classmethod
-    def set_model(cls, name: str, scale: float, custom_model=False) -> None:
+    def set_model(cls, name: str, scale: Optional[float] = None, custom_model: bool = False) -> None:
         """Set the values important for the model.
 
         Args:
             name (str): The name of the model and all necessary mesh files.
-            scale (float): The scaling factor used in the simulation.
+            scale (Optional[float], optional): The scaling factor used in the simulation. 
+             If set to None, uses the default scales (This means a predefined scale for the example models 
+             and a scale of `0.01` for any custom model). Defaults to None.
+            custom_model (bool, optional): True, if the set model is custom. Defaults to False.
 
         Raises:
             ValueError: If scale is less than or equal to 0.
         """
-        if scale <= 0:
+        if scale is not None and scale <= 0:
             raise ValueError("Scale must be positive.")
+
+        if scale is None:
+            scales = {
+                "beam": 0.01,
+                "gripper_3_arm": 0.01,
+                "gripper_4_arm": 0.01,
+                "butterfly": 0.0002898551,
+                "simple_butterfly": 0.0002898551,
+            }
+            scale = scales.get(name, 0.01)
 
         if custom_model:
             name = "../imported_models/"+name
@@ -308,18 +326,55 @@ class Config:
         """
         cls._use_constraints = True
         if cls.get_name() == "beam":
-            cls._point_a = np.array([-0.005, 0, 0])
-            cls._point_b = np.array([0.005, 0.05, 0.05])
+            cls._point_a = np.array([-0.0025,  0.,  0.])
+            cls._point_b = np.array([0.0025, 0.025, 0.025])
         elif cls.get_name() == "gripper_3_arm" or cls.get_name() == "gripper_4_arm":
-            cls._point_a = np.array([-0.05, -0.05, 0.01])
-            cls._point_b = np.array([0.05, 0.05, 0.03])
+            cls._point_a = np.array([-0.025, -0.025,  0.005])
+            cls._point_b = np.array([0.025, 0.025, 0.015])
         elif cls.get_name() == "butterfly" or cls.get_name() == "simple_butterfly":
-            cls._point_a = np.array([-0.1, -0.6, -0.2])
-            cls._point_b = np.array([0.1, 0.05, 0.1])
+            cls._point_a = np.array([-0.001449, -0.00869, -0.00289])
+            cls._point_b = np.array([0.001449, 0.000724, 0.001449])
         else:
             cls._use_constraints = False
             cls._point_a = np.array([0, 0, 0])
             cls._point_b = np.array([0, 0, 0])
+
+    @classmethod
+    def set_stress_kwargs(cls, show_stress: bool, ) -> None:
+        cls._show_stress = show_stress
+        binary_bool = int(show_stress)
+        cls._stress_kwargs = {
+            'computeVonMisesStress': binary_bool,
+            'showVonMisesStressPerNodeColorMap': binary_bool,
+        }
+
+    @classmethod
+    def get_stress_kwargs(cls) -> dict:
+        """Get the keyword arguments for stress visualization.
+
+        Returns:
+            dict: stress kwargs that may be dereferenced in the FEMForceField.
+        """
+        return cls._stress_kwargs
+
+    @classmethod
+    def get_show_stress(cls) -> bool:
+        """Get the bool of whether stress is shown or not
+
+        Returns:
+            bool: whether stress is shown or not.
+        """
+        return cls._show_stress
+
+    @classmethod
+    def _reset_stress_kwargs(cls) -> None:
+        """Resets the stress visualization arguments to the default of showing no stress.
+        """
+        cls._show_stress = False
+        cls._stress_kwargs = {
+            'computeVonMisesStress': 0,
+            'showVonMisesStressPerNodeColorMap': 0,
+        }
 
     @classmethod
     def set_test_env(cls) -> None:
@@ -400,3 +455,4 @@ class Config:
         cls.set_plugin_list([""])
         cls.set_analysis_parameters()
         cls.set_first_launch()
+        cls._reset_stress_kwargs()

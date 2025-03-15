@@ -7,7 +7,7 @@ import Sofa.Gui
 import Sofa.Simulation
 import SofaRuntime
 
-from src import (Config, SceneBuilder, ElasticObject, MagneticController,
+from src import (Config, SceneBuilder, ElasticObject, MagneticController, StressAnalyzer,
                  MaterialLoader, MeshLoader, SimulationAnalysisController)
 from src.mesh_loader import Mode
 
@@ -114,6 +114,9 @@ def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
         analysis_controller = SimulationAnalysisController(
             root, analysis_parameter)
         root.addObject(analysis_controller)
+        root.addObject(
+            StressAnalyzer(elastic_object, analysis_parameter)
+        )
 
     return root
 

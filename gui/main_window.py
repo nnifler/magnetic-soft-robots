@@ -29,7 +29,7 @@ from src.units import Tesla
 from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
 from src.mesh_loader import Mode as MeshMode
 
-from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget
+from gui import MSRHeaderWidget, MSRMaterialGroup, MSRDeformationAnalysisWidget, MSRStressAnalysisWidget
 
 
 class MainWindow(QMainWindow):
@@ -153,6 +153,9 @@ class MainWindow(QMainWindow):
         sidebar_tabs.addTab(analysis_settings, "Analysis Settings")
 
         # Space to add to analysis tab
+        self.stress_analysis = MSRStressAnalysisWidget(analysis_settings)
+        analysis_layout.addWidget(self.stress_analysis)
+
         self.deformation_widget = MSRDeformationAnalysisWidget()
         analysis_layout.addWidget(self.deformation_widget)
 
@@ -172,7 +175,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("butterfly", 0.02)
+        Config.set_model("butterfly", None, False)
 
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
@@ -202,7 +205,7 @@ class MainWindow(QMainWindow):
         The slider value is divided by 10 to convert it into Tesla
         and displayed with up to four decimal places.
         """
-        strength_in_tesla = self.field_strength_slider.value() / 10
+        strength_in_tesla = self.field_strength_slider.value() / 1000
         formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
         self.field_strength_label.setText(
             f"Magnetic Field Strength: {formatted_strength} T")
@@ -244,10 +247,10 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Invalid direction!")
             return
 
-        field_strength_val = self.field_strength_slider.value() / 10  # Conversion to Tesla
+        field_strength_val = self.field_strength_slider.value() / 1000  # Conversion to Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
-        Config.set_show_force(True)
+        Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    field_strength,
@@ -272,12 +275,24 @@ class MainWindow(QMainWindow):
                 np.array(bounding_box_a), np.array(bounding_box_b))
 
         deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
+        if deformation_widget_enabled is None:
+            return
 
         analysis_parameters = AnalysisParameters()
         if deformation_widget_enabled:
-            analysis_parameters.set_max_deformation_parameters(
+            analysis_parameters.enable_max_deformation_analysis(
                 self.deformation_widget, deformation_input_list)
-            Config.set_analysis_parameters(analysis_parameters)
+        else:
+            analysis_parameters.disable_max_deformation_analysis()
+
+        show_stress = self.stress_analysis.show_stress
+        if show_stress:
+            analysis_parameters.enable_stress_analysis(self.stress_analysis)
+        else:
+            analysis_parameters.disable_stress_analysis()
+        Config.set_stress_kwargs(show_stress)
+        Config.set_analysis_parameters(analysis_parameters)
+
         sofa_instantiator.main()
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
@@ -299,7 +314,7 @@ class MainWindow(QMainWindow):
                 # Match with regex
                 if not self.deformation_widget.coord_regex.match(coords):
                     QMessageBox.warning(self, "Error", "Invalid coordinates!")
-                    return
+                    return None, None
                 # Extract information
                 coord_nums = list(
                     map(float, re.findall(r"-?\d+(?:\.\d+)?", coords)))
@@ -313,7 +328,7 @@ class MainWindow(QMainWindow):
                 # Match with regex
                 if not self.deformation_widget.indices_regex.match(indices):
                     QMessageBox.warning(self, "Error", "Invalid indices!")
-                    return
+                    return None, None
                 # Extract information
                 input_list = list(map(int, re.findall(r"\d+", indices)))
         return deformation_widget_enabled, input_list
