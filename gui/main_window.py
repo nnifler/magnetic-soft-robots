@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(content_layout)
 
         # Default values
-        Config.set_model("butterfly", 0.02)
+        Config.set_model("butterfly", None, False)
 
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow):
         The slider value is divided by 10 to convert it into Tesla
         and displayed with up to four decimal places.
         """
-        strength_in_tesla = self.field_strength_slider.value() / 10
+        strength_in_tesla = self.field_strength_slider.value() / 1000
         formatted_strength = f"{strength_in_tesla:.4f}".rstrip("0").rstrip(".")
         self.field_strength_label.setText(
             f"Magnetic Field Strength: {formatted_strength} T")
@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Invalid direction!")
             return
 
-        field_strength_val = self.field_strength_slider.value() / 10  # Conversion to Tesla
+        field_strength_val = self.field_strength_slider.value() / 1000  # Conversion to Tesla
         field_strength = Tesla.from_T(field_strength_val)
 
         Config.set_show_force(False)
