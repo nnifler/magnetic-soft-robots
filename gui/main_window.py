@@ -293,7 +293,7 @@ class MainWindow(QMainWindow):
         Config.set_stress_kwargs(show_stress)
         Config.set_analysis_parameters(analysis_parameters)
 
-        sofa_instantiator.main()
+        sofa_instantiator.main_wrapper()
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
         """Parses the information from the deformation widget 

@@ -435,14 +435,6 @@ class Config:
         return cls._analysis_parameters
 
     @classmethod
-    def set_first_launch(cls, is_first_launch: bool = True) -> None:
-        cls._is_first_launch = is_first_launch
-
-    @classmethod
-    def is_first_launch(cls) -> bool:
-        return cls._is_first_launch
-
-    @classmethod
     def reset(cls) -> None:
         """Reset the configuration to the default values.
         """
@@ -454,5 +446,4 @@ class Config:
         cls.set_material_parameters(0., YoungsModulus(0), Density(0), Tesla(0))
         cls.set_plugin_list([""])
         cls.set_analysis_parameters()
-        cls.set_first_launch()
         cls._reset_stress_kwargs()

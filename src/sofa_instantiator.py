@@ -1,6 +1,7 @@
 """This script instantiates the Sofa simulation."""
 
 from pathlib import Path
+import multiprocessing as mp
 
 import Sofa
 import Sofa.Gui
@@ -10,6 +11,11 @@ import SofaRuntime
 from src import (Config, SceneBuilder, ElasticObject, MagneticController, StressAnalyzer,
                  MaterialLoader, MeshLoader, SimulationAnalysisController)
 from src.mesh_loader import Mode
+
+
+def main_wrapper() -> None:
+    p = mp.Process(target=main)
+    p.start()
 
 
 def main() -> None:
@@ -57,11 +63,10 @@ def main() -> None:
                             'Sofa.Component.Engine.Select',
                             ])
 
-    Sofa.Gui.GUIManager.closeGUI()
-
     root = Sofa.Core.Node("root")
     createScene(root)
     Sofa.Simulation.init(root)
+
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
     Sofa.Gui.GUIManager.MainLoop(root, __file__)
     Sofa.Gui.GUIManager.closeGUI()
