@@ -40,9 +40,10 @@ Invoke-WebRequest -uri $get_pip_url -Method "GET" -Outfile get_pip.py
 & "$py_path/python.exe" get_pip.py
 
 $pthFile = "$py_path\python$py_version_a$py_version_b._pth"
-Add-Content -Path $pthFile -Value "$pwd\$py_path\Lib\site-packages"
-Add-Content -Path $pthFile -Value "$pwd\$sofa_path\STLIB\lib\python3\site-packages"
-Add-Content -Path $pthFile -Value "$pwd\$sofa_path\SofaPython3\lib\python3\site-packages"
+Add-Content -Path $pthFile -Value "$pwd\plugins\$py_path\Lib\site-packages"
+Add-Content -Path $pthFile -Value "$pwd\plugins\$sofa_path\STLIB\lib\python3\site-packages"
+Add-Content -Path $pthFile -Value "$pwd\plugins\$sofa_path\SofaPython3\lib\python3\site-packages"
+Add-Content -Path $pthFile -Value "$pwd"
 & "$py_path\python.exe" -m pip install -r requirements.txt
 
 $sofa_root = "$pwd\$sofa_path"
