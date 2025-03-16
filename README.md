@@ -21,24 +21,25 @@ MSR offers the following features:
 MSR enables precise testing of different materials and magnetic field strengths and their effects on the behavior of soft robots. 
 
 ## Getting Started
-Before getting started, please read the Requirements document.
+To get started with the MSR software, the following guide describes the steps to install the project on a local computer. 
 
-To get started with the MSR software, the following guide describes the steps to install the project on a local computer after successfully setting up the required dependencies. 
+### Install the Project 
+1. Create a folder where the repository will be stored if not already existing. 
+2. Clone the repository from GitHub.
+    1. Download the ZIP file from the Releases tab.
+    2. Extract the ZIP file to your desired destination folder. 
+    Note: This folder cannot be changed later. To move the installation, you must download and extract the ZIP file again.
+3. Installation
+    Open PowerShell and navigate to the project folder.
+    Execute the installation script **once** with ```./Install.ps1```. 
+    Note: Running it multiple times will result in error messages.
+    The project is now cloned to your local machine. 
 
-### Clone the Repository 
-1. Create a folder where the repository will be stored and navigate to this folder. 
-2. Open a terminal window and run the following command to clone the repository from GitHub to the local directory on your computer: 
-    ```git clone https://github.com/nnifler/magnetic-soft-robots.git```
-3. Now the project is cloned to the local computer and can be opened in an IDE (e.g. Visual Studio).
-
-### Start the Software 
-Open the MSR software in a suitable IDE and start the software by opening the repository and running the file main.py.
-Or start the MSR software in a terminal window by navigation to the repository and running ```python main.py```
+## Start the Application 
+    Start the application by opening Powershell, navigating to the project folder and running ```./Run.ps1``
 
 ## License
 For licensing information, refer to the LICENSE file included in this repository.
 
 ## Background 
-The project is devolped as part of the ’Teamprojekt Softwareentwicklung’ course at the Technical University of Darmstadt, overseen by Dr.-Ing. Ragnar Mogk. 
-
-
+This project was developed as part of the ‘Teamprojekt Softwareentwicklung’ course at the Technical University of Darmstadt, under the supervision of Dr.-Ing. Ragnar Mogk, for the client Functional Materials at the Institute of Materials Science, Technical University of Darmstadt.
