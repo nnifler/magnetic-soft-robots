@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
         self._field_strength_round = 50  # current rounded value in T
 
         # Input field for magnetic field strength
-        self._field_strength = MSRMaterialParameter("Magnetic Field Strength", (0, 5), [
+        self._field_strength = MSRMaterialParameter("Magnetic Field Strength (B):", (0, 5), [
             'T'], [Tesla.from_T], [Tesla.T], .01, 4, 0)
         self._field_strength.spinbox.setValue(1.)
         self._field_strength.spinbox.valueChanged.connect(
@@ -134,9 +134,9 @@ class MainWindow(QMainWindow):
         self.field_strength_slider.setValue(1*self._slider_multiplier)
         self.field_strength_slider.setTickPosition(QSlider.TicksBelow)
         self.field_strength_slider.setTickInterval(self._slider_multiplier)
-        field_strength_max = QLabel("5")
+        field_strength_max = QLabel("5 T")
         field_strength_max.setAlignment(Qt.AlignRight)
-        field_strength_min = QLabel("0")
+        field_strength_min = QLabel("0 T")
         field_strength_min.setAlignment(Qt.AlignLeft)
         self.field_strength_slider.valueChanged.connect(
             lambda value: self._field_strength_update(  # update fine slider and spinbox
