@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         field_layout = QGridLayout(field_group)
 
         self._slider_multiplier = 1000  # base unit (mT)
-        self._field_strength_round = 50  # current rounded value in T
+        # self._field_strength_round = 50  # current rounded value in T
 
         # Input field for magnetic field strength
         self._field_strength = MSRMaterialParameter("Magnetic Field Strength (B):", (0, 5), [
@@ -278,7 +278,7 @@ class MainWindow(QMainWindow):
             slider1 (bool): Whether to update the coarse slider.
             slider2 (bool): Whether to update the fine slider.
         """
-        self._field_strength_round = round(strength)
+        # self._field_strength_round = round(strength)
         try:  # block signals to prevent infinite loops
             self._field_strength.spinbox.blockSignals(True)
             self.field_strength_slider.blockSignals(True)
