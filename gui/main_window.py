@@ -115,10 +115,10 @@ class MainWindow(QMainWindow):
         model_layout.addWidget(self._model_nodes, 1, 1)
         model_layout.addWidget(model_tetrahedra_label, 2, 0)
         model_layout.addWidget(self._model_tetrahedra, 2, 1)
-        model_layout.addWidget(self._model_bounding_box_a_label, 3, 0, 1, 3)
-        model_layout.addWidget(self._model_bounding_box_a, 4, 0, 1, 3)
-        model_layout.addWidget(self._model_bounding_box_b_label, 5, 0, 1, 3)
-        model_layout.addWidget(self._model_bounding_box_b, 6, 0, 1, 3)
+        model_layout.addWidget(self._model_bounding_box_a_label, 3, 0)
+        model_layout.addWidget(self._model_bounding_box_a, 3, 1, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_b_label, 4, 0)
+        model_layout.addWidget(self._model_bounding_box_b, 4, 1, 1, 2)
 
         # Magnetic field control
         field_group = QGroupBox("Magnet Field Settings")
