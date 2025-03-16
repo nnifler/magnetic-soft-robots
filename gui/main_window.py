@@ -116,7 +116,6 @@ class MainWindow(QMainWindow):
         field_layout = QGridLayout(field_group)
 
         self._slider_multiplier = 1000  # base unit (mT)
-        # self._field_strength_round = 50  # current rounded value in T
 
         # Input field for magnetic field strength
         self._field_strength = MSRMaterialParameter("Magnetic Field Strength (B):", (0, 5), [
@@ -126,8 +125,7 @@ class MainWindow(QMainWindow):
             lambda value: self._field_strength_update(  # Update both sliders
                 value,
                 spinbox=False,
-                slider1=True,
-                slider2=True))
+                slider=True))
 
         self.field_strength_slider = QSlider(Qt.Horizontal)
         self.field_strength_slider.setRange(0, 5*self._slider_multiplier)
@@ -142,47 +140,7 @@ class MainWindow(QMainWindow):
             lambda value: self._field_strength_update(  # update fine slider and spinbox
                 value/self._slider_multiplier,
                 spinbox=True,
-                slider1=False,
-                slider2=True))
-
-        # Alternative: use seperate sliders for coarse and fine adjustment
-        # Slider for coarse magnetic field strength (0-100)
-        # self.field_strength_slider = QSlider(Qt.Horizontal)
-        # self.field_strength_slider.setRange(0, 100*self._slider_multiplier)
-        # self.field_strength_slider.setValue(50*self._slider_multiplier)
-        # self.field_strength_slider.setTickPosition(QSlider.TicksBelow)
-        # self.field_strength_slider.setTickInterval(10*self._slider_multiplier)
-        # field_strength_max = QLabel("100")
-        # field_strength_max.setAlignment(Qt.AlignRight)
-        # field_strength_min = QLabel("0")
-        # field_strength_min.setAlignment(Qt.AlignLeft)
-        # self.field_strength_slider.valueChanged.connect(
-        #     lambda value: self._field_strength_update(  # update fine slider and spinbox
-        #         value/self._slider_multiplier,
-        #         spinbox=True,
-        #         slider1=False,
-        #         slider2=True))
-
-        # # Slider for fine magnetic field strength (-.5 to .5)
-        # self._field_strength_slider_fine = QSlider(Qt.Horizontal)
-        # self._field_strength_slider_fine.setRange(
-        #     -self._slider_multiplier/2, self._slider_multiplier/2)
-        # self._field_strength_max_fine = QLabel("49.5")
-        # self._field_strength_max_fine.setAlignment(Qt.AlignRight)
-        # self._field_strength_avg_fine = QLabel("50")
-        # self._field_strength_avg_fine.setAlignment(Qt.AlignCenter)
-        # self._field_strength_min_fine = QLabel("50.5")
-        # self._field_strength_min_fine.setAlignment(Qt.AlignLeft)
-        # self._field_strength_slider_fine.setValue(0)
-        # self._field_strength_slider_fine.setTickPosition(QSlider.TicksBelow)
-        # self._field_strength_slider_fine.setTickInterval(
-        #     self._slider_multiplier/10)
-        # self._field_strength_slider_fine.valueChanged.connect(
-        #     lambda value: self._field_strength_update(  # update coarse slider and spinbox
-        #         self._field_strength_round + value/self._slider_multiplier,
-        #         spinbox=True,
-        #         slider1=True,
-        #         slider2=False))
+                slider=False))
 
         field_direction_label = QLabel("Direction (Vector):")
         self.field_direction_input = QLineEdit("[0, -1, 0]")
@@ -197,22 +155,14 @@ class MainWindow(QMainWindow):
         field_layout.addWidget(self._field_strength.unit_selector, 0, 2)
         # coarse slider
         field_layout.addWidget(self.field_strength_slider, 1, 0, 1, 3)
-        # coarse slider min (0)
+        # slider min (0)
         field_layout.addWidget(field_strength_min, 2, 0)
-        # coarse slider max (100)
+        # slider max (5)
         field_layout.addWidget(field_strength_max, 2, 2)
-        # # fine slider
-        # field_layout.addWidget(self._field_strength_slider_fine, 3, 0, 1, 3)
-        # # fine slider min (-0.5)
-        # field_layout.addWidget(self._field_strength_min_fine, 4, 0)
-        # # fine slider avg (+-0)
-        # field_layout.addWidget(self._field_strength_avg_fine, 4, 1)
-        # # fine slider max (+0.5)
-        # field_layout.addWidget(self._field_strength_max_fine, 4, 2)
         # label direction
         field_layout.addWidget(field_direction_label, 5, 0)
         # direction input ([x, y, z])
-        field_layout.addWidget(self.field_direction_input, 6, 0, 1, 3)
+        field_layout.addWidget(self.field_direction_input, 5, 1)
 
         simulation_layout.addWidget(field_group, stretch=1)
         simulation_layout.addWidget(model_group, stretch=3)
@@ -269,38 +219,25 @@ class MainWindow(QMainWindow):
         self._model_tetrahedra.setText(str(tetrahedron_count))
 
     def _field_strength_update(self, strength: float, spinbox: bool,
-                               slider1: bool, slider2: bool) -> None:
+                               slider: bool) -> None:
         """Updates the different field strength input fields in the GUI.
 
         Args:
             strength (float): The new field strength value in Tesla.
             spinbox (bool): Whether to update the spinbox.
-            slider1 (bool): Whether to update the coarse slider.
-            slider2 (bool): Whether to update the fine slider.
+            slider (bool): Whether to update the coarse slider.
         """
-        # self._field_strength_round = round(strength)
         try:  # block signals to prevent infinite loops
             self._field_strength.spinbox.blockSignals(True)
             self.field_strength_slider.blockSignals(True)
-            # self._field_strength_slider_fine.blockSignals(True)
             if spinbox:
                 self._field_strength.spinbox.setValue(strength)
-            if slider1:
+            if slider:
                 self.field_strength_slider.setValue(
                     strength * self._slider_multiplier)
-            # if slider2:
-            #     self._field_strength_min_fine.setText(
-            #         str(self._field_strength_round-.5))
-            #     self._field_strength_avg_fine.setText(
-            #         str(self._field_strength_round))
-            #     self._field_strength_max_fine.setText(
-            #         str(self._field_strength_round+.5))
-            #     self._field_strength_slider_fine.setValue(
-            #         (strength-self._field_strength_round) * self._slider_multiplier)
         finally:
             self._field_strength.spinbox.blockSignals(False)
             self.field_strength_slider.blockSignals(False)
-            # self._field_strength_slider_fine.blockSignals(False)
 
     def parse_direction_input(self, text: str) -> Optional[List[float]]:
         """Parses the direction input from the user
@@ -363,7 +300,8 @@ class MainWindow(QMainWindow):
             Config.set_constraints(
                 np.array(bounding_box_a), np.array(bounding_box_b))
 
-        deformation_widget_enabled, deformation_input_list = self._parse_max_deformation_information()
+        deformation_widget_enabled, deformation_input_list = \
+            self._parse_max_deformation_information()
 
         analysis_parameters = AnalysisParameters()
         if deformation_widget_enabled:
