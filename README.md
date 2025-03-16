@@ -31,11 +31,11 @@ To get started with the MSR software, the following guide describes the steps to
 1. Create a folder where the repository will be stored if not already existing.
 2. Clone the repository from GitHub.
    1. Download the ZIP file from the Releases tab.
-   2. Extract the ZIP file to your desired destination folder.\\
+   2. Extract the ZIP file to your desired destination folder.\
     Note: This folder cannot be changed later. To move the installation, you must download and extract the ZIP file again.
 3. Installation
    1. Open PowerShell and navigate to the project folder.
-   2. Execute the installation script **once** with `./Install.ps1`.\\
+   2. Execute the installation script **once** with `./Install.ps1`.\
     Note: Running it multiple times will result in error messages.
    3. The project is now cloned to your local machine.
 
