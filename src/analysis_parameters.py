@@ -1,5 +1,5 @@
 """This module contains the class that hold all parameters important for the analysis."""
-
+from multiprocessing.connection import Connection
 from typing import List, Optional
 import numpy as np
 from PySide6.QtWidgets import QWidget
@@ -8,9 +8,17 @@ from PySide6.QtWidgets import QWidget
 class AnalysisParameters:
     """Class that holds all parameters important for the analysis"""
 
-    def __init__(self):
+    def __init__(self, callpoint: Connection):
         """Initializes the class with every analysis disabled.
+
+        Args:
+            callpoint (Connection): A pipe for communicating with the QWidget.
+            Should always be set on initialization, as it will be required independent of analysis type.
         """
+        if callpoint is None:
+            raise ValueError(
+                "callpoint must not be None. Necessary for process communication")
+
         self.max_deformation_analysis = False
         self.max_deformation_input = None
         self.max_deformation_widget = None
@@ -18,7 +26,7 @@ class AnalysisParameters:
         self._stress_analysis = False
         self._stress_widget = None
 
-        self.callpoint = None
+        self.callpoint = callpoint
 
     def __repr__(self) -> str:
         """Returns a string representation of the class.

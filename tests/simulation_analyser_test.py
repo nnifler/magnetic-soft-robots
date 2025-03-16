@@ -272,7 +272,7 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
-        parameters = AnalysisParameters()
+        parameters = AnalysisParameters(unittest.mock.Mock())
         parameters.enable_max_deformation_analysis(widget, deform_input)
         Config.set_analysis_parameters(parameters)
 
@@ -299,7 +299,7 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = [np.random.randint(10, size=(3,)) for _ in range(25)]
 
-        parameters = AnalysisParameters()
+        parameters = AnalysisParameters(unittest.mock.Mock())
         parameters.enable_max_deformation_analysis(widget, deform_input)
         Config.set_analysis_parameters(parameters)
 
@@ -330,7 +330,7 @@ class TestAnalysisController(unittest.TestCase):
 
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
-        parameters = AnalysisParameters()
+        parameters = AnalysisParameters(unittest.mock.Mock())
         parameters.enable_max_deformation_analysis(widget, deform_input)
         Config.set_analysis_parameters(parameters)
 
@@ -377,7 +377,7 @@ class TestAnalysisController(unittest.TestCase):
         }
         widget = unittest.mock.Mock(**widget_args)
 
-        parameters = AnalysisParameters()
+        parameters = AnalysisParameters(unittest.mock.Mock())
         parameters.enable_max_deformation_analysis(widget, None)
         Config.set_analysis_parameters(parameters)
 
@@ -424,8 +424,8 @@ class TestAnalysisController(unittest.TestCase):
         widget = unittest.mock.Mock(**widget_args)
 
         deform_input = [int(1e10)]
-
-        parameters = AnalysisParameters()
+        callpoint = unittest.mock.Mock()
+        parameters = AnalysisParameters(callpoint)
         parameters.enable_max_deformation_analysis(widget, deform_input)
         Config.set_analysis_parameters(parameters)
 
@@ -435,8 +435,9 @@ class TestAnalysisController(unittest.TestCase):
         Sofa.Simulation.init(root)
         Sofa.Simulation.animate(root, root.dt.value)
 
-        widget.display_input_error.assert_called_once()
-        widget.update_results.assert_not_called()
+        callpoint.send.assert_called_with(
+            ("deformation_error", ['Point 10000000000 is not part of the model.']))
+        # widget.update_results.assert_not_called()
 
 
 def suite() -> unittest.TestSuite:

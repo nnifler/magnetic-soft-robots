@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Main window module for the Magnetic Soft Robotics Simulation.
 
 Provides the graphical user interface (GUI) for configuring and running 
@@ -24,7 +25,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QRegularExpression, QThread
 from PySide6.QtGui import QRegularExpressionValidator
 import Sofa.Core
-
 from src.units import Tesla
 from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
 from src.mesh_loader import Mode as MeshMode
@@ -46,7 +46,22 @@ class MainWindow(QMainWindow):
     field_direction_input (QLineEdit): Input field for defining the magnetic field direction.
     """
     class Listener(QThread):
+        """Inherits from QThread to monitor calls from the SOFA Simulation.
+        """
+
+        def __init__(self, /, parent: MainWindow = ...):
+            """Initializes a QThread for listening to signals from SOFA. 
+            Neccessary to display the analysis results.
+
+            Args:
+                parent (MainWindow, optional): The parent widget. Defaults to ....
+            """
+            super().__init__(parent)
+            self._runs = True
+
         def run(self) -> None:
+            """Listens for signals from the SOFA process and passes them to the appropriate GUI components.
+            """
             call_to_func = {
                 # self.stress_analysis.set_min,
                 "stress_min": self.parent().stress_analysis.set_min,
@@ -55,12 +70,16 @@ class MainWindow(QMainWindow):
                 "deform_update": self.parent().deformation_widget.update_results,
                 "deform_error": self.parent().deformation_widget.update_results,
             }
-            while True:
-                while not self.parent()._reciever.poll(4):
+            while self._runs:
+                while not self.parent()._reciever.poll(1):
                     pass
                 package = self.parent()._reciever.recv()
                 call, args = package
                 call_to_func[call](*args)
+
+        def stop(self):
+            """Stops the thread, in the near future."""
+            self._runs = False
 
     def __init__(self):
         """Initialize the main window and set up the UI."""
@@ -196,6 +215,7 @@ class MainWindow(QMainWindow):
         self._simulation = None
         self._reciever, self._caller = mp.Pipe()
         self._listener = self.Listener(self)
+        self.destroyed.connect(self._listener.stop())
         self._listener.start()
 
     def update_model(self) -> None:
@@ -299,7 +319,7 @@ class MainWindow(QMainWindow):
         if deformation_widget_enabled is None:
             return
 
-        analysis_parameters = AnalysisParameters()
+        analysis_parameters = AnalysisParameters(callpoint=self._caller)
         if deformation_widget_enabled:
             analysis_parameters.enable_max_deformation_analysis(
                 self.deformation_widget, deformation_input_list)
@@ -311,8 +331,6 @@ class MainWindow(QMainWindow):
             analysis_parameters.enable_stress_analysis(self.stress_analysis)
         else:
             analysis_parameters.disable_stress_analysis()
-
-        analysis_parameters.callpoint = self._caller
 
         Config.set_stress_kwargs(show_stress)
         Config.set_analysis_parameters(analysis_parameters)
