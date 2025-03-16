@@ -1,7 +1,6 @@
 """This script instantiates the Sofa simulation."""
 
 from pathlib import Path
-import multiprocessing as mp
 
 import Sofa
 import Sofa.Gui
@@ -11,11 +10,6 @@ import SofaRuntime
 from src import (Config, SceneBuilder, ElasticObject, MagneticController, StressAnalyzer,
                  MaterialLoader, MeshLoader, SimulationAnalysisController)
 from src.mesh_loader import Mode
-
-
-def main_wrapper() -> None:
-    p = mp.Process(target=main)
-    p.start()
 
 
 def main() -> None:
@@ -122,6 +116,12 @@ def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
         root.addObject(
             StressAnalyzer(elastic_object, analysis_parameter)
         )
+        if analysis_parameter.stress_analysis:
+            print("reset called;", analysis_parameter.stress_widget.reset)
+            analysis_parameter.callpoint.send((
+                "stress_reset",
+                []
+            ))
 
     return root
 

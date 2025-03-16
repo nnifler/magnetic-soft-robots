@@ -9,7 +9,7 @@ Classes:
                 parameter management for the simulation.
 """
 
-
+import multiprocessing as mp
 import os
 import re
 from builtins import ValueError
@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
     QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout, QTabWidget
 )
-from PySide6.QtCore import Qt, QRegularExpression
+from PySide6.QtCore import Qt, QRegularExpression, QThread
 from PySide6.QtGui import QRegularExpressionValidator
 import Sofa.Core
 
@@ -45,6 +45,22 @@ class MainWindow(QMainWindow):
     field_strength_slider (QSlider): Slider for adjusting the magnetic field strength.
     field_direction_input (QLineEdit): Input field for defining the magnetic field direction.
     """
+    class Listener(QThread):
+        def run(self) -> None:
+            call_to_func = {
+                # self.stress_analysis.set_min,
+                "stress_min": self.parent().stress_analysis.set_min,
+                "stress_max": self.parent().stress_analysis.set_max,
+                "stress_reset": self.parent().stress_analysis.reset,
+                "deform_update": self.parent().deformation_widget.update_results,
+                "deform_error": self.parent().deformation_widget.update_results,
+            }
+            while True:
+                while not self.parent()._reciever.poll(4):
+                    pass
+                package = self.parent()._reciever.recv()
+                call, args = package
+                call_to_func[call](*args)
 
     def __init__(self):
         """Initialize the main window and set up the UI."""
@@ -177,6 +193,11 @@ class MainWindow(QMainWindow):
         # Default values
         Config.set_model("butterfly", None, False)
 
+        self._simulation = None
+        self._reciever, self._caller = mp.Pipe()
+        self._listener = self.Listener(self)
+        self._listener.start()
+
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
         name = Config.get_name()
@@ -290,10 +311,17 @@ class MainWindow(QMainWindow):
             analysis_parameters.enable_stress_analysis(self.stress_analysis)
         else:
             analysis_parameters.disable_stress_analysis()
+
+        analysis_parameters.callpoint = self._caller
+
         Config.set_stress_kwargs(show_stress)
         Config.set_analysis_parameters(analysis_parameters)
 
-        sofa_instantiator.main_wrapper()
+        if self._simulation is not None:
+            self._simulation.kill()
+        self._simulation = mp.Process(target=sofa_instantiator.main)
+        self._simulation.start()
+        print("simulation process started")
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
         """Parses the information from the deformation widget 

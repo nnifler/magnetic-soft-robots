@@ -18,6 +18,8 @@ class AnalysisParameters:
         self._stress_analysis = False
         self._stress_widget = None
 
+        self.callpoint = None
+
     def __repr__(self) -> str:
         """Returns a string representation of the class.
 
