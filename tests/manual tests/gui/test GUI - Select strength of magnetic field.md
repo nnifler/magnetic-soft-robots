@@ -13,12 +13,12 @@ As a student of material sciences, I’d like to experiment with different magne
     1. Check whether a sub widget with the name "Magnetic Field Settings" is visible in the simulation tab upon application start.
 3. **Window check**
     1. Slider for Strength Adjustment
-        1. Verify that it contains a slider with the label Magnetic Field Strength.
+        1. Verify that it contains a slider with the label `Magnetic Field Strength`.
         2. Slider is adjustable to various positions within its range.
         3. Ensure that the minimum and maximum values of the slider are correct zero and 100 T.
-        4. Check that changes in the slider position update the magnetic field strength output in the Magnetic Field Setting widget in real time and match the expected values in Tesla.
+        4. Check that changes in the slider position update the `Magnetic Field Strength` output in the `Magnetic Field Setting` widget in real time and match the expected values in Tesla.
     2. Vector Input Field
-        1. Verify the presence of the input field with the label "Direction (Vector)".
+        1. Verify the presence of the input field with the label `Direction (Vector)`.
         2. Allowed: Numbers in the format [x, y, z], with optional spaces and decimal places.
         3. Invalid input is restricted: Anything that does not adhere to the format [x, y, z] with exactly three valid numbers and separators.
         4. The text field contains a description of the correct input format when empty. 

@@ -229,18 +229,18 @@ class TestConfig(unittest.TestCase):
         names = ["beam", "butterfly", "gripper_3_arm",
                  "gripper_4_arm", "simple_butterfly"]
         refs_a = [
-            [-0.005, 0, 0],
-            [-0.1, -0.6, -0.2],
-            [-0.05, -0.05, 0.01],
-            [-0.05, -0.05, 0.01],
-            [-0.1, -0.6, -0.2]
+            [-0.0025, 0, 0],
+            [-0.001449, -0.00869, -0.00289],
+            [-0.025, -0.025, 0.005],
+            [-0.025, -0.025, 0.005],
+            [-0.001449, -0.00869, -0.00289]
         ]
         refs_b = [
-            [0.005, 0.05, 0.05],
-            [0.1, 0.05, 0.1],
-            [0.05, 0.05, 0.03],
-            [0.05, 0.05, 0.03],
-            [0.1, 0.05, 0.1]
+            [0.0025, 0.025, 0.025],
+            [0.001449, 0.000724, 0.001449],
+            [0.025, 0.025, 0.015],
+            [0.025, 0.025, 0.015],
+            [0.001449, 0.000724, 0.001449]
         ]
         for i, name in enumerate(names):
             Config.set_model(name, 1)
@@ -270,6 +270,45 @@ class TestConfig(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Config.set_constraints(np.array([0, 0, 0]), err_b2)
+
+    def test_stress_kwargs(self) -> None:
+        ref_dict_0 = {
+            'computeVonMisesStress': 0,
+            'showVonMisesStressPerNodeColorMap': 0,
+        }
+        ref_dict_1 = {
+            'computeVonMisesStress': 1,
+            'showVonMisesStressPerNodeColorMap': 1,
+        }
+        self.assertFalse(Config.get_show_stress(), "default should be false")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="default should be dict with two keys and 0 vals")
+
+        Config.set_stress_kwargs(True)
+        self.assertTrue(Config.get_show_stress(),
+                        "should be True after kwargs set to True")
+        self.assertEqual(ref_dict_1, Config.get_stress_kwargs(),
+                         msg="vals should hold value 1 after kwargs set to False")
+
+        Config.set_stress_kwargs(False)
+        self.assertFalse(Config.get_show_stress(),
+                         "should be False after kwargs set to False")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="vals should hold value 0 after kwargs set to False")
+
+        Config.set_stress_kwargs(True)
+        Config._reset_stress_kwargs()
+        self.assertFalse(Config.get_show_stress(),
+                         "should be False after kwargs reset")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="vals should hold value 0 after kwargs reset")
+
+        Config.set_stress_kwargs(True)
+        Config.reset()
+        self.assertFalse(Config.get_show_stress(),
+                         "should be False after hard reset")
+        self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
+                         msg="vals should hold value 0 after hard reset")
 
     def tearDown(self) -> None:
         """Resets config after each test."""
