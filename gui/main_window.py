@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
         self._slider_multiplier = 1000  # base unit (mT)
 
         # Input field for magnetic field strength
-        self._field_strength = MSRMaterialParameter("Magnetic Field Strength (B):", (0, 5), [
+        self._field_strength = MSRMaterialParameter("Magnetic Flux Density (B):", (0, 5), [
             'T'], [Tesla.from_T], [Tesla.T], .01, 4, 0)
         self._field_strength.spinbox.setValue(1.)
         self._field_strength.spinbox.valueChanged.connect(
