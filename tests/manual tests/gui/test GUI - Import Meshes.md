@@ -21,15 +21,16 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     2. Define a name in the box for that, include spaces.
     3. Select a random .stl as a surface mesh, for instance from the provided examples
     4. Select a random .msh as a volumetric mesh, for instance from the provided examples
-    5. Press the `Import` button.
-    6. Check for success popup and close it.
+    5. Press the `Import and Select Model` button.
+    6. Check for success popups and close them.
+    7. Press the `Apply` button in the main window.
 4. **Provoke Errors**
     0. For each of the following points, repeat the previous instructions for the regular case (see point 1-3), except...
-    1. Press `Import` with nothing specified.
-    2. Press `Import` with no paths but valid name specified.
-    3. Press `Import` with either path unspecified.
+    1. Press `Import and Select Model` with nothing specified.
+    2. Press `Import and Select Model` with no paths but valid name specified.
+    3. Press `Import and Select Model` with either path unspecified.
     4. Try selecting a file with invalid format in the dialog.
-    5. Press `Import` with no name but valid paths specified.
+    5. Press `Import and Select Model` with no name but valid paths specified.
 ## Expected Result
 1. The main window is started.
 2. 
@@ -42,7 +43,8 @@ Make sure that the project is installed according to [README.md]() and [Requirem
     4. A file dialog opens, allowing to select a file. Only .msh files should be shown. Upon selection, the path pointing to the selected file should appear in the label beside the button.
     5. After the button push, a pair consisting of a .stl and .msh file should appear in the folder lib/imported_models. Both files should have the specified name. Furthermore, they should appear in the Open Models Popup in the field Custom Models.
     Spaces before and after the specified 
-    6. A popup indicating import success should open. Upon acknowledging that, both the popup and import window should close
+    6. A popup indicating import success should open. After closing that, a popup indication selection success should open. Upon acknowledging that, both the popup and import window should close.
+    7. The previously imported model should be seen in the simulation as it is selected.
 4. 
     1. Warning popup indicating the missing name should appear. Import does not go through.
     2. Warning popup indicating a missing mesh path should appear. Import does not go through.

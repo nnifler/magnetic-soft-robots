@@ -10,14 +10,11 @@ Classes:
 """
 
 from pathlib import Path
-from typing import List, Optional
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                               QLabel, QPushButton, QMenu, QListWidget, QMessageBox,
-                               QMainWindow, QSizePolicy)
+from PySide6.QtWidgets import (QWidget, QHBoxLayout,
+                               QLabel, QPushButton, QMenu, QMainWindow, QSizePolicy)
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QPixmap
-from src import Config
-from gui import MSRModelImportPopup
+from gui import MSROpenModelsPopup, MSRModelImportPopup
 
 
 class MSRHeaderWidget(QWidget):
@@ -41,9 +38,9 @@ class MSRHeaderWidget(QWidget):
         """
         super().__init__()
 
-        self.main_window = main_window
-        self._popup_open: QWidget = None
-        self._popup_import: QWidget = MSRModelImportPopup()
+        self._main_window = main_window
+        self._popup_open: QWidget = MSROpenModelsPopup(self._main_window)
+        self._popup_import: QWidget = MSRModelImportPopup(self._popup_open)
 
         self.setFixedHeight(30)  # max 1cm height
         header_layout = QHBoxLayout(self)
@@ -83,7 +80,7 @@ class MSRHeaderWidget(QWidget):
         # Add action to the Library menu
         open_action = QAction("Open", self)
         open_action.triggered.connect(
-            self._open_models_popup)
+            self._popup_open.show)
         context_menu.addAction(open_action)
 
         import_action = QAction("Import", self)
@@ -91,85 +88,5 @@ class MSRHeaderWidget(QWidget):
             self._popup_import.show)
         context_menu.addAction(import_action)
 
-        context_menu.exec(
-            self._models_button.mapToGlobal(self._models_button.rect().bottomLeft()))
-
-    def _open_models_popup(self) -> None:
-        """Opens the model selection popup menu."""
-
-        self._popup_open = QWidget()  # garbage collected without self
-        self._popup_open.setWindowTitle("Models")
-        self._popup_open.resize(600, 400)
-
-        layout = QVBoxLayout(self._popup_open)
-
-        default_label = QLabel("Default Models:")
-        default_list = QListWidget()
-
-        custom_label = QLabel("Custom Models:")
-        custom_list = QListWidget()
-
-        lib_path = Path(__file__).parents[1] / "lib"
-
-        self.load_models(default_list, lib_path / "models")
-        default_list.itemClicked.connect(
-            lambda item:
-            self.update_loaded_model(item.text(), False, [custom_list]))
-
-        self.load_models(custom_list, lib_path / "imported_models")
-        custom_list.itemClicked.connect(
-            lambda item:
-            self.update_loaded_model(item.text(), True, [default_list]))
-
-        close_button = QPushButton("Close")
-        close_button.clicked.connect(self._popup_open.close)
-
-        layout.addWidget(default_label)
-        layout.addWidget(default_list)
-        layout.addWidget(custom_label)
-        layout.addWidget(custom_list)
-        layout.addWidget(close_button)
-
-        self._popup_open.show()
-
-    def update_loaded_model(self, model_name: str, custom_model: bool,
-                            other_widgets: List[QListWidget] = None, scale: Optional[float] = None) -> None:
-        """Updates the loaded model in the config.
-
-        Args:
-            model_name (str): The name of the model to load.
-            custom_model (bool): Whether the model is a custom model.
-            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
-            scale (Optional[float], optional): The scale of the model shown in the simulation. 
-                If set to None, uses the default scales (This means a predefined scale for the example models
-                and a scale of `0.01` for any custom model). Defaults to None.
-
-        Raises:
-            ValueError: If scale is less than or equal to 0.
-        """
-        # TODO: accept different file suffixes
-        # TODO: make scaling factor configurable
-        if other_widgets is not None:
-            for widget in other_widgets:
-                widget.clearSelection()
-
-        Config.set_model(model_name, scale, custom_model)
-        self.main_window.update_model()
-
-    def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
-        """Loads the models from the specified directory into the given list widget.
-
-        Args:
-            list_widget (QListWidget): The widget to display the list of models.
-            models_path (Path): The path to the directory containing model files.
-        """
-        if not models_path.exists():
-            QMessageBox.warning(
-                self, "Error", f"Models folder not found at: {models_path}")
-            return
-
-        model_names = list(
-            {path.stem for path in models_path.iterdir()} - {".gitkeep"})
-        # use set comprehension to remove duplicates
-        for model_name in model_names:
-            list_widget.addItem(model_name)
+        context_menu.exec(self._models_button.mapToGlobal(
+            self._models_button.rect().bottomLeft()))
