@@ -2,7 +2,7 @@
 
 ## Project Description
 
-The Magnetic Soft Robtics (MSR) Software is designed to provide a software solution for the modeling,
+The Magnetic Soft Robotics (MSR) Software is designed to provide a software solution for the modeling,
 simulation and visualization of the deformation behavior of magnetic soft robots under the influence of magnetic forces.
 It is specifically developed for Windows and focuses on a user-friedly interface as well as robust simulation tools.
 
