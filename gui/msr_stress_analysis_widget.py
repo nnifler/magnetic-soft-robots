@@ -70,6 +70,15 @@ class MSRHeatmap(QWidget):
         self._layout.addWidget(self._heatmap)
         self._layout.addWidget(self._min_label)
 
+    def reset(self) -> None:
+        """Resets the labels and the saved min/max values used for input validation.
+        Useful e.g. for running another simulation.
+        """
+        self._max_label.setText("max: tbd")
+        self._min_label.setText("min: tbd")
+        self._min_val = None
+        self._max_val = None
+
     def set_min(self, val: float) -> None:
         """Updates the minimum measured value for the heatmap legend.
 
@@ -142,6 +151,12 @@ class MSRStressAnalysisWidget(QGroupBox):
         self._layout = QVBoxLayout(self)
         self._layout.addWidget(self._stress_checkbox)
         self._layout.addWidget(self._heatmap)
+
+    def reset(self) -> None:
+        """Resets the labels and the saved min/max values used for input validation.
+        Useful e.g. for running another simulation.
+        """
+        self._heatmap.reset()
 
     @property
     def show_stress(self) -> bool:

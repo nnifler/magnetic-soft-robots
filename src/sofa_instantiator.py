@@ -2,21 +2,20 @@
 
 from pathlib import Path
 
+import Sofa
 import Sofa.Gui
+import Sofa.Simulation
+import SofaRuntime
 
 from src import (Config, SceneBuilder, ElasticObject, MagneticController, StressAnalyzer,
-                 MaterialLoader, MeshLoader, SimulationAnalysisController, AnalysisParameters)
+                 MaterialLoader, MeshLoader, SimulationAnalysisController)
 from src.mesh_loader import Mode
 
 
-def main(analysis_parameter: AnalysisParameters = AnalysisParameters()) -> None:
+def main() -> None:
     """Main function that instantiates the Sofa simulation with the given analysis parameters.
     If no analysis parameters are given (i.e `analysis_parameters == None`), 
     the simulation will run without any analysis.
-
-    Args:
-        analysis_parameter (AnalysisParameters, optional): The analysis parameters. 
-            Defaults to a AnalysisParameters object with every analysis disabled.
     """
     debug = False
     if debug:
@@ -38,24 +37,24 @@ def main(analysis_parameter: AnalysisParameters = AnalysisParameters()) -> None:
     Config.set_default_plugin_list()
 
     root = Sofa.Core.Node("root")
-    createScene(root, analysis_parameter)
+    createScene(root)
     Sofa.Simulation.init(root)
 
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
     Sofa.Gui.GUIManager.createGUI(root, __file__)
     Sofa.Gui.GUIManager.SetDimension(1080, 1080)
-    Sofa.Gui.GUIManager.MainLoop(root)
+    Sofa.Gui.GUIManager.MainLoop(root, __file__)
     Sofa.Gui.GUIManager.closeGUI()
 
 
 # DO NOT REFACTOR TO SNAKE CASE; WILL CRASH SOFA
-def createScene(root: Sofa.Core.Node, analysis_parameter: AnalysisParameters) -> Sofa.Core.Node:
+def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
     """Creates the scene for the Sofa simulation with the given argument as the root node
-    and initializes analyser according to the given analysis_parameters.
+    using the settings specified in the configuration class.
 
     Args:
         root (Sofa.Core.Node): The root node of the simulation.
-        analysis_parameter (AnalysisParameters): The analysis parameters.
+
 
     Returns:
         Sofa.Core.Node: The root node of the simulation.
@@ -66,9 +65,13 @@ def createScene(root: Sofa.Core.Node, analysis_parameter: AnalysisParameters) ->
     mesh_loader = MeshLoader(scaling_factor=Config.get_scale())
     name = Config.get_name()
     mesh_loader.load_file(
-        path=Path(f"./lib/models/{name}.msh"), mode=Mode.VOLUMETRIC)
+        path=Path(__file__).parents[1] / f"lib/models/{name}.msh",
+        mode=Mode.VOLUMETRIC,
+    )
     mesh_loader.load_file(
-        path=Path(f"./lib/models/{name}.stl"), mode=Mode.SURFACE)
+        path=Path(__file__).parents[1] / f"lib/models/{name}.stl",
+        mode=Mode.SURFACE,
+    )
 
     elastic_object = ElasticObject(root,
                                    mesh_loader=mesh_loader,
@@ -86,6 +89,7 @@ def createScene(root: Sofa.Core.Node, analysis_parameter: AnalysisParameters) ->
 
     magnetic_controller = MagneticController(elastic_object, mat_loader)
     root.addObject(magnetic_controller)
+    analysis_parameter = Config.get_analysis_parameters()
     if analysis_parameter is not None:
         analysis_controller = SimulationAnalysisController(
             root, analysis_parameter)
@@ -93,6 +97,11 @@ def createScene(root: Sofa.Core.Node, analysis_parameter: AnalysisParameters) ->
         root.addObject(
             StressAnalyzer(elastic_object, analysis_parameter)
         )
+        if analysis_parameter.stress_analysis:
+            analysis_parameter.callpoint.send((
+                "stress_reset",
+                []
+            ))
 
     return root
 
