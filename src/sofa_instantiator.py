@@ -62,6 +62,8 @@ def main() -> None:
     Sofa.Simulation.init(root)
 
     Sofa.Gui.GUIManager.Init("myscene", "qglviewer")
+    Sofa.Gui.GUIManager.createGUI(root, __file__)
+    Sofa.Gui.GUIManager.SetDimension(1080, 1080)
     Sofa.Gui.GUIManager.MainLoop(root, __file__)
     Sofa.Gui.GUIManager.closeGUI()
 
@@ -117,7 +119,6 @@ def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
             StressAnalyzer(elastic_object, analysis_parameter)
         )
         if analysis_parameter.stress_analysis:
-            print("reset called;", analysis_parameter.stress_widget.reset)
             analysis_parameter.callpoint.send((
                 "stress_reset",
                 []

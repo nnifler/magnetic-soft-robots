@@ -49,7 +49,14 @@ class MainWindow(QMainWindow):
         """Inherits from QThread to monitor calls from the SOFA Simulation.
         """
 
-        def __init__(self, /, parent=...):
+        def __init__(self, /, parent: MainWindow = ...):
+            """Initializes a QThread for listening to signals from SOFA. 
+
+            Neccessary to display the analysis results.
+
+            Args:
+                parent (MainWindow, optional): The parent widget. Defaults to ....
+            """
             super().__init__(parent)
             self._runs = True
 
@@ -72,6 +79,7 @@ class MainWindow(QMainWindow):
                 call_to_func[call](*args)
 
         def stop(self):
+            """Stops the thread, in the near future."""
             self._runs = False
 
     def __init__(self):
@@ -332,7 +340,6 @@ class MainWindow(QMainWindow):
             self._simulation.kill()
         self._simulation = mp.Process(target=sofa_instantiator.main)
         self._simulation.start()
-        print("simulation process started")
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
         """Parses the information from the deformation widget 

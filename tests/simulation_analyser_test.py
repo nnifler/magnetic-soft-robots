@@ -247,15 +247,13 @@ class TestDeformation(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.analyser.calculate_deformation(random_points.tolist())
 
-    @classmethod
-    def tearDown(cls):
+    def tearDown():
         Config.reset()
 
 
 class TestAnalysisController(unittest.TestCase):
 
-    @classmethod
-    def setUp(cls):
+    def setUp():
         Config.reset()
         Config.set_test_env()
         Config.set_model('beam', 1)
