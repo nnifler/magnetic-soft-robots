@@ -1,154 +1,92 @@
-"""This module provides a toolkit for the GUI header definition."""
+"""
+This module provides a header widget for the MSR GUI.
+
+The header includes buttons and menus to manage model imports 
+and the display of models. It integrates with other modules to handle 
+custom and default models.
+
+Classes:
+    MSRHeaderWidget: Implements the header of the GUI as a QWidget.
+"""
 
 from pathlib import Path
-from typing import List
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QMenu, QListWidget, QMessageBox, QMainWindow
-)
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeySequence, QAction
-from src import Config
-# from src.mesh_loader import Mode as MeshMode, endings as mesh_endings # used for commented code
+from PySide6.QtWidgets import (QWidget, QHBoxLayout,
+                               QLabel, QPushButton, QMenu, QMainWindow, QSizePolicy)
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QAction, QPixmap
+from gui import MSROpenModelsPopup, MSRModelImportPopup
 
 
 class MSRHeaderWidget(QWidget):
     """Implements the header of the GUI as a QWidget."""
 
     def __init__(self, main_window: QMainWindow) -> None:
-        """Initializes the header widget."""
+        """Initializes the header widget. 
+        Args:
+            main_window (QMainWindow): The main window of the application.
+
+        Attributes:
+            main_window (QMainWindow): Reference to the main window.
+            _popup_open (QWidget): Reference to the currently open popup, if any.
+            _popup_import (QWidget): Instance of the import popup.
+            _models_button (QPushButton): Button to open the models menu.
+            logo_label (QLabel): Label to display the application logo.
+
+        Notes: The `button_height` value is derived from `self._models_button.sizeHint().height() - 10`.
+        The `-10` offset compensates for additional padding/margins that Qt includes in the 
+        button's size hint calculation. This ensures the logo height aligns visually with the button.
+        """
         super().__init__()
 
-        self.main_window = main_window
-        self.setFixedHeight(30)  # Maximal 1 cm Höhe
+        self._main_window = main_window
+        self._popup_open: QWidget = MSROpenModelsPopup(self._main_window)
+        self._popup_import: QWidget = MSRModelImportPopup(self._popup_open)
+
+        self.setFixedHeight(30)  # max 1cm height
         header_layout = QHBoxLayout(self)
         header_layout.setContentsMargins(5, 0, 5, 0)
-        header_layout.setSpacing(5)  # Minimaler Abstand zwischen Buttons
-
-        msr_label = QLabel("MSR")
-        msr_label.setStyleSheet("font-size: 20px; font-weight: bold;")
-        header_layout.addWidget(msr_label, alignment=Qt.AlignLeft)
+        header_layout.setSpacing(5)  # min distance between buttons
 
         self._models_button = QPushButton("Models")
         self._models_button.clicked.connect(self._show_models_menu)
+
+        button_size_hint = self._models_button.sizeHint()
+        button_height = max(1, button_size_hint.height() -
+                            10) if isinstance(button_size_hint, QSize) else 22
+
+        self.logo_label = QLabel(self)
+        pixmap = QPixmap(Path(__file__).parent / "logo" / "butterfly_logo.png")
+        aspect_ratio = pixmap.width() / pixmap.height()
+        desired_width = int(button_height * aspect_ratio)
+
+        pixmap = pixmap.scaled(
+            desired_width, button_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.logo_label.setPixmap(pixmap)
+        self.logo_label.setFixedSize(desired_width, button_height)
+        self.logo_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        header_layout.addWidget(self.logo_label, alignment=Qt.AlignVCenter)
         header_layout.addStretch()
-        header_layout.addWidget(self._models_button)
+        header_layout.addWidget(self._models_button, alignment=Qt.AlignVCenter)
 
     def _show_models_menu(self) -> None:
-        """Creates the models context menu."""
+        """Creates and displays the models context menu."""
 
         # Create the menu bar
         context_menu = QMenu(self)
+        context_menu.triggered.connect(context_menu.close)
 
         # Add action to the Library menu
         open_action = QAction("Open", self)
-        open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(
-            lambda _: self._open_models_popup(context_menu))
+            self._popup_open.show)
         context_menu.addAction(open_action)
 
         import_action = QAction("Import", self)
-        import_action.setShortcut(QKeySequence("Ctrl+I"))
         import_action.triggered.connect(
-            lambda _: self.import_library(context_menu))
+            self._popup_import.show)
         context_menu.addAction(import_action)
-
-        export_action = QAction("Export", self)
-        export_action.setShortcut(QKeySequence("Ctrl+E"))
-        export_action.triggered.connect(
-            lambda _: self.export_library(context_menu))
-        context_menu.addAction(export_action)
 
         context_menu.exec(self._models_button.mapToGlobal(
             self._models_button.rect().bottomLeft()))
-
-    def _open_models_popup(self, menu: QMenu) -> None:
-        """Opens the models popup menu.
-
-        Args:
-            menu (QMenu): The menu to close when opening the popup.
-        """
-        menu.close()
-
-        self._popup = QWidget()  # garbage collected without self
-        self._popup.setWindowTitle("Models")
-        self._popup.resize(600, 400)
-
-        layout = QVBoxLayout(self._popup)
-
-        default_label = QLabel("Default Models:")
-        default_list = QListWidget()
-
-        custom_label = QLabel("Custom Models:")
-        custom_list = QListWidget()
-
-        lib_path = Path(__file__).parents[1] / "lib"
-
-        self.load_models(default_list, lib_path / "models")
-        default_list.currentTextChanged.connect(
-            lambda model_name:
-            self.update_loaded_model(model_name, False, [custom_list]))
-
-        # TODO: change to custom model path
-        self.load_models(custom_list, lib_path / "models")
-        custom_list.currentTextChanged.connect(
-            lambda model_name:
-            self.update_loaded_model(model_name, True, [default_list]))
-
-        import_button = QPushButton("Close")
-        import_button.clicked.connect(self._popup.close)
-        # TODO Implement import_custom_model or use super? (GUI refactoring issue)
-        # import_button.clicked.connect(self.import_custom_model)
-
-        layout.addWidget(default_label)
-        layout.addWidget(default_list)
-        layout.addWidget(custom_label)
-        layout.addWidget(custom_list)
-        layout.addWidget(import_button)
-
-        self._popup.show()
-
-    def update_loaded_model(self, model_name: str, custom_model: bool,
-                            other_widgets: List[QListWidget] = None, scale=0.02) -> None:
-        """Updates the loaded model in the config.
-
-        Args:
-            model_name (str): The name of the model to load.
-            custom_model (bool): Whether the model is a custom model.
-            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
-            scale (float, optional): The scale of the model shown in the simulation. Defaults to 0.02.
-        """
-        # TODO: accept different file suffixes
-        # TODO: make scaling factor configurable
-        if other_widgets is not None:
-            for widget in other_widgets:
-                widget.clearSelection()
-
-        Config.set_model(model_name, scale)
-        self.main_window.update_model()
-        # Config.set_model(model_name, scaling, custom_model)  # My idea how custom models could be implemented
-
-    def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
-        """Loads the default models from the default folder into the list widget.
-
-        Args:
-            list_widget (QListWidget): The list widget to add the items to.
-            models_path (Path): The path to the models folder.
-        """
-        if not models_path.exists:
-            QMessageBox.warning(
-                self, "Error", f"Models folder not found at: {models_path}")
-            return
-
-        # previous implementation: problem with both surface and volumetric mesh endings
-        # self._default_list_filenames = []
-        # for filepath in models_path.iterdir():
-        #     if filepath.suffix not in mesh_endings[MeshMode.SURFACE.value]:
-        #         return
-        #     self._default_list.addItem(filepath.stem)
-        #     self._default_list_filenames.append(filepath.stem)
-
-        model_names = list({path.stem for path in models_path.iterdir()})
-        # use set comprehension to remove duplicates
-        for model_name in model_names:
-            list_widget.addItem(model_name)

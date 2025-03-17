@@ -102,7 +102,7 @@ class SceneBuilder():
         self.root.addObject('CollisionResponse',
                             name="CollisionResponse", response="FrictionContactConstraint")
         self.root.addObject('MinProximityIntersection', useLineLine=True, usePointPoint=True,
-                            alarmDistance=0.003, contactDistance=0.0015, useLinePoint=True)
+                            alarmDistance=0.00003, contactDistance=0.000015, useLinePoint=True)
 
     def _render_force(self):
         """Adds the force visualization to the scene."""
