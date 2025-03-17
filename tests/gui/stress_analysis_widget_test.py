@@ -20,7 +20,7 @@ class TestGradient(unittest.TestCase):
 
     def tearDown(self):
         super().tearDown()
-        self.uut_main_window._listener.terminate()
+        self.uut_main_window._listener.stop()
         self.app.shutdown()
 
     def test_gradient(self):
@@ -37,7 +37,7 @@ class TestHeatmapWidget(unittest.TestCase):
 
     def tearDown(self):
         super().tearDown()
-        self.uut_main_window._listener.terminate()
+        self.uut_main_window._listener.stop()
         self.app.shutdown()
 
     def test_defaults(self):
@@ -100,7 +100,7 @@ class TestStressWidget(unittest.TestCase):
 
     def tearDown(self):
         super().tearDown()
-        self.uut_main_window._listener.terminate()
+        self.uut_main_window._listener.stop()
         self.app.shutdown()
 
     def test_max(self):

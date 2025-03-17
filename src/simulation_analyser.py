@@ -221,6 +221,6 @@ class SimulationAnalysisController(Sofa.Core.Controller):
 
             except ValueError as vale:
                 self.callpoint.send((
-                    "deformation_error",
+                    "deform_error",
                     [str(vale)]
                 ))
