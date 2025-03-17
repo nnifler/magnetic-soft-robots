@@ -16,7 +16,7 @@ As a student of material sciences, I’d like to experiment with different magne
     1. Check whether a sub widget with the name "Magnetic Field Settings" is visible in the simulation tab upon application start.
 3. **Window check**
     1. Slider for Strength Adjustment
-        1. Verify an input field with the label `Magnetic Field Strength` is shown.
+        1. Verify an input field with the label `Magnetic Flux Density` is shown.
         2. Invalid input is restricted to ensure only values between 0 and 5.0000 are allowed (excluding negative numbers, non-numeric characters, except comma or dot).
         3. Verify the unit `T` is shown after the input field
         4. Verify a slider from `0 T` to `5 T` is shown.
@@ -24,7 +24,7 @@ As a student of material sciences, I’d like to experiment with different magne
         6. Ensure that the minimum and maximum values of the slider are correct zero and 5 T.
         7. Insert a random number from 0.0000 to 5.0000 with up to 4 decimal places in the spinbox.
         8. Check the selected value in the slider.
-        9. Input a random number in the slider.
+        9. Put the slider in a random position.
         10. Check the selected value in the spinbox
     2. Vector Input Field
         1. Verify the presence of the input field with the label `Direction (Vector)`.
