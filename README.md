@@ -4,7 +4,7 @@
 
 The Magnetic Soft Robotics (MSR) Software is designed to provide a software solution for the modeling,
 simulation and visualization of the deformation behavior of magnetic soft robots under the influence of magnetic forces.
-It is specifically developed for Windows and focuses on a user-friedly interface as well as robust simulation tools.
+It is specifically developed for Windows and focuses on a user-friendly interface as well as robust simulation tools.
 
 The project is based on the [Simulation Open Framework Architecture (SOFA)](https://www.sofa-framework.org),
 an open-source framework for interactive physics simulations using the finite element method (FEM).
@@ -14,10 +14,10 @@ MSR offers the following features:
 - Graphical user interface (GUI) for configuring simulation parameters
 - Support for simulating various models with adjustable parameters
 - Material and model library with approximately 35 sample materials and five sample models
-- Extensibility trough custom material and model definitions
+- Extensibility through custom material and model definitions
 - Detailed analysis of deformation behavior, including:
-  - Display of maximum defirmation along all axes
-  - Visualizsation of local stress distribution within the model
+  - Display of maximum deformation along all axes
+  - Visualization of local stress distribution within the model
 - Interactive simulation of magnetic forces, where the magnetic field affects material properties and consequently deformation
 
 MSR enables precise testing of different materials and magnetic field strengths and their effects on the behavior of soft robots.
@@ -28,7 +28,7 @@ To get started with the MSR software, the following guide describes the steps to
 
 ### Install the Project
 
-1. Create a folder where the repository will be stored if not already existing.
+1. Create a folder where the repository will be stored, if it does not already exist.
 2. Clone the repository from GitHub.
    1. Download the ZIP file from the Releases tab.
    2. Extract the ZIP file to your desired destination folder.\
@@ -41,7 +41,7 @@ To get started with the MSR software, the following guide describes the steps to
 
 ## Start the Application
 
-Start the application by opening Powershell, navigating to the project folder and running `./Run.ps1`.
+Start the application by opening PowerShell, navigating to the project folder and running `./Run.ps1`.
 
 ## License
 
