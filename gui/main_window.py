@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
 
         # Unintialized variables for later code
         self.custom_list = None
+        self._custom_model = False
 
         self.setWindowTitle("Magnetic Soft Robotics Simulation")
         self.resize(400, 600)
@@ -85,31 +86,38 @@ class MainWindow(QMainWindow):
 
         model_name_label = QLabel("Selected Model:")
         self._model_name = QLabel()
+        self._model_custom_label = QLabel("Default")
+        self._model_custom_label.setDisabled(True)
         model_nodes_label = QLabel("Number of Nodes:")
         self._model_nodes = QLabel()
         model_tetrahedra_label = QLabel("Number of Tetrahedra:")
         self._model_tetrahedra = QLabel()
 
-        model_bounding_box_a_label = QLabel("Constraint Box Lower Corner:")
+        self._model_bounding_box_a_label = QLabel(
+            "Constraint Box Lower Corner:")
         self._model_bounding_box_a = QLineEdit()
         self._model_bounding_box_a.setPlaceholderText(
-            "Enter as [x, y, z], leave empty for default model")
+            "Enter as [x, y, z]")
 
-        model_bounding_box_b_label = QLabel("Constraint Box Upper Corner:")
+        self._model_bounding_box_b_label = QLabel(
+            "Constraint Box Upper Corner:")
         self._model_bounding_box_b = QLineEdit()
         self._model_bounding_box_b.setPlaceholderText(
-            "Enter as [x, y, z], leave empty for default model")
+            "Enter as [x, y, z]")
+
+        self._update_bounding_box_enabled()
 
         model_layout.addWidget(model_name_label, 0, 0)
         model_layout.addWidget(self._model_name, 0, 1)
+        model_layout.addWidget(self._model_custom_label, 0, 2)
         model_layout.addWidget(model_nodes_label, 1, 0)
         model_layout.addWidget(self._model_nodes, 1, 1)
         model_layout.addWidget(model_tetrahedra_label, 2, 0)
         model_layout.addWidget(self._model_tetrahedra, 2, 1)
-        model_layout.addWidget(model_bounding_box_a_label, 3, 0, 1, 2)
-        model_layout.addWidget(self._model_bounding_box_a, 4, 0, 1, 2)
-        model_layout.addWidget(model_bounding_box_b_label, 5, 0, 1, 2)
-        model_layout.addWidget(self._model_bounding_box_b, 6, 0, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_a_label, 3, 0)
+        model_layout.addWidget(self._model_bounding_box_a, 3, 1, 1, 2)
+        model_layout.addWidget(self._model_bounding_box_b_label, 4, 0)
+        model_layout.addWidget(self._model_bounding_box_b, 4, 1, 1, 2)
 
         # Magnetic field control
         field_group = QGroupBox("Magnet Field Settings")
@@ -198,9 +206,30 @@ class MainWindow(QMainWindow):
         # Default values
         Config.set_model("butterfly", None, False)
 
-    def update_model(self) -> None:
-        """Updates the model value fields in the GUI after setting the model."""
+    def _update_bounding_box_enabled(self) -> None:
+        """Enables or disables the bounding box inputs based on the model type."""
+        self._model_bounding_box_a_label.setDisabled(not self._custom_model)
+        self._model_bounding_box_b_label.setDisabled(not self._custom_model)
+        self._model_bounding_box_a.setDisabled(not self._custom_model)
+        self._model_bounding_box_b.setDisabled(not self._custom_model)
+
+    def update_model(self, custom_model: bool) -> None:
+        """Updates the model value fields in the GUI after setting the model.
+
+        Args:
+            custom_model (bool): Whether the model is a custom model.
+        """
         name = Config.get_name()
+        self._custom_model = custom_model
+
+        # Disable bounding box inputs for default models
+
+        if self._custom_model:
+            self._model_custom_label.setText("Custom")
+        else:
+            self._model_custom_label.setText("Default")
+
+        self._update_bounding_box_enabled()
 
         # SOFA to get nodes and tetrahedra
         root = Sofa.Core.Node("root")
@@ -216,7 +245,7 @@ class MainWindow(QMainWindow):
         # updating the values
         node_count = len(model_obj.position.value)
         tetrahedron_count = len(model_obj.tetrahedra.value)
-        self._model_name.setText(name)
+        self._model_name.setText(name.rsplit('/', maxsplit=1)[-1])
         self._model_nodes.setText(str(node_count))
         self._model_tetrahedra.setText(str(tetrahedron_count))
 
@@ -296,8 +325,11 @@ class MainWindow(QMainWindow):
         bounding_box_b = self.parse_direction_input(
             self._model_bounding_box_b.text())
 
-        if bounding_box_a is None or bounding_box_b is None:
+        if not self._custom_model:  # Default model
             Config.set_default_constraints()
+        elif bounding_box_a is None or bounding_box_b is None:
+            QMessageBox.warning(self, "Error", "Invalid bounding box!")
+            return
         else:
             Config.set_constraints(
                 np.array(bounding_box_a), np.array(bounding_box_b))

@@ -154,7 +154,7 @@ class MSRHeaderWidget(QWidget):
                 widget.clearSelection()
 
         Config.set_model(model_name, scale, custom_model)
-        self.main_window.update_model()
+        self.main_window.update_model(custom_model)
 
     def load_models(self, list_widget: QListWidget, models_path: Path) -> None:
         """Loads the models from the specified directory into the given list widget.
