@@ -21,7 +21,7 @@ class TestStressAnalyzer(unittest.TestCase):
             side_effect=von_mises_vals
         )
 
-        params = AnalysisParameters(unittest.mock.Mock())
+        params = AnalysisParameters()
         params.enable_stress_analysis(unittest.mock.MagicMock())
 
         uut = StressAnalyzer(elastic_object=eo_mock, parameters=params)
@@ -41,7 +41,7 @@ class TestStressAnalyzer(unittest.TestCase):
             StressAnalyzer(None, mock)
 
     def test_no_change(self):
-        params = AnalysisParameters(unittest.mock.Mock())
+        params = AnalysisParameters()
         params.disable_stress_analysis()
         eo_mock = unittest.mock.MagicMock()
 
