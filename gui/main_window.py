@@ -23,8 +23,7 @@ from PySide6.QtWidgets import (
     QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout, QTabWidget
 )
 
-from PySide6.QtCore import Qt, QRegularExpression, QThread
-from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtCore import Qt, QThread
 import Sofa.Core
 from src.units import Tesla
 from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
