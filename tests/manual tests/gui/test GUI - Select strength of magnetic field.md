@@ -20,7 +20,7 @@ As a student of material sciences, I’d like to experiment with different magne
         2. Invalid input is restricted to ensure only values between 0 and 5.0000 are allowed (excluding negative numbers, non-numeric characters, except comma or dot).
         3. Verify the unit `T` is shown after the input field
         4. Verify a slider from `0 T` to `5 T` is shown.
-        5. The sliders are adjustable to various positions within its range.
+        5. The slider is adjustable to various positions within its range.
         6. Ensure that the minimum and maximum values of the slider are correct zero and 5 T.
         7. Insert a random number from 0.0000 to 5.0000 with up to 4 decimal places in the spinbox.
         8. Check the selected value in the slider.
