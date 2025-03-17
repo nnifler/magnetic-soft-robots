@@ -16,6 +16,7 @@ class TestGradient(unittest.TestCase):
         super().setUp()
         self.app = QApplication([])
         self.uut_main_window = MainWindow()
+        self.uut_main_window._listener.stop()
         self.uut = self.uut_main_window.stress_analysis._heatmap._heatmap
 
     def tearDown(self):
@@ -33,6 +34,7 @@ class TestHeatmapWidget(unittest.TestCase):
         super().setUp()
         self.app = QApplication([])
         self.uut_main_window = MainWindow()
+        self.uut_main_window._listener.stop()
         self.uut = self.uut_main_window.stress_analysis._heatmap
 
     def tearDown(self):
@@ -96,6 +98,7 @@ class TestStressWidget(unittest.TestCase):
         super().setUp()
         self.app = QApplication([])
         self.uut_main_window = MainWindow()
+        self.uut_main_window._listener.stop()
         self.uut = self.uut_main_window.stress_analysis
 
     def tearDown(self):
