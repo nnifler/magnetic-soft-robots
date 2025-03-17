@@ -1,7 +1,6 @@
 """Implementation of the Stress Analyzer, a class responsible for the von Mises stress analysis. It updates the associated GUI component as well."""
 from typing import Any
 
-
 import Sofa
 import numpy as np
 
@@ -39,14 +38,15 @@ class StressAnalyzer(Sofa.Core.Controller):
         self.max_stress = -np.inf
         self.min_stress = np.inf
 
-        self._callpoint = parameters.callpoint
-
     # override -> no snake case
     def onAnimateBeginEvent(self, _: Any) -> None:
         """Overrides the onAnimateBeginEvent method executed before each animation step.
 
         Args:
             _ (Any): the (unused) event
+
+        Raises:
+            ValueError: If parameters.stress_widget is None, but parameters.stress_analysis is True
         """
         if not self._analyze:
             return
@@ -59,16 +59,10 @@ class StressAnalyzer(Sofa.Core.Controller):
 
         if cur_max > self.max_stress:
             self.max_stress = cur_max
-            self._callpoint.send((
-                "stress_max",
-                [self.max_stress],
-            ))
+            self._widget.set_max(self.max_stress)
             # max stress alert check
         if cur_min < self.min_stress:
             self.min_stress = cur_min
-            self._callpoint.send((
-                "stress_min",
-                [self.max_stress],
-            ))
+            self._widget.set_min(self.min_stress)
 
         return

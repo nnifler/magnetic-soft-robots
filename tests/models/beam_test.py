@@ -13,7 +13,7 @@ class TestBeam(unittest.TestCase):
         Config.set_model('beam', 1)
 
         cls.root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(cls.root)
+        sofa_instantiator.createScene(cls.root, None)
         Sofa.Simulation.init(cls.root)
 
         cls.elastic_object = cls.root.getChild('object')

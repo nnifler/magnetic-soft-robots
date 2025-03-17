@@ -11,7 +11,7 @@ from gui import MSRDeformationAnalysisWidget
 class TestAnalysisParameters(unittest.TestCase):
 
     def test_init(self):
-        ap = AnalysisParameters(unittest.mock.Mock())
+        ap = AnalysisParameters()
         self.assertFalse(ap.max_deformation_analysis)
         self.assertIsNone(ap.max_deformation_input)
         self.assertIsNone(ap.max_deformation_widget)
@@ -29,7 +29,7 @@ class TestAnalysisParameters(unittest.TestCase):
         }
         widget = unittest.mock.Mock(**widget_args)
 
-        ap = AnalysisParameters(unittest.mock.Mock())
+        ap = AnalysisParameters()
         input_list = np.random.randint(3, size=(3,)).tolist()
         ap.enable_max_deformation_analysis(widget, input_list)
         self.assertTrue(ap.max_deformation_analysis)
@@ -46,7 +46,7 @@ class TestAnalysisParameters(unittest.TestCase):
         }
         widget = unittest.mock.Mock(**widget_args)
 
-        ap = AnalysisParameters(unittest.mock.Mock())
+        ap = AnalysisParameters()
         input_list = [(np.random.rand(3) - 0.5) * 100 for _ in range(3)]
         ap.enable_max_deformation_analysis(widget, input_list)
         self.assertTrue(ap.max_deformation_analysis)
@@ -63,7 +63,7 @@ class TestAnalysisParameters(unittest.TestCase):
         }
         widget = unittest.mock.Mock(**widget_args)
 
-        ap = AnalysisParameters(unittest.mock.Mock())
+        ap = AnalysisParameters()
         input_list = None
         ap.enable_max_deformation_analysis(widget, input_list)
         self.assertTrue(ap.max_deformation_analysis)
@@ -80,7 +80,7 @@ class TestAnalysisParameters(unittest.TestCase):
         }
         widget = unittest.mock.Mock(**widget_args)
 
-        ap = AnalysisParameters(unittest.mock.Mock())
+        ap = AnalysisParameters()
         input_list = None
         with self.assertRaises(ValueError):
             ap.enable_max_deformation_analysis(widget, input_list)
@@ -95,7 +95,7 @@ class TestAnalysisParameters(unittest.TestCase):
         }
         widget = unittest.mock.Mock(**widget_args)
 
-        ap = AnalysisParameters(unittest.mock.Mock())
+        ap = AnalysisParameters()
         input_list = np.random.randint(3, size=(3,)).tolist()
         ap.enable_max_deformation_analysis(widget, input_list)
 
@@ -105,7 +105,7 @@ class TestAnalysisParameters(unittest.TestCase):
         self.assertIsNone(ap.max_deformation_widget)
 
     def test_stress_enable(self):
-        uut = AnalysisParameters(unittest.mock.Mock())
+        uut = AnalysisParameters()
         widget_mock = unittest.mock.MagicMock()
         uut.enable_stress_analysis(widget_mock)
 
@@ -115,7 +115,7 @@ class TestAnalysisParameters(unittest.TestCase):
                          "stress_widget is not given as provided")
 
     def test_stress_disable(self):
-        uut = AnalysisParameters(unittest.mock.Mock())
+        uut = AnalysisParameters()
         uut.disable_stress_analysis()
         self.assertFalse(uut.stress_analysis,
                          "stress_analysis should be False after disabling")
@@ -133,12 +133,7 @@ class TestAnalysisParameters(unittest.TestCase):
         ]
         for widget in erroneous_widgets:
             with self.assertRaises(ValueError):
-                AnalysisParameters(unittest.mock.Mock()
-                                   ).enable_stress_analysis(widget)
-
-    def test_error_on_init(self):
-        with self.assertRaises(ValueError):
-            AnalysisParameters(None)
+                AnalysisParameters().enable_stress_analysis(widget)
 
 
 def suite() -> unittest.TestSuite:
