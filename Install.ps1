@@ -1,7 +1,7 @@
-$py_version = "3.12.9"
+$py_version = "3.10.11"
 
 $arch = "amd64"
-$sofa_version = "v24.12.00"
+$sofa_version = "v24.06.00"
 $sofa_arch = "Win64"
 $sofa_url = "https://github.com/sofa-framework/sofa/releases/download/$sofa_version/SOFA_${sofa_version}_$sofa_arch.zip"
 $sofa_archive = "sofa-$sofa_version-$sofa_arch.zip"
