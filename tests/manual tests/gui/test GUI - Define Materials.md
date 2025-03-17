@@ -15,8 +15,10 @@ Make sure that the project is installed according to [README.md]() and [Requirem
 2. **Check the behaviour of the application**
     1. Check whether a sub widget with the name "Material Configuration" opens in the simulation tab at start.
 3. **Window check**
-    1. Check if a widget with the name `Material Configuration` is shown. 
-    2. Input field with label for `Young's Modulus`:
+    1. Dropdown menu `Selecting materials`:
+        1. By default, the first material from the dropdown should be selected
+        2. Its parameters are displayed accordingly in the fields described below.
+    2. Input field with label for `Young modulus`:
         1. Input of positive values with up to four decimal digits possible
         2. Input of invalid characters not possible (negative numbers, non-numeric characters except comma or dot for decimal separator)
     3. Input field with label for `Poisson's Ratio`:
