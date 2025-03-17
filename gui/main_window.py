@@ -321,7 +321,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Invalid direction!")
             return
 
-        Config.set_show_force(True)
+        Config.set_show_force(False)
         Config.set_external_forces(True,
                                    np.array([0, -9.81, 0]),
                                    self._field_strength.value(),
