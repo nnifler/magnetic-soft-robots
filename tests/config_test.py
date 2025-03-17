@@ -1,6 +1,7 @@
 from random import uniform, choices, choice, randint
 import string
 import unittest
+import unittest.mock
 import numpy as np
 from src.config import Config
 from src.units import YoungsModulus, Density, Tesla
@@ -270,6 +271,17 @@ class TestConfig(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Config.set_constraints(np.array([0, 0, 0]), err_b2)
+
+    def test_analysis_params(self):
+        self.assertIsNone(Config.get_analysis_parameters(),
+                          "initially should be None")
+        ap_mock = unittest.mock.MagicMock()
+        Config.set_analysis_parameters(ap_mock)
+        self.assertEqual(
+            Config.get_analysis_parameters(),
+            ap_mock,
+            msg="different params than set found after get"
+        )
 
     def test_stress_kwargs(self) -> None:
         ref_dict_0 = {
