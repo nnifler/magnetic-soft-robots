@@ -1,0 +1,1 @@
+from .stress_analysis_widget_test import suite as stress_widget_suite
