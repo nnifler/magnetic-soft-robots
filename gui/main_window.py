@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
         self._simulation = None
         self._reciever, self._caller = mp.Pipe()
         self._listener = self.Listener(self)
-        self.destroyed.connect(self._listener.stop())
+        self.destroyed.connect(self._listener.stop)
         self._listener.start()
 
     def update_model(self) -> None:
@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
         if deformation_widget_enabled is None:
             return
 
-        analysis_parameters = AnalysisParameters(callpoint=self._caller)
+        analysis_parameters = AnalysisParameters(self._caller)
         if deformation_widget_enabled:
             analysis_parameters.enable_max_deformation_analysis(
                 self.deformation_widget, deformation_input_list)
