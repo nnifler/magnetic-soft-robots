@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
         field_direction_label = QLabel("Direction (Vector):")
         self.field_direction_input = QLineEdit("[0, -1, 0]")
         self.field_direction_input.setPlaceholderText(
-            "Enter direction as [x, y, z]")
+            "Enter as [x, y, z]")
 
         # label spinbox
         field_layout.addWidget(self._field_strength.label, 0, 0)
