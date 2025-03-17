@@ -49,16 +49,6 @@ class MainWindow(QMainWindow):
         """Inherits from QThread to monitor calls from the SOFA Simulation.
         """
 
-        def __init__(self, /, parent: MainWindow = ...):
-            """Initializes a QThread for listening to signals from SOFA. 
-            Neccessary to display the analysis results.
-
-            Args:
-                parent (MainWindow, optional): The parent widget. Defaults to ....
-            """
-            super().__init__(parent)
-            self._runs = True
-
         def run(self) -> None:
             """Listens for signals from the SOFA process and passes them to the appropriate GUI components.
             """
@@ -70,16 +60,12 @@ class MainWindow(QMainWindow):
                 "deform_update": self.parent().deformation_widget.update_results,
                 "deform_error": self.parent().deformation_widget.update_results,
             }
-            while self._runs:
+            while True:
                 while not self.parent()._reciever.poll(1):
                     pass
                 package = self.parent()._reciever.recv()
                 call, args = package
                 call_to_func[call](*args)
-
-        def stop(self):
-            """Stops the thread, in the near future."""
-            self._runs = False
 
     def __init__(self):
         """Initialize the main window and set up the UI."""
@@ -215,7 +201,7 @@ class MainWindow(QMainWindow):
         self._simulation = None
         self._reciever, self._caller = mp.Pipe()
         self._listener = self.Listener(self)
-        self.destroyed.connect(self._listener.stop)
+        self.destroyed.connect(self._listener.terminate)
         self._listener.start()
 
     def update_model(self) -> None:
