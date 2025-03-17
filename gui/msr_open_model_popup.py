@@ -8,7 +8,7 @@ Classes:
 """
 
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QMainWindow,
                                QLabel, QPushButton, QListWidget, QMessageBox,)
 from PySide6.QtGui import QFont
@@ -84,19 +84,20 @@ class MSROpenModelsPopup(QWidget):
         self._layout.addWidget(open_button)
 
     def update_loaded_model(self, model_name: str, custom_model: bool,
-                            other_widgets: List[QListWidget] = None, scale=0.02) -> None:
-        """Updates the model loaded in the application configuration.
+                            other_widgets: List[QListWidget] = None, scale: Optional[float] = None) -> None:
+        """Updates the loaded model in the config.
 
         Args:
             model_name (str): The name of the model to load.
             custom_model (bool): Whether the model is a custom model.
-            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear 
-            the selection of. Defaults to None.
-            scale (float, optional): The scale of the model shown in the simulation. 
-            Defaults to 0.02.
+            other_widgets (Optional[List[QListWidget]], optional): Other widgets to clear the selection of. Defaults to None.
+            scale (Optional[float], optional): The scale of the model shown in the simulation. 
+                If set to None, uses the default scales (This means a predefined scale for the example models
+                and a scale of `0.01` for any custom model). Defaults to None.
+
+        Raises:
+            ValueError: If scale is less than or equal to 0.
         """
-        # TODO: accept different file suffixes
-        # TODO: make scaling factor configurable
         if other_widgets is not None:
             for widget in other_widgets:
                 widget.clearSelection()
@@ -112,7 +113,7 @@ class MSROpenModelsPopup(QWidget):
         Displays a warning if no model is selected.
         Displays a message after everything succeeds.
         """
-        if self._selected_is_custom is None or self._selected_model_name is None or self._selected_scale is None:
+        if self._selected_is_custom is None or self._selected_model_name is None:
             QMessageBox.warning(
                 self,
                 "Model Selection Error",

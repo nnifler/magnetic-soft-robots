@@ -4,7 +4,7 @@ from pathlib import Path
 
 import Sofa.Gui
 
-from src import (Config, SceneBuilder, ElasticObject, MagneticController,
+from src import (Config, SceneBuilder, ElasticObject, MagneticController, StressAnalyzer,
                  MaterialLoader, MeshLoader, SimulationAnalysisController, AnalysisParameters)
 from src.mesh_loader import Mode
 
@@ -111,6 +111,9 @@ def createScene(root: Sofa.Core.Node, analysis_parameter: AnalysisParameters) ->
         analysis_controller = SimulationAnalysisController(
             root, analysis_parameter)
         root.addObject(analysis_controller)
+        root.addObject(
+            StressAnalyzer(elastic_object, analysis_parameter)
+        )
 
     return root
 

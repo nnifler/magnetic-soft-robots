@@ -154,8 +154,6 @@ class MagneticController(Sofa.Core.Controller):
                 cur_positions[tetrahedron[0]]
             self._volume += abs(np.dot(vec1, np.cross(vec2, vec3))) / 6
 
-        self._volume_per_node = self._volume / self._num_nodes
-
     def onAnimateBeginEvent(self, _):
         """Function that is automatically called at the beginning of the Sofa animation step.
         """
@@ -177,7 +175,7 @@ class MagneticController(Sofa.Core.Controller):
 
             for node in tetrahedron:
                 if not force_defined_at[node]:
-                    dipole_moment = Config.get_remanence().T * self._volume_per_node / MU0
+                    dipole_moment = Config.get_remanence().T * self._volume / MU0
 
                     m = dipole_moment * orientation
                     torque = np.cross(m, Config.get_b_field())
