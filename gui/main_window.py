@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
                 "stress_max": self.parent().stress_analysis.set_max,
                 "stress_reset": self.parent().stress_analysis.reset,
                 "deform_update": self.parent().deformation_widget.update_results,
-                "deform_error": self.parent().deformation_widget.update_results,
+                "deform_error": self.parent().deformation_widget.display_input_error,
             }
             while True:
                 while not self.parent()._reciever.poll(1):
