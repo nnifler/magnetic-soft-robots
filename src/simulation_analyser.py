@@ -176,17 +176,12 @@ class SimulationAnalysisController(Sofa.Core.Controller):
         # Max deformation
         self.max_deformation_analysis = analysis_parameters.max_deformation_analysis
         self.max_deformation_input = analysis_parameters.max_deformation_input
-        self.max_deformation_widget = analysis_parameters.max_deformation_widget
-        if self.max_deformation_widget is not None:
-            self.max_deformation_mode = self.max_deformation_widget.get_mode()
-            # Convert input to indices if necessary
-            if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.COORDINATES:
-                self.max_deformation_input = list(
-                    map(self.analyser.calculate_nearest_node, self.max_deformation_input))
-        else:
-            # Not tested right now, should be tested as soon as
-            # the controller has to handle multiple analysis types
-            self.max_deformation_mode = None
+        self.max_deformation_mode = analysis_parameters.max_deformation_mode
+
+        # Convert input to indices if necessary
+        if self.max_deformation_mode == AnalysisParameters.SelectionMode.COORDINATES:
+            self.max_deformation_input = list(
+                map(self.analyser.calculate_nearest_node, self.max_deformation_input))
 
     # Inbuilt function, therfore not in snake case
     def onAnimateBeginEvent(self, _) -> None:
@@ -197,7 +192,7 @@ class SimulationAnalysisController(Sofa.Core.Controller):
             self.analyser.update_deformation()
             try:
                 deformation, deformation_indices = None, None
-                if self.max_deformation_mode == self.max_deformation_widget.SelectionMode.ALL:
+                if self.max_deformation_mode == AnalysisParameters.SelectionMode.ALL:
                     deformation, deformation_indices = self.analyser.calculate_deformation()
                 else:
                     # This might raise a ValueError

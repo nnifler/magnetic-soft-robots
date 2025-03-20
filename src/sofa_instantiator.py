@@ -1,22 +1,26 @@
 """This script instantiates the Sofa simulation."""
 
 from pathlib import Path
+from multiprocessing.connection import Connection
 
 import Sofa
 import Sofa.Gui
 import Sofa.Simulation
-import SofaRuntime
-
 from src import (Config, SceneBuilder, ElasticObject, MagneticController, StressAnalyzer,
                  MaterialLoader, MeshLoader, SimulationAnalysisController)
 from src.mesh_loader import Mode
 
 
-def main() -> None:
+def main(conn: Connection) -> None:
     """Main function that instantiates the Sofa simulation with the given analysis parameters.
     If no analysis parameters are given (i.e `analysis_parameters == None`), 
     the simulation will run without any analysis.
+
+    Args:
+        conn (Connection): Connection to the main process, 
+            that should contain the result of `Config.to_list()`
     """
+    Config.from_list(conn.recv())
     debug = False
     if debug:
         print(f"Show force: {Config.get_show_force()}")
@@ -118,15 +122,13 @@ def createScene(root: Sofa.Core.Node) -> Sofa.Core.Node:
         root.addObject(
             StressAnalyzer(elastic_object, analysis_parameter)
         )
-        if analysis_parameter.stress_analysis:
-            analysis_parameter.callpoint.send((
-                "stress_reset",
-                []
-            ))
+        analysis_parameter.callpoint.send((
+            "stress_reset",
+            []
+        ))
+        analysis_parameter.callpoint.send((
+            "deform_reset",
+            []
+        ))
 
     return root
-
-
-# Function used only if this script is called from a python environment
-if __name__ == '__main__':
-    main()

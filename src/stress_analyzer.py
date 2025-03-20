@@ -32,9 +32,6 @@ class StressAnalyzer(Sofa.Core.Controller):
         self._elastic_object = elastic_object
 
         self._analyze = parameters.stress_analysis
-        self._widget = None
-        if self._analyze:
-            self._widget = parameters.stress_widget
 
         self.max_stress = -np.inf
         self.min_stress = np.inf
