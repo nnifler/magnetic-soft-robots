@@ -171,6 +171,7 @@ class SimulationAnalysisController(Sofa.Core.Controller):
         super().__init__(root, name="AnalysisController")
         self.root = root
         self.analyser = SimulationAnalyser(root)
+        self.callpoint = analysis_parameters.callpoint
 
         # Max deformation
         self.max_deformation_analysis = analysis_parameters.max_deformation_analysis
@@ -204,14 +205,22 @@ class SimulationAnalysisController(Sofa.Core.Controller):
                     deformation, deformation_indices = self.analyser.calculate_deformation(
                         self.max_deformation_input)
                 maximum_indices = np.abs(deformation).argmax(axis=0)
-                self.max_deformation_widget.update_results([
-                    round(deformation[maximum_indices[0], 0], 6),
-                    round(deformation[maximum_indices[1], 1], 6),
-                    round(deformation[maximum_indices[2], 2], 6),
-                ], [
-                    deformation_indices[maximum_indices[0], 0],
-                    deformation_indices[maximum_indices[1], 1],
-                    deformation_indices[maximum_indices[2], 2],
-                ])
+
+                self.callpoint.send((
+                    "deform_update",
+                    [[
+                        round(deformation[maximum_indices[0], 0], 6),
+                        round(deformation[maximum_indices[1], 1], 6),
+                        round(deformation[maximum_indices[2], 2], 6),
+                    ], [
+                        deformation_indices[maximum_indices[0], 0],
+                        deformation_indices[maximum_indices[1], 1],
+                        deformation_indices[maximum_indices[2], 2],
+                    ]]
+                ))
+
             except ValueError as vale:
-                self.max_deformation_widget.display_input_error(str(vale))
+                self.callpoint.send((
+                    "deform_error",
+                    [str(vale)]
+                ))

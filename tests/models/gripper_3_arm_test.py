@@ -13,7 +13,7 @@ class TestGripper3Arm(unittest.TestCase):
         Config.set_model('gripper_3_arm', 1)
 
         cls.root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(cls.root, None)
+        sofa_instantiator.createScene(cls.root)
         Sofa.Simulation.init(cls.root)
 
         cls.elastic_object = cls.root.getChild('object')
