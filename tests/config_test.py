@@ -322,6 +322,118 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(ref_dict_0, Config.get_stress_kwargs(),
                          msg="vals should hold value 0 after hard reset")
 
+    def test_reconstrutability(self) -> None:
+        # Initialize random values
+        ref_show_force = choice([True, False])
+
+        ref_name = ''.join(
+            choices(string.ascii_uppercase + string.digits, k=6))
+        ref_scale = uniform(0, 100)
+
+        ref_use_gravity = choice([True, False])
+        ref_gravity_vec = np.random.uniform(0, 100, 3)
+        ref_magnetic_force = Tesla.from_T(uniform(0, 100))
+        ref_magnetic_dir = np.random.uniform(0, 20, 3)
+        normalised_magnetic_dir = ref_magnetic_dir / \
+            np.linalg.norm(ref_magnetic_dir)
+        ref_b_field = ref_magnetic_force.T * normalised_magnetic_dir
+        ref_initial_dipole_moment = np.random.uniform(0, 20, 3)
+
+        ref_poisson_ratio = uniform(0, 0.4999)
+        ref_youngs_modulus = YoungsModulus.from_Pa(uniform(0, 100))
+        ref_density = Density.from_kgpm3(uniform(0, 100))
+        ref_remanence = Tesla.from_T(uniform(0, 100))
+
+        ref_plugin_list = [''.join(
+            choices(string.ascii_uppercase + string.digits, k=20)) for _ in range(randint(1, 20))]
+
+        ref_a = np.random.uniform(0, 100, 3)
+        ref_b = np.random.uniform(0, 100, 3)
+
+        ref_show_stress = choice([True, False])
+        ref_stress_kwargs = {
+            'computeVonMisesStress': int(ref_show_stress),
+            'showVonMisesStressPerNodeColorMap': int(ref_show_stress),
+        }
+
+        ref_anal_params = unittest.mock.MagicMock()
+
+        # Set values
+        Config.set_show_force(ref_show_force)
+        Config.set_model(ref_name, ref_scale)
+        Config.set_external_forces(
+            ref_use_gravity,
+            ref_gravity_vec,
+            ref_magnetic_force,
+            ref_magnetic_dir,
+            ref_initial_dipole_moment
+        )
+        Config.set_material_parameters(
+            ref_poisson_ratio,
+            ref_youngs_modulus,
+            ref_density,
+            ref_remanence
+        )
+        Config.set_plugin_list(ref_plugin_list)
+        Config.set_constraints(ref_a, ref_b)
+        Config.set_stress_kwargs(ref_show_stress)
+        Config.set_analysis_parameters(ref_anal_params)
+
+        # Reset and reconstruct
+        config_list = Config.to_list()
+        Config.reset()
+        Config.from_list(config_list)
+
+        # Check values
+        self.assertEqual(Config.get_show_force(),
+                         ref_show_force, msg="show_force has wrong value")
+
+        self.assertEqual(Config.get_name(),
+                         ref_name, msg="name has wrong value")
+        self.assertAlmostEqual(Config.get_scale(),
+                               ref_scale, msg="scale has wrong value")
+
+        self.assertEqual(Config.get_use_gravity(),
+                         ref_use_gravity, msg="use_gravity has wrong value")
+        for pair in zip(Config.get_gravity_vec(), ref_gravity_vec):
+            self.assertAlmostEqual(*pair, msg="gravity_vec has wrong value")
+        self.assertAlmostEqual(Config.get_magnetic_force(
+        ).T, ref_magnetic_force.T, msg="magnetic_force has wrong value")
+        for pair in zip(Config.get_magnetic_dir(), normalised_magnetic_dir):
+            self.assertAlmostEqual(*pair, msg="magnetic_dir has wrong value")
+        for pair in zip(Config.get_b_field(), ref_b_field):
+            self.assertAlmostEqual(*pair, msg="b_field has wrong value")
+        for pair in zip(Config.get_initial_dipole_moment(), ref_initial_dipole_moment):
+            self.assertAlmostEqual(
+                *pair, msg="initial_dipole_moment has wrong value")
+
+        self.assertAlmostEqual(Config.get_poisson_ratio(),
+                               ref_poisson_ratio, msg="poisson_ratio has wrong value")
+        self.assertAlmostEqual(Config.get_youngs_modulus(
+        ).Pa, ref_youngs_modulus.Pa, msg="youngs_modulus has wrong value")
+        self.assertAlmostEqual(Config.get_density().kgpm3,
+                               ref_density.kgpm3, msg="density has wrong value")
+        self.assertAlmostEqual(Config.get_remanence().T,
+                               ref_remanence.T, msg="remanence has wrong value")
+
+        for pair in zip(Config.get_plugin_list(), ref_plugin_list):
+            self.assertEqual(*pair, msg="plugin_list has wrong value")
+
+        for pair in zip(Config.get_constraints()[0], ref_a):
+            self.assertAlmostEqual(*pair, msg="constraint a has wrong value")
+        for pair in zip(Config.get_constraints()[1], ref_b):
+            self.assertAlmostEqual(*pair, msg="constraint b has wrong value")
+        self.assertTrue(Config.get_use_constraints(),
+                        msg="use_constraints has wrong value")
+
+        self.assertEqual(Config.get_show_stress(),
+                         ref_show_stress, msg="show_stress has wrong value")
+        self.assertDictEqual(Config.get_stress_kwargs(),
+                             ref_stress_kwargs, msg="stress_kwargs has wrong value")
+
+        self.assertEqual(Config.get_analysis_parameters(),
+                         ref_anal_params, msg="analysis_parameters has wrong value")
+
     def tearDown(self) -> None:
         """Resets config after each test."""
         Config.reset()
