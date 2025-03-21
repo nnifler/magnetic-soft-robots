@@ -48,7 +48,7 @@ class Config:
     @classmethod
     def to_list(cls) -> List:
         """Returns a list with all values of the configuration.
-        This function is mostly used to reconstruct the configuration with the `from_list` function.
+        This function is mostly used to reconstruct the configuration with the `from_list` method.
 
         Returns:
             List: List with all values of the configuration.
@@ -80,8 +80,8 @@ class Config:
     @classmethod
     def from_list(cls, config_list: List) -> None:
         """Reconstructs the configuration from the given list.
-        This function should only be used to reconstruct the 
-        configuration from the list created with the `to_list` function.
+        This method should only be used to reconstruct the 
+        configuration from the list created with the `to_list` method.
 
         Args:
             config_list (List): List with all values of the configuration.

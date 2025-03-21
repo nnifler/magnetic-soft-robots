@@ -82,14 +82,14 @@ class MSRDeformationAnalysisWidget(QGroupBox):
             label.setAlignment(Qt.AlignCenter)
             self._output.addWidget(label, 0, i)
 
-        self.result = [QLineEdit(), QLineEdit(), QLineEdit()]
-        for i, line_edit in enumerate(self.result):
+        self.result_outputs = [QLineEdit(), QLineEdit(), QLineEdit()]
+        for i, line_edit in enumerate(self.result_outputs):
             line_edit.setReadOnly(True)
             self._output.addWidget(line_edit, 1, i)
 
         self.result_indices = [QLabel(), QLabel(), QLabel()]
         self.result_indices_box = QHBoxLayout()
-        for i, label in enumerate(self.result_indices):
+        for label in self.result_indices:
             label.setAlignment(Qt.AlignCenter)
             self.result_indices_box.addWidget(label)
             label.setText("Index: tbd")
@@ -145,14 +145,14 @@ class MSRDeformationAnalysisWidget(QGroupBox):
 
         Args:
             results (List[float]): The list of deformation analysis results
-            indices (List[int]): The lit of indices
+            indices (List[int]): The list of indices
         """
-        for i, result in enumerate(results):
-            self.result[i].setText(str(result))
+        for output, result in zip(self.result_outputs, results):
+            output.setText(str(result))
 
-        for i, index in enumerate(indices):
-            self.result_indices[i].setStyleSheet("")
-            self.result_indices[i].setText(f"Index: {index}")
+        for output, index in zip(self.result_indices, indices):
+            output.setStyleSheet("")
+            output.setText(f"Index: {index}")
 
     def display_input_error(self, message: str) -> None:
         """Displays the given message as an error in the results section.
@@ -183,7 +183,7 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         """Resets the labels and the saved min/max values used for input validation.
         Useful e.g. for running another simulation.
         """
-        for i, result in enumerate(self.result):
+        for i, result in enumerate(self.result_outputs):
             result.setText("")
             self.result_indices[i].setText("Index: tbd")
             self.result_indices[i].setStyleSheet("")

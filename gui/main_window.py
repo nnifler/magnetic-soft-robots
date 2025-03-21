@@ -365,9 +365,6 @@ class MainWindow(QMainWindow):
         Config.set_stress_kwargs(show_stress)
         Config.set_analysis_parameters(analysis_parameters)
 
-        # self.stress_analysis.reset()
-        # self.deformation_widget.reset()
-
         if self._simulation is not None:
             self._simulation.kill()
         parent_conn, child_conn = mp.Pipe()
