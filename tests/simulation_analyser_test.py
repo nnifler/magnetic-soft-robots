@@ -11,8 +11,6 @@ from src import sofa_instantiator
 from src.mesh_loader import Mode
 from src.units import YoungsModulus, Density
 
-from gui import MSRDeformationAnalysisWidget
-
 
 class TestAnalyserUtils(unittest.TestCase):
 
@@ -247,68 +245,55 @@ class TestDeformation(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.analyser.calculate_deformation(random_points.tolist())
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         Config.reset()
 
 
 class TestAnalysisController(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
+        Config.reset()
         Config.set_test_env()
         Config.set_model('beam', 1)
 
     def test_init_deform_indices(self):
-        selection_mode = MSRDeformationAnalysisWidget.SelectionMode.INDICES
-        widget_args = {
-            'get_mode.return_value': selection_mode,
-            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-        }
-        widget = unittest.mock.Mock(**widget_args)
+        selection_mode = AnalysisParameters.SelectionMode.INDICES
 
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
-        parameters = AnalysisParameters()
-        parameters.enable_max_deformation_analysis(widget, deform_input)
+        parameters = AnalysisParameters(unittest.mock.Mock())
+        parameters.enable_max_deformation_analysis(
+            selection_mode, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
 
         controller: SimulationAnalysisController = root.getObject(
             'AnalysisController')
 
         self.assertTrue(controller.max_deformation_analysis)
         self.assertListEqual(controller.max_deformation_input, deform_input)
-        self.assertEqual(controller.max_deformation_widget, widget)
         self.assertEqual(controller.max_deformation_mode, selection_mode)
 
     def test_init_deform_coords(self):
-        selection_mode = MSRDeformationAnalysisWidget.SelectionMode.COORDINATES
-        widget_args = {
-            'get_mode.return_value': selection_mode,
-            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-        }
-        widget = unittest.mock.Mock(**widget_args)
+        selection_mode = AnalysisParameters.SelectionMode.COORDINATES
 
         deform_input = [np.random.randint(10, size=(3,)) for _ in range(25)]
 
-        parameters = AnalysisParameters()
-        parameters.enable_max_deformation_analysis(widget, deform_input)
+        parameters = AnalysisParameters(unittest.mock.Mock())
+        parameters.enable_max_deformation_analysis(
+            selection_mode, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
         analyser = SimulationAnalyser(root)
 
         controller: SimulationAnalysisController = root.getObject(
             'AnalysisController')
 
         self.assertTrue(controller.max_deformation_analysis)
-        self.assertEqual(controller.max_deformation_widget, widget)
         self.assertEqual(controller.max_deformation_mode, selection_mode)
 
         ref_indices = [analyser.calculate_nearest_node(
@@ -317,21 +302,18 @@ class TestAnalysisController(unittest.TestCase):
         self.assertListEqual(controller.max_deformation_input, ref_indices)
 
     def test_simulation_behaviour_indices(self):
-        widget_args = {
-            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-        }
-        widget = unittest.mock.Mock(**widget_args)
-
         deform_input = np.random.randint(100, size=(25,)).tolist()
 
-        parameters = AnalysisParameters()
-        parameters.enable_max_deformation_analysis(widget, deform_input)
+        selection_mode = AnalysisParameters.SelectionMode.INDICES
+
+        callpoint = unittest.mock.Mock()
+        parameters = AnalysisParameters(callpoint)
+        parameters.enable_max_deformation_analysis(
+            selection_mode, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
         analyser = SimulationAnalyser(root)
 
         Sofa.Simulation.init(root)
@@ -341,9 +323,11 @@ class TestAnalysisController(unittest.TestCase):
             Sofa.Simulation.animate(root, root.dt.value)
             ref_values, ref_indices = analyser.calculate_deformation(
                 deform_input)
-            args = widget.update_results.call_args
-            values = np.array(args[0][0])
-            indices = np.array(args[0][1])
+            args = callpoint.send.call_args[0][0]
+            callname, args = args
+            self.assertEqual(callname, "deform_update")
+            values = np.array(args[0])
+            indices = np.array(args[1])
 
             ref_maxima = np.absolute(ref_values).argmax(axis=0)
             ref_values = np.array([
@@ -365,19 +349,14 @@ class TestAnalysisController(unittest.TestCase):
             analyser.update_deformation()
 
     def test_simulation_behaviour_all(self):
-        widget_args = {
-            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-        }
-        widget = unittest.mock.Mock(**widget_args)
-
-        parameters = AnalysisParameters()
-        parameters.enable_max_deformation_analysis(widget, None)
+        selection_mode = AnalysisParameters.SelectionMode.ALL
+        callpoint = unittest.mock.Mock()
+        parameters = AnalysisParameters(callpoint)
+        parameters.enable_max_deformation_analysis(selection_mode, None)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
         analyser = SimulationAnalyser(root)
 
         Sofa.Simulation.init(root)
@@ -386,9 +365,11 @@ class TestAnalysisController(unittest.TestCase):
         for _ in range(10):
             Sofa.Simulation.animate(root, root.dt.value)
             ref_values, ref_indices = analyser.calculate_deformation()
-            args = widget.update_results.call_args
-            values = np.array(args[0][0])
-            indices = np.array(args[0][1])
+            args = callpoint.send.call_args[0][0]
+            callname, args = args
+            self.assertEqual(callname, "deform_update")
+            values = np.array(args[0])
+            indices = np.array(args[1])
 
             ref_maxima = np.absolute(ref_values).argmax(axis=0)
             ref_values = np.array([
@@ -410,27 +391,24 @@ class TestAnalysisController(unittest.TestCase):
             analyser.update_deformation()
 
     def test_simulation_error(self):
-        widget_args = {
-            'get_mode.return_value': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.INDICES': MSRDeformationAnalysisWidget.SelectionMode.INDICES,
-            'SelectionMode.COORDINATES': MSRDeformationAnalysisWidget.SelectionMode.COORDINATES,
-            'SelectionMode.ALL': MSRDeformationAnalysisWidget.SelectionMode.ALL,
-        }
-        widget = unittest.mock.Mock(**widget_args)
+        selection_mode = AnalysisParameters.SelectionMode.INDICES
 
         deform_input = [int(1e10)]
-
-        parameters = AnalysisParameters()
-        parameters.enable_max_deformation_analysis(widget, deform_input)
+        callpoint = unittest.mock.Mock()
+        parameters = AnalysisParameters(callpoint)
+        parameters.enable_max_deformation_analysis(
+            selection_mode, deform_input)
+        Config.set_analysis_parameters(parameters)
 
         root = Sofa.Core.Node("root")
-        sofa_instantiator.createScene(root, parameters)
+        sofa_instantiator.createScene(root)
 
         Sofa.Simulation.init(root)
         Sofa.Simulation.animate(root, root.dt.value)
 
-        widget.display_input_error.assert_called_once()
-        widget.update_results.assert_not_called()
+        callpoint.send.assert_called_with(
+            ("deform_error", ['Point 10000000000 is not part of the model.']))
+        # widget.update_results.assert_not_called()
 
 
 def suite() -> unittest.TestSuite:

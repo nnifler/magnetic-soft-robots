@@ -1,23 +1,18 @@
 """This module contains the widgets for the post simulation analysis."""
 
 import re
-from enum import Enum
 from typing import List
 
 from PySide6.QtWidgets import (
-    QGroupBox, QVBoxLayout, QCheckBox, QGridLayout, QTextEdit, QLabel, QLineEdit, QRadioButton
+    QGroupBox, QVBoxLayout, QCheckBox, QGridLayout, QTextEdit, QLabel, QLineEdit, QRadioButton, QHBoxLayout
 )
 from PySide6.QtCore import Qt
+
+from src import AnalysisParameters
 
 
 class MSRDeformationAnalysisWidget(QGroupBox):
     """Widget for the deformation analysis of the simulation results."""
-
-    class SelectionMode(Enum):
-        """Enum class for the different ways to select points."""
-        INDICES = 0
-        COORDINATES = 1
-        ALL = 2
 
     def __init__(self) -> None:
         """Initializes the widget for the deformation analysis.
@@ -87,12 +82,18 @@ class MSRDeformationAnalysisWidget(QGroupBox):
             label.setAlignment(Qt.AlignCenter)
             self._output.addWidget(label, 0, i)
 
-        self.result = [QLineEdit(), QLineEdit(), QLineEdit()]
-        for i, line_edit in enumerate(self.result):
+        self.result_outputs = [QLineEdit(), QLineEdit(), QLineEdit()]
+        for i, line_edit in enumerate(self.result_outputs):
             line_edit.setReadOnly(True)
             self._output.addWidget(line_edit, 1, i)
 
-        self.result_indices = None
+        self.result_indices = [QLabel(), QLabel(), QLabel()]
+        self.result_indices_box = QHBoxLayout()
+        for label in self.result_indices:
+            label.setAlignment(Qt.AlignCenter)
+            self.result_indices_box.addWidget(label)
+            label.setText("Index: tbd")
+        self._output.addLayout(self.result_indices_box, 2, 0, 1, 3)
 
         result_box.setLayout(self._output)
         layout.addWidget(result_box)
@@ -144,18 +145,14 @@ class MSRDeformationAnalysisWidget(QGroupBox):
 
         Args:
             results (List[float]): The list of deformation analysis results
-            indices (List[int]): The lit of indices
+            indices (List[int]): The list of indices
         """
-        for i, result in enumerate(results):
-            self.result[i].setText(str(result))
+        for output, result in zip(self.result_outputs, results):
+            output.setText(str(result))
 
-        if self.result_indices is None:
-            self.result_indices = [QLabel(), QLabel(), QLabel()]
-            for i, label in enumerate(self.result_indices):
-                label.setAlignment(Qt.AlignCenter)
-                self._output.addWidget(label, 2, i)
-        for i, index in enumerate(indices):
-            self.result_indices[i].setText(f"Index: {index}")
+        for output, index in zip(self.result_indices, indices):
+            output.setStyleSheet("")
+            output.setText(f"Index: {index}")
 
     def display_input_error(self, message: str) -> None:
         """Displays the given message as an error in the results section.
@@ -163,19 +160,30 @@ class MSRDeformationAnalysisWidget(QGroupBox):
         Args:
             message (str): The message to display
         """
-        error_message = QLabel(message)
-        error_message.setAlignment(Qt.AlignCenter)
-        error_message.setStyleSheet("color: crimson")
-        self._output.addWidget(error_message, 3, 0, 1, 3)
+        for i, ind in enumerate(self.result_indices):
+            if i == 1:
+                ind.setText(message)
+                ind.setStyleSheet("color: crimson")
+            else:
+                ind.setText("")
 
-    def get_mode(self) -> SelectionMode:
+    def get_mode(self) -> AnalysisParameters.SelectionMode:
         """Returns the mode of the point selection.
 
         Returns:
             SelectionMode: The mode of the point selection
         """
         if self.point_radio_buttons[0].isChecked():
-            return self.SelectionMode.ALL
+            return AnalysisParameters.SelectionMode.ALL
         if self.point_radio_buttons[1].isChecked():
-            return self.SelectionMode.COORDINATES
-        return self.SelectionMode.INDICES
+            return AnalysisParameters.SelectionMode.COORDINATES
+        return AnalysisParameters.SelectionMode.INDICES
+
+    def reset(self) -> None:
+        """Resets the labels and the saved min/max values used for input validation.
+        Useful e.g. for running another simulation.
+        """
+        for i, result in enumerate(self.result_outputs):
+            result.setText("")
+            self.result_indices[i].setText("Index: tbd")
+            self.result_indices[i].setStyleSheet("")

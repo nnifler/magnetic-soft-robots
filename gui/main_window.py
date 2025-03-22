@@ -8,8 +8,9 @@ Classes:
     MainWindow: The main application window containing UI elements and
                 parameter management for the simulation.
 """
+from __future__ import annotations
 
-
+import multiprocessing as mp
 import os
 import re
 from builtins import ValueError
@@ -21,9 +22,9 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox,
     QLabel, QSlider, QPushButton, QMessageBox, QLineEdit, QFileDialog, QGridLayout, QTabWidget
 )
-from PySide6.QtCore import Qt
-import Sofa.Core
 
+from PySide6.QtCore import Qt, QThread
+import Sofa.Core
 from src.units import Tesla
 from src import AnalysisParameters, Config, MeshLoader, sofa_instantiator
 from src.mesh_loader import Mode as MeshMode
@@ -44,6 +45,43 @@ class MainWindow(QMainWindow):
         field_strength_slider (QSlider): Slider for adjusting the magnetic field strength.
         field_direction_input (QLineEdit): Input field for defining the magnetic field direction.
     """
+    class Listener(QThread):
+        """Inherits from QThread to monitor calls from the SOFA Simulation.
+        """
+
+        def __init__(self, /, parent: MainWindow = ...):
+            """Initializes a QThread for listening to signals from SOFA. 
+
+            Neccessary to display the analysis results.
+
+            Args:
+                parent (MainWindow, optional): The parent widget. Defaults to ....
+            """
+            super().__init__(parent)
+            self._runs = True
+
+        def run(self) -> None:
+            """Listens for signals from the SOFA process and passes them to the appropriate GUI components.
+            """
+            call_to_func = {
+                # self.stress_analysis.set_min,
+                "stress_min": self.parent().stress_analysis.set_min,
+                "stress_max": self.parent().stress_analysis.set_max,
+                "stress_reset": self.parent().stress_analysis.reset,
+                "deform_update": self.parent().deformation_widget.update_results,
+                "deform_error": self.parent().deformation_widget.display_input_error,
+                "deform_reset": self.parent().deformation_widget.reset,
+            }
+            while self._runs:
+                while not self.parent()._reciever.poll(1):
+                    pass
+                package = self.parent()._reciever.recv()
+                call, args = package
+                call_to_func[call](*args)
+
+        def stop(self):
+            """Stops the thread, in the near future."""
+            self._runs = False
 
     def __init__(self):
         """Initialize the main window and set up the UI."""
@@ -198,6 +236,12 @@ class MainWindow(QMainWindow):
         # Default values
         Config.set_model("butterfly", None, False)
 
+        self._simulation = None
+        self._reciever, self._caller = mp.Pipe()
+        self._listener = self.Listener(self)
+        self.destroyed.connect(self._listener.terminate)
+        self._listener.start()
+
     def update_model(self) -> None:
         """Updates the model value fields in the GUI after setting the model."""
         name = Config.get_name()
@@ -305,19 +349,29 @@ class MainWindow(QMainWindow):
         deformation_widget_enabled, deformation_input_list = \
             self._parse_max_deformation_information()
 
-        analysis_parameters = AnalysisParameters()
+        analysis_parameters = AnalysisParameters(self._caller)
         if deformation_widget_enabled:
             analysis_parameters.enable_max_deformation_analysis(
-                self.deformation_widget, deformation_input_list)
+                self.deformation_widget.get_mode(), deformation_input_list)
+        else:
+            analysis_parameters.disable_max_deformation_analysis()
 
         show_stress = self.stress_analysis.show_stress
         if show_stress:
-            analysis_parameters.enable_stress_analysis(self.stress_analysis)
+            analysis_parameters.enable_stress_analysis()
         else:
             analysis_parameters.disable_stress_analysis()
-        Config.set_stress_kwargs(show_stress)
 
-        sofa_instantiator.main(analysis_parameters)
+        Config.set_stress_kwargs(show_stress)
+        Config.set_analysis_parameters(analysis_parameters)
+
+        if self._simulation is not None:
+            self._simulation.kill()
+        parent_conn, child_conn = mp.Pipe()
+        self._simulation = mp.Process(
+            target=sofa_instantiator.main, args=(child_conn,))
+        parent_conn.send(Config.to_list())
+        self._simulation.start()
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
         """Parses the information from the deformation widget 
