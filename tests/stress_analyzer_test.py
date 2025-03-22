@@ -22,7 +22,7 @@ class TestStressAnalyzer(unittest.TestCase):
         )
 
         params = AnalysisParameters(unittest.mock.Mock())
-        params.enable_stress_analysis(unittest.mock.MagicMock())
+        params.enable_stress_analysis()
 
         uut = StressAnalyzer(elastic_object=eo_mock, parameters=params)
         for _ in range(len(von_mises_vals)):

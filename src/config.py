@@ -46,6 +46,67 @@ class Config:
     _analysis_parameters = None
 
     @classmethod
+    def to_list(cls) -> List:
+        """Returns a list with all values of the configuration.
+        This function is mostly used to reconstruct the configuration with the `from_list` method.
+
+        Returns:
+            List: List with all values of the configuration.
+        """
+        return [
+            cls._show_force,
+            cls._is_first_launch,
+            cls._show_stress,
+            cls._stress_kwargs,
+            cls._name,
+            cls._scale,
+            cls._use_constraints,
+            cls._point_a,
+            cls._point_b,
+            cls._use_gravity,
+            cls._gravity_vec,
+            cls._magnetic_force,
+            cls._magnetic_dir,
+            cls._b_field,
+            cls._initial_dipole_moment,
+            cls._poisson_ratio,
+            cls._youngs_modulus,
+            cls._density,
+            cls._remanence,
+            cls._plugin_list,
+            cls._analysis_parameters,
+        ]
+
+    @classmethod
+    def from_list(cls, config_list: List) -> None:
+        """Reconstructs the configuration from the given list.
+        This method should only be used to reconstruct the 
+        configuration from the list created with the `to_list` method.
+
+        Args:
+            config_list (List): List with all values of the configuration.
+
+        Raises:
+            ValueError: If the list does not have the right amount of elements (21).
+            ValueError: If a value in the list is in the wrong format or has an invalid value.
+        """
+        if len(config_list) != 21:
+            raise ValueError("List does not have 21 Elements.")
+
+        cls.set_show_force(config_list[0])
+        cls._is_first_launch = config_list[1]
+        cls.set_stress_kwargs(config_list[2])
+        cls.set_model(config_list[4], config_list[5])
+        cls.set_constraints(config_list[7], config_list[8])
+        cls._use_constraints = config_list[6]
+        cls.set_external_forces(
+            config_list[9], config_list[10], config_list[11], config_list[12], config_list[14])
+        cls.set_material_parameters(
+            config_list[15], config_list[16], config_list[17], config_list[18])
+        cls.set_plugin_list(config_list[19])
+        cls.set_analysis_parameters(config_list[20])
+
+    @classmethod
     def set_show_force(cls, show_force: bool) -> None:
         """Set if Sofa should display forces acting on the model during the simulation.
 
@@ -370,6 +431,11 @@ class Config:
 
     @classmethod
     def set_stress_kwargs(cls, show_stress: bool, ) -> None:
+        """Set the keyword arguments for stress visualization used by SOFA.
+
+        Args:
+            show_stress (bool): When True, the simulation will display stress.
+        """
         cls._show_stress = show_stress
         binary_bool = int(show_stress)
         cls._stress_kwargs = {

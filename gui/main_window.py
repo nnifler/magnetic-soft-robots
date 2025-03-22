@@ -70,6 +70,7 @@ class MainWindow(QMainWindow):
                 "stress_reset": self.parent().stress_analysis.reset,
                 "deform_update": self.parent().deformation_widget.update_results,
                 "deform_error": self.parent().deformation_widget.display_input_error,
+                "deform_reset": self.parent().deformation_widget.reset,
             }
             while self._runs:
                 while not self.parent()._reciever.poll(1):
@@ -351,13 +352,13 @@ class MainWindow(QMainWindow):
         analysis_parameters = AnalysisParameters(self._caller)
         if deformation_widget_enabled:
             analysis_parameters.enable_max_deformation_analysis(
-                self.deformation_widget, deformation_input_list)
+                self.deformation_widget.get_mode(), deformation_input_list)
         else:
             analysis_parameters.disable_max_deformation_analysis()
 
         show_stress = self.stress_analysis.show_stress
         if show_stress:
-            analysis_parameters.enable_stress_analysis(self.stress_analysis)
+            analysis_parameters.enable_stress_analysis()
         else:
             analysis_parameters.disable_stress_analysis()
 
@@ -366,7 +367,10 @@ class MainWindow(QMainWindow):
 
         if self._simulation is not None:
             self._simulation.kill()
-        self._simulation = mp.Process(target=sofa_instantiator.main)
+        parent_conn, child_conn = mp.Pipe()
+        self._simulation = mp.Process(
+            target=sofa_instantiator.main, args=(child_conn,))
+        parent_conn.send(Config.to_list())
         self._simulation.start()
 
     def _parse_max_deformation_information(self) -> Tuple[bool, List[int | np.ndarray]]:
