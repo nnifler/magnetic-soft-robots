@@ -132,9 +132,12 @@ class ElasticObject():
         # Add visuals
         visu = eo_node.addChild("VisualModel")
         visu.loader = self._mesh_loader.load_mesh_into(visu, Mode.SURFACE)
-        visu.addObject('OglModel', name="model", src=self._mesh_loader.reference(
+        ogl = visu.addObject('OglModel', name="model", src=self._mesh_loader.reference(
             Mode.SURFACE), color=[1., 1., 1.], updateNormals=False)
         visu.addObject('IdentityMapping')
+        # SOFA 24.12 seems to break the automatic calculation of the bounding box
+        pos: np.ndarray = ogl.position.value
+        self._root.bbox = np.stack((pos.min(axis=0), pos.max(axis=0)))
 
         l = len(self.mesh.position.value)
         self.vertex_forces = [None] * l

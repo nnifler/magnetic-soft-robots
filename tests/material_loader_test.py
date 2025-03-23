@@ -62,7 +62,8 @@ class TestNormalBehavior(unittest.TestCase):
         uut.set_poissons_ratio(expected_poissons_ratio)
         uut.update_elastic_object()
         _, kwargs = eo.FEM_force_field.setDataValues.call_args
-        self.assertAlmostEqual(kwargs['poissonRatio'], expected_poissons_ratio)
+        self.assertAlmostEqual(
+            kwargs['poissonRatio'][0], expected_poissons_ratio)
         self.assertAlmostEqual(uut.get_poissons_ratio(),
                                expected_poissons_ratio)
 
