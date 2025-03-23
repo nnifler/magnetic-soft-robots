@@ -34,14 +34,31 @@ To get started with the MSR software, the following guide describes the steps to
    2. Extract the ZIP file to your desired destination folder.\
     Note: This folder cannot be changed later. To move the installation, you must download and extract the ZIP file again.
 3. Installation
-   1. Open PowerShell and navigate to the project folder.
-   2. Execute the installation script **once** with `./Install.ps1`.\
-    Note: Running it multiple times will result in error messages.
-   3. The project is now cloned to your local machine.
+   1. Execute the installation script `Install.ps1`\
+      This can be done by right clicking on it and selecting `Run with PowerShell` or by executing it in `PowerShell`.
+   3. The project is now installed on your local machine.
+
+### Possible Complications
+**Windows prevents execution of the installation script**\
+This could happen because the PowerShell execution policy is not configured correctly. To execute the installation script, set the execution policy to `Bypass` by executing the command `Set-ExecutionPolicy -ExecutionPolicy Bypass` in an administrator PowerShell.\
+More information: [about_execution_policies](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies)
+
+**The installation script fails while downloading python or SOFA**\
+This could happen because the path to the location of the project folder is too long. Try extracting the project folder to a location with a shorter path.
 
 ## Start the Application
 
-Start the application by opening PowerShell, navigating to the project folder and running `./Run.ps1`.
+Start the application by executing `Run.ps1` by right clicking on it and selecting `Run with PowerShell` or by executing it in `PowerShell`.
+
+## How to get a volumetric mesh
+
+To import a custom model you need both a surface mesh and a volumetric mesh. Most mesh files for 3D Models found on the internet are surface meshes. These meshes can be converted to volumetric meshes using various programs.
+
+An easy to use program to convert `.stl`-files is [Gmsh](https://gmsh.info/). The steps to to create a volumetric mesh are as follows:
+1. Open the `stl`-file using `File > Open`
+2. Add a volume using `Modules > Geometry > Elementary entities > Add > Volume` and clicking on the model. If prompted to create a `.geo`-file, do so. Then press `e` to cancel the selection of hole boundaries.
+3. Create the volumetric mesh using `Modules > Mesh > 3D`
+4. Save the volumetric mesh using `Modules > Mesh > Save`
 
 ## License
 
