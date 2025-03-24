@@ -20,7 +20,7 @@
 # Contact information: finn.s.schubert@gmail.com                                       #
 # ____________________________________________________________________________________ #
 
-$py_version = "3.12.09"
+$py_version = "3.12.9"
 
 $arch = "amd64"
 $sofa_version = "v24.12.00"
