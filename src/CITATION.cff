@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Hahnewald
+    given-names: Julius
+  - family-names: Hellkamp
+    given-names: Heiko
+  - family-names: Schubert
+    given-names: Finn
+  - family-names: Wehner
+    given-names: Carla
+title: "Magnetic Soft Robotics"
+license: LGPL v2.1
+version: v1.0_24.12
+date-released: 2025-03-24
